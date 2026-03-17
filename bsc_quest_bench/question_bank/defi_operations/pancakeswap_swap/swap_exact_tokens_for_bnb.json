@@ -1,0 +1,193 @@
+{
+  "id": "swap_exact_tokens_for_bnb",
+  "version": "2.0.0",
+  "category": "defi_operations",
+  "subcategory": "pancakeswap_swap",
+  "difficulty": "medium",
+  "title": "PancakeSwap Swap - Token to BNB",
+  "natural_language_templates": [
+    "Swap {amount_in} {token_symbol} for BNB on PancakeSwap",
+    "Exchange {amount_in} {token_symbol} to BNB using PancakeSwap Router",
+    "Convert {amount_in} {token_symbol} tokens to BNB through PancakeSwap V2",
+    "Trade {amount_in} {token_symbol} for BNB on PancakeSwap with {slippage}% slippage tolerance"
+  ],
+  "description": [
+    "Swap ERC20 tokens for BNB using PancakeSwap V2 Router's swapExactTokensForETH function.",
+    "",
+    "Technical context:",
+    "- PancakeSwap V2 Router (BSC Mainnet): 0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "- Function signature: swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)",
+    "- This function requires prior token approval to the Router contract",
+    "- The swap follows Uniswap V2 AMM (Automated Market Maker) model: x * y = k",
+    "- Function selector: 0x18cbafe5",
+    "- Recommended gas limit: 180000",
+    "",
+    "Key considerations:",
+    "- MUST approve tokens to Router before calling swap function",
+    "- amountIn: Exact amount of tokens to swap",
+    "- amountOutMin: Minimum amount of BNB to receive (slippage protection)",
+    "- path: Array of token addresses for the swap route [TOKEN, WBNB]",
+    "- to: Recipient address (usually the sender/agent address)",
+    "- deadline: Unix timestamp after which the transaction will revert",
+    "- WBNB address on BSC: 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "",
+    "Two-step process:",
+    "1. Call approve(router, amountIn) on the token contract",
+    "2. Call swapExactTokensForETH on the router contract",
+    "",
+    "Slippage protection:",
+    "- Calculate amountOutMin using getAmountsOut or apply a percentage (2-5% typical)",
+    "- Formula: amountOutMin = expectedOutput * (1 - slippagePercent)",
+    "- For testing, can use 0 for amountOutMin (accepts any output)",
+    "",
+    "Success criteria:",
+    "- Transaction executes successfully",
+    "- Correct PancakeSwap Router is called",
+    "- Token balance decreases by amountIn",
+    "- BNB balance increases by at least amountOutMin (minus gas)"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "token_address": {
+      "type": "address",
+      "role": "token_in",
+      "description": "Input token to swap (USDT by default)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955",
+        "comment": "USDT on BSC"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "wbnb_address": {
+      "type": "address",
+      "role": "token_out",
+      "description": "WBNB address (wrapped BNB)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "amount_in": {
+      "type": "number",
+      "unit": "token",
+      "role": "swap_amount",
+      "description": "Amount of tokens to swap",
+      "generation": {
+        "method": "random",
+        "min": 0.5,
+        "max": 5.0,
+        "decimals": 2
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance percentage",
+      "generation": {
+        "method": "fixed",
+        "value": 5.0
+      }
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance_check",
+        "description": "Agent must have sufficient token balance"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.25,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "token_approval",
+        "weight": 0.2,
+        "address": "{router_address}",
+        "description": "Token approved to Router (or approval check passed)"
+      },
+      {
+        "type": "contract_called",
+        "weight": 0.1,
+        "address": "{router_address}",
+        "description": "Correct PancakeSwap Router called"
+      },
+      {
+        "type": "function_selector",
+        "weight": 0.1,
+        "selector": "0x18cbafe5",
+        "description": "Correct function swapExactTokensForETH called"
+      },
+      {
+        "type": "token_balance_decrease",
+        "weight": 0.2,
+        "token": "{token_address}",
+        "expected_decrease": "{amount_in}",
+        "tolerance": "0",
+        "description": "Token balance decreased by swap amount"
+      },
+      {
+        "type": "bnb_balance_increase",
+        "weight": 0.15,
+        "min_increase": 0,
+        "description": "BNB balance increased (received output BNB minus gas)"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "pancakeswap",
+      "swap",
+      "dex",
+      "amm",
+      "defi",
+      "token-to-bnb",
+      "approval-required"
+    ],
+    "estimated_gas": 180000,
+    "requires_contract": true,
+    "requires_approval": true,
+    "network": "mainnet",
+    "dex": "PancakeSwap V2",
+    "swap_type": "exact_input",
+    "difficulty_notes": [
+      "Requires understanding of token approval mechanism",
+      "Two-step process: approve + swap",
+      "Requires understanding of swap paths",
+      "Must handle BNB balance change correctly (minus gas)"
+    ]
+  }
+}

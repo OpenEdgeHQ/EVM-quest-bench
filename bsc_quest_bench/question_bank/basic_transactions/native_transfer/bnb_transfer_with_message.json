@@ -1,0 +1,117 @@
+{
+  "id": "bnb_transfer_with_message",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "native_transfer",
+  "difficulty": "easy",
+  "title": "BNB Transfer with Message",
+  "description": [
+    "Transfer BNB with an attached text message encoded in the transaction data field.",
+    "",
+    "Technical context:",
+    "- Message should be encoded in the 'data' field of the transaction",
+    "- Convert string to UTF-8 bytes, then to hexadecimal format",
+    "- Transactions with data field consume slightly more gas than empty data",
+    "- Recommended gas limit: 25000 (vs 21000 for transfers without data)",
+    "",
+    "Key considerations:",
+    "- Encode message as UTF-8 bytes in hex format",
+    "- Set transaction 'to' field to recipient address",
+    "- Set transaction 'value' field to transfer amount",
+    "- Set transaction 'data' field to hex-encoded message"
+  ],
+  "natural_language_templates": [
+    "Transfer {amount} BNB to {to_address} with message '{message}'",
+    "Send {amount} BNB to {to_address} and include the message: {message}",
+    "Please send {amount} BNB to address {to_address} with the note '{message}'",
+    "I want to transfer {amount} BNB to {to_address} and attach message: {message}"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "to_address": {
+      "type": "address",
+      "role": "receiver",
+      "description": "Recipient address",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "unit": "BNB",
+      "description": "Transfer amount in BNB",
+      "generation": {
+        "min": 0.001,
+        "max": 0.1,
+        "decimals": 3
+      },
+      "role": "transfer_amount"
+    },
+    "message": {
+      "type": "string",
+      "description": "Text message to attach to the transaction",
+      "generation": {
+        "method": "random",
+        "length": 20,
+        "charset": "alphanumeric_space"
+      },
+      "role": "parameter"
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "balance",
+        "description": "Agent must have sufficient BNB balance",
+        "min_balance": "0.2 BNB"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.2,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "value_transfer",
+        "weight": 0.2,
+        "description": "Correct amount of BNB transferred",
+        "expected": "{amount}",
+        "tolerance": "0"
+      },
+      {
+        "type": "recipient_check",
+        "weight": 0.2,
+        "description": "BNB sent to correct recipient",
+        "expected": "{to_address}"
+      },
+      {
+        "type": "message_check",
+        "weight": 0.3,
+        "description": "Transaction data contains the message",
+        "expected": "{message}"
+      },
+      {
+        "type": "balance_change",
+        "weight": 0.1,
+        "description": "Sender balance decreased correctly",
+        "expected_change": "-{amount}",
+        "tolerance": "0.01 BNB"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "native_transfer",
+      "bnb",
+      "message",
+      "data_field",
+      "basic"
+    ],
+    "estimated_gas": 25000,
+    "requires_contract": false
+  }
+}

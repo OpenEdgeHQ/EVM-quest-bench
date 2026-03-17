@@ -1,0 +1,128 @@
+{
+  "id": "wbnb_withdraw",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "native_transfer",
+  "difficulty": "medium",
+  "title": "WBNB Withdraw (Unwrap WBNB)",
+  "natural_language_templates": [
+    "Withdraw {amount} WBNB to get BNB",
+    "Unwrap {amount} WBNB back to BNB",
+    "Convert {amount} WBNB to native BNB",
+    "I want to withdraw {amount} WBNB to receive BNB"
+  ],
+  "description": [
+    "Withdraw WBNB tokens from the WBNB contract to receive an equivalent amount of native BNB.",
+    "",
+    "Technical context:",
+    "- The withdraw(uint256) function burns WBNB tokens and sends native BNB back",
+    "- Function signature: withdraw(uint256 wad)",
+    "- The amount must be in wei (smallest unit)",
+    "- You must have sufficient WBNB balance before withdrawal",
+    "- Recommended gas limit: 60000",
+    "",
+    "Key considerations:",
+    "- Call the withdraw(uint256) function on WBNB contract",
+    "- Encode function call with amount parameter in wei",
+    "- Function selector: 0x2e1a7d4d",
+    "- Set transaction 'to' to the WBNB contract address",
+    "- Set transaction 'value' to 0 (not sending BNB, just calling contract)",
+    "- After withdrawal, WBNB token balance decreases",
+    "- Native BNB balance increases by the withdrawal amount (minus gas)"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "wbnb_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "WBNB contract address",
+      "generation": {
+        "method": "from_list",
+        "addresses": [
+          "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+        ],
+        "comment": "BSC Mainnet WBNB contract"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "unit": "WBNB",
+      "description": "Amount of WBNB to withdraw (will be converted to BNB)",
+      "generation": {
+        "min": 0.001,
+        "max": 0.05,
+        "decimals": 3
+      },
+      "role": "transfer_amount"
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "wbnb_balance",
+        "description": "Agent must have sufficient WBNB balance",
+        "min_balance": "200 WBNB"
+      },
+      {
+        "type": "contract_exists",
+        "description": "WBNB contract must exist",
+        "address": "{wbnb_address}"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "contract_call",
+        "weight": 0.2,
+        "description": "Transaction calls WBNB contract",
+        "expected": "{wbnb_address}"
+      },
+      {
+        "type": "function_signature",
+        "weight": 0.2,
+        "description": "Correct withdraw function signature",
+        "expected": "withdraw(uint256)"
+      },
+      {
+        "type": "wbnb_balance_decrease",
+        "weight": 0.15,
+        "description": "WBNB token balance decreased by withdrawal amount",
+        "expected_decrease": "{amount}"
+      },
+      {
+        "type": "bnb_balance_increase",
+        "weight": 0.15,
+        "description": "Native BNB balance increased by withdrawal amount (minus gas)",
+        "expected_increase": "{amount}"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "wbnb",
+      "unwrap",
+      "withdraw",
+      "native_token",
+      "contract_call",
+      "intermediate"
+    ],
+    "estimated_gas": 60000,
+    "requires_contract": true,
+    "requires_token_balance": true,
+    "contract_requirements": {
+      "contract_type": "WBNB",
+      "required_functions": [
+        "withdraw",
+        "balanceOf"
+      ],
+      "note": "Must have WBNB tokens to withdraw"
+    }
+  }
+}

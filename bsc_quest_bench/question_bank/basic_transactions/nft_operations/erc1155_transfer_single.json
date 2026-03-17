@@ -1,0 +1,156 @@
+{
+  "id": "erc1155_transfer_single",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "nft_operations",
+  "difficulty": "medium",
+  "title": "ERC1155 Single Token Transfer",
+  "natural_language_templates": [
+    "Transfer {amount} units of token ID {token_id} from {nft_address} to {to_address}",
+    "Send {amount} of ERC1155 token #{token_id} at {nft_address} to {to_address}",
+    "Transfer {amount} units of multi-token {token_id} from contract {nft_address} to {to_address}",
+    "I want to transfer {amount} of token {token_id} (contract: {nft_address}) to {to_address}"
+  ],
+  "description": [
+    "Transfer ERC1155 tokens (single token ID) to another address using the safeTransferFrom function.",
+    "",
+    "Technical context:",
+    "- ERC1155 is the multi-token standard supporting both fungible and non-fungible tokens",
+    "- Function signature: safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data)",
+    "- The 'from' address must be the current owner or approved operator",
+    "- The 'to' address must implement ERC1155Receiver interface (or be an EOA)",
+    "- The 'id' parameter specifies which token type to transfer",
+    "- The 'amount' parameter specifies how many units to transfer",
+    "- The 'data' parameter is additional data to pass (can be empty bytes)",
+    "- Recommended gas limit: 150000",
+    "",
+    "Key considerations:",
+    "- Create a Contract instance with ERC1155 address and ERC1155 ABI",
+    "- Use encode the function call('safeTransferFrom', [from, to, id, amount, data])",
+    "- Set transaction 'to' to the ERC1155 contract address",
+    "- Set transaction 'value' to 0 (not sending BNB)",
+    "- The 'from' parameter should be the agent's address (current owner)",
+    "- After transfer, balanceOf(to, id) should increase by amount",
+    "- The agent's balance balanceOf(from, id) should decrease by amount"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "nft_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "ERC1155 multi-token contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc1155_token_address",
+        "comment": "Use dynamically deployed ERC1155 token from environment"
+      }
+    },
+    "nft_name": {
+      "type": "string",
+      "description": "Multi-token collection name for natural language",
+      "generation": {
+        "method": "fixed",
+        "value": "TestMultiToken"
+      },
+      "role": "parameter"
+    },
+    "token_id": {
+      "type": "integer",
+      "description": "Token ID to transfer (token type within the collection)",
+      "generation": {
+        "method": "fixed",
+        "value": 1
+      },
+      "role": "parameter"
+    },
+    "amount": {
+      "type": "integer",
+      "description": "Amount of tokens to transfer",
+      "generation": {
+        "method": "fixed",
+        "value": 10
+      },
+      "role": "transfer_amount"
+    },
+    "to_address": {
+      "type": "address",
+      "role": "recipient",
+      "description": "Recipient address",
+      "generation": {
+        "method": "random"
+      }
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "erc1155_balance_check",
+        "description": "Agent must own sufficient tokens of this ID",
+        "nft_contract": "{nft_address}",
+        "token_id": "{token_id}",
+        "min_balance": "{amount}"
+      },
+      {
+        "type": "contract_exists",
+        "description": "ERC1155 contract must exist",
+        "address": "{nft_address}"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "contract_call",
+        "weight": 0.2,
+        "description": "Transaction calls correct ERC1155 contract",
+        "expected": "{nft_address}"
+      },
+      {
+        "type": "function_signature",
+        "weight": 0.2,
+        "description": "Correct safeTransferFrom function signature",
+        "expected": "safeTransferFrom(address,address,uint256,uint256,bytes)"
+      },
+      {
+        "type": "erc1155_balance_transferred",
+        "weight": 0.3,
+        "description": "Token balance transferred correctly",
+        "nft_contract": "{nft_address}",
+        "token_id": "{token_id}",
+        "from_address": "{agent_address}",
+        "to_address": "{to_address}",
+        "expected_amount": "{amount}"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "erc1155",
+      "multi-token",
+      "nft",
+      "transfer",
+      "semi-fungible",
+      "intermediate"
+    ],
+    "estimated_gas": 150000,
+    "requires_contract": true,
+    "requires_token_ownership": true,
+    "contract_requirements": {
+      "contract_type": "ERC1155",
+      "required_functions": [
+        "safeTransferFrom",
+        "balanceOf",
+        "balanceOfBatch"
+      ],
+      "note": "Agent must own sufficient tokens to transfer"
+    },
+    "erc_standard": "ERC1155",
+    "requires_custom_token": true
+  }
+}

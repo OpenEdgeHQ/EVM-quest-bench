@@ -1,0 +1,244 @@
+{
+  "id": "composite_triple_pool_liquidity",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "advanced_defi",
+  "difficulty": "hard",
+  "title": "Triple Pool: BNB to Stablecoin Liquidity",
+  "natural_language_templates": [
+    "Swap {amount} BNB to USDT, then swap half to BUSD, and add liquidity to USDT/BUSD pool",
+    "Convert BNB to USDT and BUSD, then provide liquidity to the stablecoin pool",
+    "Multi-step liquidity: BNB → USDT → BUSD, then add USDT/BUSD liquidity on PancakeSwap"
+  ],
+  "description": [
+    "Complex DeFi workflow to convert BNB to stablecoin liquidity position.",
+    "",
+    "This is a 6-step process:",
+    "1. Swap BNB for USDT on PancakeSwap",
+    "2. Approve USDT for swapping",
+    "3. Swap half USDT for BUSD",
+    "4. Approve remaining USDT for liquidity",
+    "5. Approve BUSD for liquidity",
+    "6. Add liquidity to USDT/BUSD pool",
+    "",
+    "Technical details:",
+    "- PancakeSwap Router: 0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "- WBNB: 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "- USDT: 0x55d398326f99059fF775485246999027B3197955",
+    "- BUSD: 0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+    "- USDT/BUSD LP: 0x7EFaEf62fDdCCa950418312c6C91Aef321375A00",
+    "",
+    "Functions:",
+    "- swapExactETHForTokens: BNB → USDT",
+    "- swapExactTokensForTokens: USDT → BUSD",
+    "- addLiquidity: Add USDT + BUSD to pool",
+    "",
+    "Note: Approvals required for both swap and liquidity operations.",
+    "BSC does NOT support ENS. Use hex addresses directly."
+  ],
+  "composite_structure": {
+    "pattern": "multi-swap-liquidity",
+    "optimal_steps": 6,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "swap_exact_bnb_for_tokens",
+        "role": "acquisition",
+        "description": "Swap BNB for USDT"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_approve",
+        "role": "approval",
+        "description": "Approve USDT for swap"
+      },
+      {
+        "step": 3,
+        "atomic_id": "swap_exact_tokens_for_tokens",
+        "role": "conversion",
+        "description": "Swap USDT for BUSD"
+      },
+      {
+        "step": 4,
+        "atomic_id": "erc20_approve",
+        "role": "approval",
+        "description": "Approve USDT for liquidity"
+      },
+      {
+        "step": 5,
+        "atomic_id": "erc20_approve",
+        "role": "approval",
+        "description": "Approve BUSD for liquidity"
+      },
+      {
+        "step": 6,
+        "atomic_id": "add_liquidity_tokens",
+        "role": "key_operation",
+        "description": "Add USDT/BUSD liquidity"
+      }
+    ],
+    "interaction_config": {
+      "max_rounds": 12,
+      "optimal_steps": 6,
+      "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+      "forced_submit_at_max": true
+    }
+  },
+  "parameters": {
+    "amount": {
+      "type": "number",
+      "unit": "BNB",
+      "role": "input",
+      "description": "Amount of BNB to start with",
+      "generation": {
+        "method": "random",
+        "min": 0.5,
+        "max": 2.0,
+        "decimals": 1
+      }
+    },
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "wbnb_address": {
+      "type": "address",
+      "role": "token",
+      "description": "WBNB token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "usdt_address": {
+      "type": "address",
+      "role": "token",
+      "description": "USDT token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "busd_address": {
+      "type": "address",
+      "role": "token",
+      "description": "BUSD token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      }
+    },
+    "token_a_address": {
+      "type": "address",
+      "role": "token",
+      "description": "Token A address for liquidity (USDT)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_b_address": {
+      "type": "address",
+      "role": "token",
+      "description": "Token B address for liquidity (BUSD)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      }
+    },
+    "lp_token_address": {
+      "type": "address",
+      "role": "lp_token",
+      "description": "USDT/BUSD LP token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x7EFaEf62fDdCCa950418312c6C91Aef321375A00"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance percentage",
+      "generation": {
+        "method": "fixed",
+        "value": 50.0
+      }
+    }
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "add_liquidity_tokens",
+    "key_operation_step": 6
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "bnb_balance",
+        "description": "Agent must have sufficient BNB",
+        "min_balance": "5 BNB"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.2,
+        "description": "Add liquidity transaction executed successfully"
+      },
+      {
+        "type": "usdt_acquired",
+        "weight": 0.15,
+        "description": "USDT acquired from BNB swap"
+      },
+      {
+        "type": "busd_acquired",
+        "weight": 0.15,
+        "description": "BUSD acquired from USDT swap"
+      },
+      {
+        "type": "tokens_approved",
+        "weight": 0.2,
+        "description": "Both tokens approved for liquidity"
+      },
+      {
+        "type": "lp_received",
+        "weight": 0.3,
+        "description": "LP tokens received from adding liquidity"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "defi",
+      "liquidity",
+      "multi-swap",
+      "stablecoin",
+      "pancakeswap",
+      "advanced",
+      "hard"
+    ],
+    "estimated_gas": 1000000,
+    "requires_approval": true,
+    "difficulty_notes": [
+      "Six-step workflow with multiple swaps",
+      "Three approval transactions required",
+      "Stablecoin pool liquidity provision",
+      "Complex token flow management"
+    ]
+  }
+}
+

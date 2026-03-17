@@ -1,0 +1,81 @@
+{
+  "id": "composite_query_balance_wrap_verify",
+  "category": "composite_problems",
+  "difficulty": "medium",
+  "title": "Query BNB Balance, Wrap BNB to WBNB, and Verify",
+  "description": [
+    "A composite problem that tests the LLM's ability to:",
+    "1. Query initial BNB balance",
+    "2. Execute a WBNB deposit (wrap BNB to WBNB)",
+    "3. Query final WBNB balance to verify the wrap"
+  ],
+  "natural_language_templates": [
+    "Check your BNB balance, wrap {amount} BNB to WBNB, then verify your WBNB balance",
+    "Query BNB balance, deposit {amount} BNB to WBNB contract, and confirm WBNB received"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "composite_structure": {
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "query_bnb_balance",
+        "description": "Query initial BNB balance"
+      },
+      {
+        "step": 2,
+        "atomic_id": "wbnb_deposit",
+        "description": "Wrap BNB to WBNB"
+      },
+      {
+        "step": 3,
+        "atomic_id": "query_erc20_balance",
+        "description": "Query final WBNB balance"
+      }
+    ]
+  },
+  "parameters": {
+    "wbnb_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "WBNB contract address",
+      "shared_across_steps": [2, 3],
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        "comment": "BSC Mainnet WBNB contract"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "unit": "BNB",
+      "role": "wrap_amount",
+      "description": "Amount of BNB to wrap",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "random",
+        "min": 0.01,
+        "max": 0.05,
+        "decimals": 3
+      }
+    }
+  },
+  "interaction_config": {
+    "optimal_steps": 2,
+    "max_rounds_multiplier": 2,
+    "comment": "max_rounds = optimal_steps * max_rounds_multiplier = 2 * 2 = 4"
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "description": "Directly reuse the atomic validator of the key operation - NO code duplication!",
+    "key_operation_step": 2,
+    "key_operation_id": "wbnb_deposit",
+    "key_operation_alias": "bnb_wrap",
+    "validator_class": "WBNBDepositValidator",
+    "note": "The validator will load WBNBDepositValidator and call its validate() method directly"
+  },
+  "tags": ["query-write-verify", "wrap"]
+}
+

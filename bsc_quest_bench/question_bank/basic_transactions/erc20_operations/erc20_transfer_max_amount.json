@@ -1,0 +1,152 @@
+{
+  "id": "erc20_transfer_max_amount",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "erc20_operations",
+  "difficulty": "medium",
+  "title": "ERC20 Transfer Maximum Amount",
+  "natural_language_templates": [
+    "Transfer all my {token_symbol} tokens at {token_address} to address {to_address}",
+    "Send my entire {token_symbol} balance (token: {token_address}) to {to_address}",
+    "Transfer the maximum amount of {token_symbol} from {token_address} to {to_address}",
+    "I want to transfer all available {token_symbol} tokens at {token_address} to {to_address}"
+  ],
+  "description": [
+    "Transfer the entire balance of an ERC20 token to another address.",
+    "",
+    "Technical context:",
+    "- Query current token balance using balanceOf(address owner)",
+    "- Transfer all tokens using transfer(address to, uint256 amount)",
+    "- Unlike native BNB transfers, no need to reserve for gas (gas is paid in BNB)",
+    "- Function signature: transfer(address,uint256)",
+    "- Recommended gas limit: 65000",
+    "",
+    "Key considerations:",
+    "- Create a Contract instance with token address and ERC20 ABI",
+    "- Query the token balance: await contract.balanceOf(agentAddress)",
+    "- Use encode the function call('transfer', [to, balance]) for the data field",
+    "- Set transaction 'to' to the token contract address",
+    "- Set transaction 'value' to 0 (not sending BNB)",
+    "- After transfer, the sender's token balance should be 0 or very close to 0",
+    "- The recipient's token balance should increase by the transfer amount"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "ERC20 token contract address",
+      "generation": {
+        "method": "from_list",
+        "addresses": [
+          "0x55d398326f99059fF775485246999027B3197955",
+          "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
+        ],
+        "comment": "USDT and CAKE on BSC Mainnet"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "description": "Token symbol for natural language",
+      "generation": {
+        "method": "from_list",
+        "values": [
+          "USDT",
+          "CAKE"
+        ]
+      },
+      "role": "parameter"
+    },
+    "token_decimals": {
+      "type": "integer",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "from_list",
+        "values": [
+          18,
+          18
+        ]
+      },
+      "role": "parameter"
+    },
+    "to_address": {
+      "type": "address",
+      "role": "recipient",
+      "description": "Recipient address",
+      "generation": {
+        "method": "random"
+      }
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "description": "Agent must have some token balance",
+        "token": "{token_address}",
+        "min_balance": "1 tokens"
+      },
+      {
+        "type": "contract_exists",
+        "description": "Token contract must exist",
+        "address": "{token_address}"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "contract_call",
+        "weight": 0.2,
+        "description": "Transaction calls correct token contract",
+        "expected": "{token_address}"
+      },
+      {
+        "type": "function_signature",
+        "weight": 0.1,
+        "description": "Correct transfer function signature",
+        "expected": "transfer(address,uint256)"
+      },
+      {
+        "type": "max_amount_transferred",
+        "weight": 0.2,
+        "description": "Transferred entire balance",
+        "tolerance": "0.1%"
+      },
+      {
+        "type": "sender_balance_zero",
+        "weight": 0.2,
+        "description": "Sender token balance should be 0 or very close to 0 after transfer",
+        "max_remaining": "0.01 tokens"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "erc20",
+      "transfer",
+      "max",
+      "balance",
+      "query",
+      "intermediate"
+    ],
+    "estimated_gas": 65000,
+    "requires_contract": true,
+    "requires_token_balance": true,
+    "requires_balance_query": true,
+    "contract_requirements": {
+      "contract_type": "ERC20",
+      "required_functions": [
+        "transfer",
+        "balanceOf"
+      ],
+      "note": "Agent must have tokens to transfer"
+    }
+  }
+}

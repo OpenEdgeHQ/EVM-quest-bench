@@ -1,0 +1,177 @@
+{
+  "id": "composite_remove_liquidity_unwrap",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "liquidity_workflows",
+  "difficulty": "medium",
+  "title": "Remove Liquidity and Unwrap to BNB",
+  "natural_language_templates": [
+    "Remove liquidity from BNB/{token_symbol} pool, unwrap the WBNB to BNB, then check your BNB balance",
+    "Withdraw liquidity to get WBNB and {token_symbol}, then convert WBNB back to BNB",
+    "Remove {liquidity_percentage}% of your LP tokens from BNB/{token_symbol} pool, unwrap received WBNB, and verify BNB balance"
+  ],
+  "description": [
+    "Remove liquidity from a BNB/Token pool and convert WBNB back to BNB.",
+    "",
+    "This is a 3-step process:",
+    "1. Remove {liquidity_percentage}% liquidity from BNB/{token_symbol} pool (receive WBNB + {token_symbol})",
+    "2. Unwrap the received WBNB to BNB",
+    "3. Query your BNB balance to verify the withdrawal",
+    "",
+    "Contract addresses:",
+    "- WBNB: {wbnb_address}",
+    "- Token ({token_symbol}): {token_address}",
+    "- PancakeSwap Router V2: {router_address}",
+    "",
+    "IMPORTANT: The key operation is step 1 (removeLiquidityETH).",
+    "",
+    "Functions:",
+    "- Router removeLiquidityETH(token, liquidity, amountTokenMin, amountETHMin, to, deadline): 0x02751cec",
+    "  Returns BNB directly, no need to unwrap!",
+    "- WBNB withdraw(uint256 wad): 0x2e1a7d4d (if using removeLiquidity instead)",
+    "",
+    "Note: Your LP tokens are already approved for the Router.",
+    "LP Token Address: Get from PancakeSwap Factory by calling getPair(WBNB, Token)"
+  ],
+  "composite_structure": {
+    "pattern": "remove-unwrap-verify",
+    "optimal_steps": 3,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "remove_liquidity_bnb_token",
+        "role": "key_operation",
+        "description": "Remove liquidity from BNB/Token pool"
+      },
+      {
+        "step": 2,
+        "atomic_id": "wbnb_withdraw",
+        "role": "conversion",
+        "description": "Unwrap WBNB to BNB (if needed)"
+      },
+      {
+        "step": 3,
+        "atomic_id": "query_bnb_balance",
+        "role": "verification",
+        "description": "Verify BNB balance"
+      }
+    ]
+  },
+  "parameters": {
+    "wbnb_address": {
+      "type": "address",
+      "role": "wbnb",
+      "description": "WBNB contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "token_address": {
+      "type": "address",
+      "role": "token",
+      "description": "Token paired with BNB (USDT)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "router_address": {
+      "type": "address",
+      "role": "router",
+      "description": "PancakeSwap Router V2 address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "liquidity_percentage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "amount",
+      "description": "Percentage of LP tokens to remove",
+      "generation": {
+        "method": "fixed",
+        "value": 50
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "tolerance",
+      "description": "Slippage tolerance",
+      "generation": {
+        "method": "fixed",
+        "value": 50
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 6,
+    "optimal_steps": 3,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "remove_liquidity_bnb_token",
+    "key_operation_step": 1
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "lp_token_balance",
+        "description": "Agent must have LP tokens",
+        "min_balance": "0.1 LP"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "liquidity_removed",
+        "weight": 0.6,
+        "description": "LP tokens burned, received tokens"
+      },
+      {
+        "type": "bnb_increased",
+        "weight": 0.4,
+        "description": "BNB balance increased"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "liquidity",
+      "unwrap",
+      "defi",
+      "pancakeswap",
+      "wbnb",
+      "medium"
+    ],
+    "estimated_gas": 300000,
+    "requires_approval": true,
+    "difficulty_notes": [
+      "Requires LP token approval",
+      "Complex liquidity calculation",
+      "Optional unwrap step"
+    ]
+  }
+}
+

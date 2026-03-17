@@ -1,0 +1,131 @@
+{
+  "id": "composite_wrap_unwrap_cycle",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "wrap_unwrap",
+  "difficulty": "easy",
+  "title": "Wrap BNB and Unwrap Back to BNB (Cycle Test)",
+  "natural_language_templates": [
+    "Wrap {amount} BNB to WBNB, then immediately unwrap all WBNB back to BNB",
+    "Deposit {amount} BNB to WBNB and withdraw it back to BNB",
+    "Convert {amount} BNB to WBNB, then convert it back to native BNB"
+  ],
+  "description": [
+    "Test the WBNB wrap/unwrap functionality by wrapping BNB and immediately unwrapping it.",
+    "",
+    "This is a 2-step process:",
+    "1. Deposit BNB to WBNB contract using deposit() function",
+    "2. Withdraw WBNB back to BNB using withdraw(uint256) function",
+    "",
+    "Technical details:",
+    "- WBNB contract address: 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "- deposit() function: 0xd0e30db0 (payable)",
+    "- withdraw(uint256) function: 0x2e1a7d4d",
+    "",
+    "Note: This is a test case to verify wrap/unwrap functionality works correctly.",
+    "The key operation is wbnb_withdraw since the final goal is to get BNB back."
+  ],
+  "composite_structure": {
+    "pattern": "wrap-unwrap",
+    "optimal_steps": 2,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "wbnb_deposit",
+        "role": "wrap_bnb",
+        "description": "Wrap BNB to WBNB by calling deposit() on WBNB contract"
+      },
+      {
+        "step": 2,
+        "atomic_id": "wbnb_withdraw",
+        "role": "key_operation",
+        "description": "Withdraw WBNB to get native BNB back"
+      }
+    ]
+  },
+  "parameters": {
+    "wbnb_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "WBNB contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "unit": "BNB",
+      "description": "Amount of BNB to wrap and unwrap",
+      "generation": {
+        "method": "random",
+        "min": 0.01,
+        "max": 0.1,
+        "decimals": 3
+      },
+      "role": "wrap_amount"
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 4,
+    "optimal_steps": 2,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "wbnb_withdraw",
+    "key_operation_step": 2
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "bnb_balance",
+        "description": "Agent must have sufficient BNB for wrap and gas",
+        "min_balance": "1 BNB"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Withdraw transaction executed successfully"
+      },
+      {
+        "type": "contract_called",
+        "weight": 0.2,
+        "address": "{wbnb_address}",
+        "description": "Correct WBNB contract called"
+      },
+      {
+        "type": "function_selector",
+        "weight": 0.2,
+        "selector": "0x2e1a7d4d",
+        "description": "Correct function withdraw(uint256) called"
+      },
+      {
+        "type": "bnb_balance_recovered",
+        "weight": 0.3,
+        "description": "BNB balance recovered (minus gas costs)"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "wrap-unwrap",
+      "test",
+      "wbnb",
+      "cycle",
+      "easy",
+      "two-step"
+    ],
+    "estimated_gas": 120000,
+    "requires_approval": false,
+    "difficulty_notes": [
+      "Simple two-step process",
+      "Tests basic WBNB wrap/unwrap functionality",
+      "No approval required"
+    ]
+  }
+}
+

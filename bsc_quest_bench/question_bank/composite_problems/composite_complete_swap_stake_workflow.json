@@ -1,0 +1,210 @@
+{
+  "id": "composite_complete_swap_stake_workflow",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "complex_defi_workflows",
+  "difficulty": "hard",
+  "title": "Complete DeFi Workflow: Swap and Stake",
+  "natural_language_templates": [
+    "Check your USDT balance, swap {amount_usdt} USDT for CAKE on PancakeSwap, then stake all received CAKE in the staking pool and verify the staked amount",
+    "Complete DeFi workflow: query USDT balance, swap {amount_usdt} USDT to CAKE, stake all CAKE, and confirm the stake",
+    "Execute full DeFi workflow: verify USDT, swap {amount_usdt} USDT for CAKE, approve staking, stake CAKE, confirm stake"
+  ],
+  "description": [
+    "Complete a full DeFi workflow: swap tokens and stake the result.",
+    "",
+    "This is a 6-step flagship workflow:",
+    "1. Query your USDT balance to verify you have enough",
+    "2. Approve USDT for PancakeSwap Router",
+    "3. Swap {amount_usdt} USDT for CAKE",
+    "4. Approve CAKE for the staking pool",
+    "5. Stake all received CAKE",
+    "6. Query staked amount to verify",
+    "",
+    "Contract addresses:",
+    "- USDT: {usdt_address}",
+    "- CAKE: {cake_address}",
+    "- PancakeSwap Router V2: {router_address}",
+    "- Staking Pool: {pool_address}",
+    "",
+    "The KEY OPERATION is step 5 (stake_single_token).",
+    "",
+    "Functions:",
+    "- ERC20 approve(address spender, uint256 amount): 0x095ea7b3",
+    "- Router swapExactTokensForTokens(amountIn, amountOutMin, path, to, deadline): 0x38ed1739",
+    "- Staking deposit(uint256 amount): 0xb6b55f25",
+    "",
+    "Path for swap: [USDT, WBNB, CAKE]",
+    "- WBNB: 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "",
+    "IMPORTANT:",
+    "- Use high slippage (50%) for swap due to price impact",
+    "- Stake ALL received CAKE (query balance after swap)",
+    "- Deadline should be current timestamp + 1200 seconds"
+  ],
+  "composite_structure": {
+    "pattern": "query-swap-stake-verify",
+    "optimal_steps": 6,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "query_erc20_balance",
+        "role": "verification",
+        "description": "Query initial USDT balance"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_approve",
+        "role": "authorization",
+        "description": "Approve USDT for Router"
+      },
+      {
+        "step": 3,
+        "atomic_id": "swap_exact_tokens_for_tokens",
+        "role": "swap",
+        "description": "Swap USDT for CAKE"
+      },
+      {
+        "step": 4,
+        "atomic_id": "erc20_approve",
+        "role": "authorization",
+        "description": "Approve CAKE for staking pool"
+      },
+      {
+        "step": 5,
+        "atomic_id": "stake_single_token",
+        "role": "key_operation",
+        "description": "Stake all received CAKE"
+      },
+      {
+        "step": 6,
+        "atomic_id": "query_staked_amount",
+        "role": "verification",
+        "description": "Verify staked amount"
+      }
+    ],
+    "interaction_config": {
+      "optimal_steps": 6,
+      "max_rounds_multiplier": 2
+    }
+  },
+  "parameters": {
+    "usdt_address": {
+      "type": "address",
+      "role": "token_in",
+      "description": "USDT token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "cake_address": {
+      "type": "address",
+      "role": "token_out",
+      "description": "CAKE token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
+      }
+    },
+    "token_address": {
+      "type": "address",
+      "role": "stake_token",
+      "description": "Token to stake (CAKE)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
+      }
+    },
+    "router_address": {
+      "type": "address",
+      "role": "router",
+      "description": "PancakeSwap Router V2 address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "pool_address": {
+      "type": "address",
+      "role": "staking_pool",
+      "description": "CAKE staking pool address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_staking_address"
+      }
+    },
+    "amount_usdt": {
+      "type": "number",
+      "unit": "ether",
+      "role": "swap_amount",
+      "description": "Amount of USDT to swap",
+      "generation": {
+        "method": "random",
+        "min": "50",
+        "max": "100",
+        "decimals": 0
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "tolerance",
+      "description": "Slippage tolerance",
+      "generation": {
+        "method": "fixed",
+        "value": 50
+      }
+    }
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "stake_single_token",
+    "key_operation_step": 5
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "description": "Agent must have USDT balance",
+        "min_balance": "100 USDT"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "staked_amount",
+        "weight": 0.5,
+        "description": "CAKE staked in pool"
+      },
+      {
+        "type": "swap_completed",
+        "weight": 0.3,
+        "description": "USDT swapped for CAKE"
+      },
+      {
+        "type": "tokens_approved",
+        "weight": 0.2,
+        "description": "Both tokens approved"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "defi",
+      "complete-workflow",
+      "swap",
+      "staking",
+      "flagship",
+      "hard"
+    ],
+    "estimated_gas": 600000,
+    "requires_approval": true,
+    "difficulty_notes": [
+      "6-step complex workflow",
+      "Multiple token interactions",
+      "Query-swap-stake pattern",
+      "Flagship scenario for LLM evaluation"
+    ]
+  }
+}
+

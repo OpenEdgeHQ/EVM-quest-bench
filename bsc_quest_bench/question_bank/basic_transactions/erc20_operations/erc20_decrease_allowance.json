@@ -1,0 +1,208 @@
+{
+  "id": "erc20_decrease_allowance",
+  "title": "ERC20 Decrease Allowance",
+  "difficulty": "easy-medium",
+  "category": "basic_transactions",
+  "subcategory": "erc20_operations",
+  "description": [
+    "Decrease the allowance for a spender (Router or Contract) by a specified amount. This safely reduces an existing allowance without completely revoking it.",
+    "",
+    "The decreaseAllowance function subtracts from the existing allowance and includes underflow protection.",
+    "",
+    "Key Points:",
+    "- Function: decreaseAllowance(address spender, uint256 subtractedValue)",
+    "- Subtracts subtractedValue from the current allowance",
+    "- Safer than calling approve(spender, 0) to revoke",
+    "- Includes built-in underflow protection",
+    "- Will revert if subtractedValue > current allowance",
+    "",
+    "Technical Details:",
+    "- Function selector: 0xa457c2d7",
+    "- New allowance = current allowance - subtractedValue",
+    "- Requires: subtractedValue <= current allowance",
+    "- Automatically prevents underflow (Solidity 0.8+)",
+    "- Transaction will FAIL if trying to subtract more than current allowance",
+    "",
+    "Transaction Requirements:",
+    "- Call decreaseAllowance() on the ERC20 token contract",
+    "- Pass spender address and amount to subtract",
+    "- Ensure subtractedValue <= current allowance",
+    "- Wait for transaction confirmation",
+    "- No BNB value needed (not payable)",
+    "- Gas: ~50,000",
+    "",
+    "Example Workflow:",
+    "1. Query current allowance (important!)",
+    "2. Ensure subtractedValue <= current allowance",
+    "3. Call decreaseAllowance(spenderAddress, subtractedValueInWei)",
+    "4. Wait for confirmation",
+    "5. Verify allowance decreased by subtractedValue"
+  ],
+  "tags": [
+    "erc20",
+    "allowance",
+    "decrease",
+    "safe",
+    "revoke"
+  ],
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "description": "ERC20 token contract address",
+      "example": "0x55d398326f99059fF775485246999027B3197955",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      },
+      "role": "receiver"
+    },
+    "token_symbol": {
+      "type": "string",
+      "description": "Token symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      },
+      "role": "parameter"
+    },
+    "token_decimals": {
+      "type": "integer",
+      "description": "Token decimals (all BSC tokens use 18)",
+      "example": 18,
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      },
+      "role": "parameter"
+    },
+    "spender_address": {
+      "type": "address",
+      "description": "Address to decrease allowance for (spender)",
+      "example": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      },
+      "role": "address"
+    },
+    "spender_name": {
+      "type": "string",
+      "description": "Spender name for display",
+      "generation": {
+        "method": "fixed",
+        "value": "PancakeSwap Router V2"
+      },
+      "role": "parameter"
+    },
+    "subtracted_value": {
+      "type": "number",
+      "description": "Amount to subtract from allowance (in token units)",
+      "example": 100.0,
+      "generation": {
+        "method": "random",
+        "min": 50.0,
+        "max": 200.0,
+        "decimals": 2
+      },
+      "role": "parameter"
+    },
+    "agent_address": {
+      "type": "address",
+      "description": "Agent address (token owner)",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "test_address"
+      },
+      "role": "address"
+    },
+    "chain_id": {
+      "type": "integer",
+      "description": "BSC Mainnet chain ID",
+      "example": 56,
+      "generation": {
+        "method": "fixed",
+        "value": 56
+      },
+      "role": "parameter"
+    }
+  },
+  "natural_language_templates": [
+    "Decrease the allowance for {spender_name} by {subtracted_value} {token_symbol} tokens.",
+    "Reduce {spender_name}'s allowance by {subtracted_value} {token_symbol}.",
+    "Subtract {subtracted_value} {token_symbol} from the allowance for {spender_name}.",
+    "Lower the spending limit for {spender_name} by {subtracted_value} {token_symbol}."
+  ],
+  "contracts": {
+    "erc20_token": {
+      "address": "dynamic",
+      "name": "ERC20 Token (USDT)",
+      "abi_functions": [
+        "function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool)",
+        "function allowance(address owner, address spender) external view returns (uint256)",
+        "function balanceOf(address account) external view returns (uint256)"
+      ]
+    },
+    "spender_contract": {
+      "address": "dynamic",
+      "name": "Spender Contract (Router/Pool)",
+      "description": "The contract whose allowance will be decreased"
+    }
+  },
+  "expected_behavior": {
+    "transaction_count": 1,
+    "state_changes": [
+      "Allowance for spender decreases by subtractedValue",
+      "Token balance remains unchanged",
+      "Approval event is emitted"
+    ],
+    "possible_failures": [
+      "Transaction reverts if subtractedValue > current allowance"
+    ],
+    "gas_estimate": 50000
+  },
+  "validation_criteria": {
+    "transaction_success": {
+      "weight": 30,
+      "description": "Transaction executed successfully without reverting"
+    },
+    "correct_function_called": {
+      "weight": 20,
+      "description": "Called decreaseAllowance(address,uint256) with correct selector"
+    },
+    "allowance_decreased_correctly": {
+      "weight": 40,
+      "description": "Allowance decreased by the specified subtractedValue"
+    },
+    "no_token_transfer": {
+      "weight": 10,
+      "description": "Token balance unchanged (only allowance modified)"
+    }
+  },
+  "hints": [
+    "Use the ERC20 decreaseAllowance function: decreaseAllowance(address spender, uint256 subtractedValue)",
+    "Convert the subtractedValue to wei units (multiply by 10^18)",
+    "Check current allowance FIRST to ensure subtractedValue <= current allowance",
+    "The new allowance will be: current allowance - subtractedValue",
+    "No BNB value should be sent with this transaction (not payable)",
+    "Transaction will FAIL if you try to subtract more than the current allowance"
+  ],
+  "common_mistakes": [
+    "Using approve(spender, 0) instead of decreaseAllowance()",
+    "Not checking current allowance before calling (causing underflow revert)",
+    "Forgetting to convert subtractedValue to wei",
+    "Sending BNB value with the transaction (not needed)",
+    "Confusing spender address with token address",
+    "Not understanding this SUBTRACTS from existing allowance (not sets)"
+  ],
+  "references": [
+    "https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20-decreaseAllowance-address-uint256-",
+    "https://eips.ethereum.org/EIPS/eip-20"
+  ],
+  "test_script_template": "erc20_decrease_allowance.ts",
+  "version": "2.0.0",
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  }
+}

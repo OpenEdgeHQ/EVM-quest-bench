@@ -1,0 +1,235 @@
+{
+  "id": "swap_tokens_for_exact_tokens",
+  "version": "2.0.0",
+  "category": "defi_operations",
+  "subcategory": "pancakeswap_swap",
+  "difficulty": "hard",
+  "title": "PancakeSwap Swap - Exact Output (Token to Token)",
+  "natural_language_templates": [
+    "Swap tokens to get exactly {amount_out} {token_out_symbol} on PancakeSwap",
+    "Exchange tokens for precisely {amount_out} {token_out_symbol} using PancakeSwap Router",
+    "Buy exactly {amount_out} {token_out_symbol} with {token_in_symbol} through PancakeSwap V2",
+    "Trade {token_in_symbol} for exactly {amount_out} {token_out_symbol} on PancakeSwap with {slippage}% max slippage"
+  ],
+  "description": [
+    "Swap tokens to receive an exact amount of output tokens using PancakeSwap V2 Router's swapTokensForExactTokens function.",
+    "",
+    "Technical context:",
+    "- PancakeSwap V2 Router (BSC Mainnet): 0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "- Function signature: swapTokensForExactTokens(uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)",
+    "- This is an EXACT OUTPUT swap (opposite of exact input)",
+    "- The swap follows Uniswap V2 AMM (Automated Market Maker) model: x * y = k",
+    "- Function selector: 0x8803dbee",
+    "- Recommended gas limit: 200000",
+    "",
+    "Key considerations:",
+    "- amountOut: EXACT amount of output tokens desired (user specifies this)",
+    "- amountInMax: MAXIMUM amount of input tokens willing to spend (slippage protection)",
+    "- path: Array of token addresses for the swap route",
+    "- to: Recipient address (usually the sender/agent address)",
+    "- deadline: Unix timestamp after which the transaction will revert",
+    "- MUST approve sufficient tokens (at least amountInMax) to Router",
+    "",
+    "Exact output vs exact input:",
+    "- Exact input: You know how much you're selling, output is variable",
+    "- Exact output: You know how much you want to buy, input is variable (up to amountInMax)",
+    "- This function is useful when you need a precise amount of output tokens",
+    "- Example: Buying exactly 100 USDT to pay for something",
+    "",
+    "Two-step process:",
+    "1. Call getAmountsIn(amountOut, path) to estimate required input",
+    "2. Calculate amountInMax with slippage tolerance",
+    "3. Approve amountInMax (or more) to Router",
+    "4. Call swapTokensForExactTokens on the router contract",
+    "",
+    "Slippage protection:",
+    "- Calculate amountInMax using getAmountsIn and apply slippage",
+    "- Formula: amountInMax = expectedInput * (1 + slippagePercent)",
+    "- The actual input used will be <= amountInMax",
+    "- For testing, can set high amountInMax to accept any input cost",
+    "",
+    "Success criteria:",
+    "- Transaction executes successfully",
+    "- Correct PancakeSwap Router is called",
+    "- Output token balance increases by EXACTLY amountOut",
+    "- Input token balance decreases by <= amountInMax"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "token_in_address": {
+      "type": "address",
+      "role": "token_in",
+      "description": "Input token to spend (USDT by default)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955",
+        "comment": "USDT on BSC"
+      }
+    },
+    "token_in_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Input token symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_in_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Input token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "token_out_address": {
+      "type": "address",
+      "role": "token_out",
+      "description": "Output token to receive (BUSD by default)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+        "comment": "BUSD on BSC"
+      }
+    },
+    "token_out_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Output token symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "BUSD"
+      }
+    },
+    "token_out_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Output token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "wbnb_address": {
+      "type": "address",
+      "role": "intermediate_token",
+      "description": "WBNB address (for multi-hop routing)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "amount_out": {
+      "type": "number",
+      "unit": "token",
+      "role": "exact_output_amount",
+      "description": "Exact amount of output tokens to receive",
+      "generation": {
+        "method": "random",
+        "min": 0.5,
+        "max": 3.0,
+        "decimals": 2
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance percentage (for amountInMax calculation)",
+      "generation": {
+        "method": "fixed",
+        "value": 5.0
+      }
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance_check",
+        "description": "Agent must have sufficient input token balance to cover amountInMax"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.2,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "token_approval",
+        "weight": 0.15,
+        "address": "{router_address}",
+        "description": "Input token approved to Router with sufficient amount"
+      },
+      {
+        "type": "contract_called",
+        "weight": 0.1,
+        "address": "{router_address}",
+        "description": "Correct PancakeSwap Router called"
+      },
+      {
+        "type": "function_selector",
+        "weight": 0.15,
+        "selector": "0x8803dbee",
+        "description": "Correct function swapTokensForExactTokens called"
+      },
+      {
+        "type": "token_balance_exact_increase",
+        "weight": 0.25,
+        "token": "{token_out_address}",
+        "expected_increase": "{amount_out}",
+        "tolerance": "0.001",
+        "description": "Output token balance increased by EXACTLY amountOut"
+      },
+      {
+        "type": "token_balance_decrease_within_max",
+        "weight": 0.15,
+        "token": "{token_in_address}",
+        "max_decrease": "calculated_from_slippage",
+        "description": "Input token balance decreased within acceptable range"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "pancakeswap",
+      "swap",
+      "dex",
+      "amm",
+      "defi",
+      "token-to-token",
+      "exact-output",
+      "approval-required",
+      "multi-hop",
+      "advanced"
+    ],
+    "estimated_gas": 200000,
+    "requires_contract": true,
+    "requires_approval": true,
+    "network": "mainnet",
+    "dex": "PancakeSwap V2",
+    "swap_type": "exact_output",
+    "difficulty_notes": [
+      "Requires understanding of exact output swaps (opposite of exact input)",
+      "Must calculate amountInMax correctly using getAmountsIn",
+      "Approval must cover the maximum possible input (amountInMax)",
+      "More complex slippage calculation (input side, not output side)",
+      "Must validate exact output amount received",
+      "Input amount validation requires range check (not exact match)"
+    ]
+  }
+}

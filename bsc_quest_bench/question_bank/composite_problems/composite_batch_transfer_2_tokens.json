@@ -1,0 +1,185 @@
+{
+  "id": "composite_batch_transfer_2_tokens",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "batch_transfer",
+  "difficulty": "medium",
+  "title": "Batch Transfer ERC20 Tokens to 2 Addresses",
+  "natural_language_templates": [
+    "Transfer {amount1} {token_symbol} to {address1} and {amount2} {token_symbol} to {address2}",
+    "Send {amount1} {token_symbol} tokens to {address1}, then send {amount2} {token_symbol} tokens to {address2}",
+    "Make two {token_symbol} transfers: {amount1} to {address1} and {amount2} to {address2}"
+  ],
+  "description": [
+    "Execute two consecutive ERC20 token transfers to different addresses.",
+    "",
+    "This is a 2-step process:",
+    "1. Transfer tokens to the first address using transfer(address, uint256)",
+    "2. Transfer tokens to the second address using transfer(address, uint256)",
+    "",
+    "Technical details:",
+    "- ERC20 transfer function: transfer(address to, uint256 amount)",
+    "- Function selector: 0xa9059cbb",
+    "- Each transfer is a separate transaction",
+    "- Agent must have sufficient token balance for both transfers",
+    "",
+    "Note: The key operation is the second transfer since it completes the batch."
+  ],
+  "composite_structure": {
+    "pattern": "batch-transfer",
+    "optimal_steps": 2,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "erc20_transfer_fixed",
+        "role": "first_transfer",
+        "description": "Transfer tokens to the first address"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_transfer_fixed",
+        "role": "key_operation",
+        "description": "Transfer tokens to the second address"
+      }
+    ]
+  },
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "role": "token",
+      "description": "ERC20 token contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955",
+        "comment": "USDT on BSC"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "address1": {
+      "type": "address",
+      "role": "recipient1",
+      "description": "First recipient address",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "amount1": {
+      "type": "number",
+      "unit": "token",
+      "description": "Amount of tokens to send to first address",
+      "generation": {
+        "method": "random",
+        "min": 1.0,
+        "max": 10.0,
+        "decimals": 2
+      },
+      "role": "transfer_amount1"
+    },
+    "address2": {
+      "type": "address",
+      "role": "recipient2",
+      "description": "Second recipient address",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "amount2": {
+      "type": "number",
+      "unit": "token",
+      "description": "Amount of tokens to send to second address",
+      "generation": {
+        "method": "random",
+        "min": 1.0,
+        "max": 10.0,
+        "decimals": 2
+      },
+      "role": "transfer_amount2"
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 4,
+    "optimal_steps": 2,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "erc20_transfer_fixed",
+    "key_operation_step": 2
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "description": "Agent must have sufficient token balance for both transfers",
+        "min_balance": "100 tokens"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Second transfer transaction executed successfully"
+      },
+      {
+        "type": "contract_called",
+        "weight": 0.2,
+        "address": "{token_address}",
+        "description": "Correct token contract called"
+      },
+      {
+        "type": "function_selector",
+        "weight": 0.1,
+        "selector": "0xa9059cbb",
+        "description": "Correct function transfer(address,uint256) called"
+      },
+      {
+        "type": "token_received",
+        "weight": 0.2,
+        "address": "{address2}",
+        "expected_amount": "{amount2}",
+        "description": "Second recipient received correct amount"
+      },
+      {
+        "type": "token_sent",
+        "weight": 0.2,
+        "description": "Agent's token balance decreased correctly"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "batch",
+      "token",
+      "erc20",
+      "transfer",
+      "medium",
+      "two-step"
+    ],
+    "estimated_gas": 100000,
+    "requires_approval": false,
+    "difficulty_notes": [
+      "Batch transfer of ERC20 tokens",
+      "Two separate transactions",
+      "Must handle token decimals correctly"
+    ]
+  }
+}
+

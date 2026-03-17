@@ -1,0 +1,229 @@
+{
+  "id": "add_liquidity_tokens",
+  "category": "defi_operations",
+  "subcategory": "pancakeswap_liquidity",
+  "difficulty": "medium",
+  "title": "PancakeSwap Add Liquidity - Token + Token",
+  "natural_language_templates": [
+    "Add {amount_token_a} {token_a_symbol} and {amount_token_b} {token_b_symbol} as liquidity to PancakeSwap",
+    "Provide liquidity to PancakeSwap: {amount_token_a} {token_a_symbol} + {amount_token_b} {token_b_symbol}",
+    "Deposit {amount_token_a} {token_a_symbol} and {amount_token_b} {token_b_symbol} into PancakeSwap liquidity pool",
+    "Add liquidity pair on PancakeSwap: {amount_token_a} {token_a_symbol} paired with {amount_token_b} {token_b_symbol}"
+  ],
+  "description": "Add liquidity to a Token/Token pair on PancakeSwap V2. IMPORTANT: You must query the pair's current reserves first using Factory.getPair() to get the pair address, then call pair.getReserves() to get reserve amounts. Determine which token is token0 and which is token1 by calling pair.token0(). Calculate the optimal amount for tokenB using the formula: optimalAmountB = (amountA × reserveB) / reserveA (adjust based on which token you're using as the base). Then calculate amountAMin and amountBMin by applying slippage tolerance (subtract slippage % from desired amounts). CRITICAL: Both tokens must be approved for the Router before calling addLiquidity. Use addLiquidity function with these parameters: tokenA address, tokenB address, amountADesired, amountBDesired, amountAMin, amountBMin, recipient address, and deadline. This is NOT a payable function - do not send BNB value.",
+  "blockchain": {
+    "network": "bsc",
+    "contract_address": "{{router_address}}",
+    "function_name": "addLiquidity",
+    "function_signature": "addLiquidity(address,address,uint256,uint256,uint256,uint256,address,uint256)"
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "description": "PancakeSwap Router V2 contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      },
+      "role": "address"
+    },
+    "token_a_address": {
+      "type": "address",
+      "description": "First token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      },
+      "role": "receiver"
+    },
+    "token_a_symbol": {
+      "type": "string",
+      "description": "First token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      },
+      "role": "parameter"
+    },
+    "token_a_decimals": {
+      "type": "integer",
+      "description": "First token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      },
+      "role": "parameter"
+    },
+    "token_b_address": {
+      "type": "address",
+      "description": "Second token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      },
+      "role": "receiver"
+    },
+    "token_b_symbol": {
+      "type": "string",
+      "description": "Second token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "BUSD"
+      },
+      "role": "parameter"
+    },
+    "token_b_decimals": {
+      "type": "integer",
+      "description": "Second token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      },
+      "role": "parameter"
+    },
+    "amount_token_a": {
+      "type": "number",
+      "description": "Desired amount of first token to add as liquidity",
+      "generation": {
+        "method": "fixed",
+        "value": 10.0
+      },
+      "role": "transfer_amount"
+    },
+    "amount_token_b": {
+      "type": "number",
+      "description": "Desired amount of second token to add as liquidity",
+      "generation": {
+        "method": "fixed",
+        "value": 10.0
+      },
+      "role": "transfer_amount"
+    },
+    "slippage": {
+      "type": "number",
+      "description": "Maximum acceptable slippage percentage (e.g., 5.0 for 5%)",
+      "generation": {
+        "method": "fixed",
+        "value": 5.0
+      },
+      "role": "parameter"
+    }
+  },
+  "preconditions": {
+    "token_a_balance": {
+      "description": "Test account must have sufficient balance of first token",
+      "token": "{{token_a_address}}",
+      "minimum_balance": "{{amount_token_a}}"
+    },
+    "token_b_balance": {
+      "description": "Test account must have sufficient balance of second token",
+      "token": "{{token_b_address}}",
+      "minimum_balance": "{{amount_token_b}}"
+    },
+    "token_a_approval": {
+      "description": "First token must be approved for PancakeSwap Router",
+      "token": "{{token_a_address}}",
+      "spender": "{{router_address}}",
+      "minimum_allowance": "{{amount_token_a}}"
+    },
+    "token_b_approval": {
+      "description": "Second token must be approved for PancakeSwap Router",
+      "token": "{{token_b_address}}",
+      "spender": "{{router_address}}",
+      "minimum_allowance": "{{amount_token_b}}"
+    },
+    "liquidity_pool": {
+      "description": "Liquidity pool for Token A/Token B pair should exist",
+      "pair": "{{token_a_symbol}}/{{token_b_symbol}}"
+    }
+  },
+  "validation": {
+    "rules": [
+      {
+        "type": "transaction_success",
+        "description": "Transaction must be successfully executed and confirmed"
+      },
+      {
+        "type": "token_approval",
+        "description": "Both tokens must have been approved for Router (or have existing allowance)",
+        "tokens": [
+          "{{token_a_address}}",
+          "{{token_b_address}}"
+        ],
+        "spender": "{{router_address}}"
+      },
+      {
+        "type": "contract_interaction",
+        "description": "Must interact with PancakeSwap Router contract",
+        "contract": "{{router_address}}"
+      },
+      {
+        "type": "function_call",
+        "description": "Must call addLiquidity function",
+        "function_selector": "0xe8e33700"
+      },
+      {
+        "type": "balance_change",
+        "description": "Token A balance must decrease by approximately the specified amount",
+        "token": "{{token_a_address}}",
+        "change": "decrease",
+        "approximate_amount": "{{amount_token_a}}"
+      },
+      {
+        "type": "balance_change",
+        "description": "Token B balance must decrease by approximately the specified amount",
+        "token": "{{token_b_address}}",
+        "change": "decrease",
+        "approximate_amount": "{{amount_token_b}}"
+      },
+      {
+        "type": "lp_token_received",
+        "description": "Must receive LP tokens from the liquidity pool",
+        "minimum_increase": "> 0"
+      }
+    ],
+    "scoring": {
+      "transaction_success": 20,
+      "token_a_approval": 10,
+      "token_b_approval": 10,
+      "correct_router": 10,
+      "correct_function": 10,
+      "token_a_decrease": 15,
+      "token_b_decrease": 15,
+      "lp_token_increase": 10
+    },
+    "pre_conditions": [],
+    "post_conditions": []
+  },
+  "metadata": {
+    "estimated_gas": "200000-300000",
+    "requires_native_token": false,
+    "complexity": "medium",
+    "tags": [
+      "defi",
+      "dex",
+      "liquidity",
+      "pancakeswap",
+      "amm",
+      "lp-token",
+      "token-pair"
+    ],
+    "learning_objectives": [
+      "Understanding liquidity provision for token pairs in AMM DEXes",
+      "Managing multiple token approvals for router contracts",
+      "Calculating optimal amounts based on pool ratios",
+      "Handling slippage tolerance for two-sided liquidity",
+      "Receiving and tracking LP tokens for token pairs"
+    ],
+    "common_pitfalls": [
+      "Not approving both tokens before adding liquidity",
+      "Using the wrong token order (tokenA vs tokenB)",
+      "Setting amountMin values too high based on wrong token",
+      "Sending BNB value (this is not a payable function)",
+      "Not querying reserves to calculate optimal ratios",
+      "Forgetting to set deadline parameter"
+    ],
+    "requires_contract": false
+  },
+  "version": "2.0.0"
+}

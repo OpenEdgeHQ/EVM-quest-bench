@@ -1,0 +1,114 @@
+{
+  "id": "erc721_set_approval_for_all",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "nft_operations",
+  "difficulty": "medium",
+  "title": "ERC721 Set Approval For All",
+  "description": [
+    "Approve or revoke an operator to manage all of your ERC721 NFTs in a collection.",
+    "",
+    "Technical context:",
+    "- Use ERC721's setApprovalForAll(address operator, bool approved) function",
+    "- Grants/revokes permission for the operator to transfer ALL your NFTs in this collection",
+    "- More efficient than approving each token individually",
+    "- Commonly used by NFT marketplaces (OpenSea, etc.) and games",
+    "- Setting approved=true grants full control, approved=false revokes it",
+    "- Function selector: 0xa22cb465",
+    "- Parameters: operator (address, 32 bytes) + approved (bool, 32 bytes)",
+    "- Recommended gas limit: 80000"
+  ],
+  "natural_language_templates": [
+    "Grant operator approval to address {operator_address} for all my NFTs in the {nft_name} collection (contract: {nft_address})",
+    "Set approval for all NFTs in {nft_name} (contract {nft_address}) to operator {operator_address}",
+    "Please approve {operator_address} as an operator for all my {nft_name} NFTs at contract {nft_address}",
+    "I want to authorize address {operator_address} to manage all my NFTs from the {nft_name} collection at {nft_address}"
+  ],
+  "parameters": {
+    "nft_address": {
+      "type": "address",
+      "role": "nft_contract",
+      "description": "ERC721 NFT contract address",
+      "generation": {
+        "method": "from_list",
+        "addresses": [
+          "0x0a8901b0E25DEb55A87524f0cC164E9644020EBA"
+        ],
+        "comment": "PancakeSquad NFT on BSC Mainnet"
+      }
+    },
+    "nft_name": {
+      "type": "string",
+      "role": "display",
+      "description": "Human-readable name of the NFT collection",
+      "generation": {
+        "method": "fixed",
+        "value": "PancakeSquad"
+      }
+    },
+    "operator_address": {
+      "type": "address",
+      "role": "operator",
+      "description": "Address to approve as operator for all NFTs",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "approved": {
+      "type": "boolean",
+      "role": "approval_status",
+      "description": "True to grant approval, false to revoke",
+      "generation": {
+        "method": "fixed",
+        "value": true,
+        "comment": "Default to granting approval (true)"
+      }
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "balance",
+        "description": "Agent must have sufficient BNB for gas",
+        "min_balance": "0.01 BNB"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.4,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "approval_for_all_check",
+        "weight": 0.4,
+        "description": "Operator approval status set correctly",
+        "expected_approved": "{approved}"
+      },
+      {
+        "type": "function_selector",
+        "weight": 0.2,
+        "description": "Correct function selector for setApprovalForAll",
+        "expected_selector": "0xa22cb465"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "nft",
+      "erc721",
+      "approval_for_all",
+      "operator",
+      "batch_authorization",
+      "onchain"
+    ],
+    "estimated_gas": 80000,
+    "requires_contract": true,
+    "network": "mainnet",
+    "erc_standard": "ERC721"
+  },
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  }
+}

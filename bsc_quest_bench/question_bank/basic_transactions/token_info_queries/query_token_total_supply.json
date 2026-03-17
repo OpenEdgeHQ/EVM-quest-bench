@@ -1,0 +1,88 @@
+{
+  "id": "query_token_total_supply",
+  "category": "basic_transactions",
+  "subcategory": "token_info_queries",
+  "difficulty": "easy",
+  "title": "Query Token Total Supply",
+  "description": "Query the total supply of an ERC20 token by calling the totalSupply() function. The total supply represents the total amount of tokens that exist, returned in the smallest unit (wei). Understanding decimals is crucial for proper display of the human-readable total supply.",
+  "natural_language_templates": [
+    "Query the total supply of token at {{token_address}}",
+    "Get the total supply for the ERC20 token at {{token_address}} with {{token_decimals}} decimals",
+    "Check how many tokens exist in total for {{token_address}}",
+    "Retrieve the totalSupply of token {{token_address}}"
+  ],
+  "blockchain": "bsc",
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "description": "ERC20 token contract address to query total supply for (USDT on BSC)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "description": "Token decimals for formatting (USDT uses 18 decimals on BSC)",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "description": "Token symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    }
+  },
+  "validation": {
+    "type": "query",
+    "rules": [
+      {
+        "field": "query_execution",
+        "condition": "success",
+        "error_message": "Failed to query token total supply",
+        "weight": 40
+      },
+      {
+        "field": "return_format",
+        "condition": "has_required_fields",
+        "required_fields": ["totalSupply"],
+        "error_message": "Missing required fields in query result",
+        "weight": 30
+      },
+      {
+        "field": "total_supply_correctness",
+        "condition": "matches_expected",
+        "tolerance_percent": 0.1,
+        "error_message": "Total supply does not match expected value (allowing 0.1% tolerance for potential changes)",
+        "weight": 30
+      }
+    ]
+  },
+  "metadata": {
+    "tags": ["erc20", "token", "totalSupply", "query", "supply"],
+    "estimated_gas": 0,
+    "prerequisites": [],
+    "related_questions": ["query_token_metadata", "query_erc20_balance"],
+    "learning_objectives": [
+      "Understand the ERC20 totalSupply() function",
+      "Learn to query token supply information",
+      "Master unit conversion with decimals (wei to token units)",
+      "Understand the difference between totalSupply and circulating supply",
+      "Learn proper formatting of large numbers"
+    ],
+    "operation_type": "query",
+    "notes": [
+      "totalSupply() returns uint256 in smallest unit (wei)",
+      "Must divide by 10^decimals for human-readable format",
+      "Total supply may change if token supports minting/burning",
+      "Some tokens have fixed supply, others are inflationary/deflationary",
+      "Small tolerance (0.1%) allows for potential minting/burning between queries"
+    ]
+  }
+}
+

@@ -1,0 +1,173 @@
+{
+  "id": "stake_lp_tokens",
+  "title": "Stake LP Tokens to Farming Pool",
+  "difficulty": "medium",
+  "category": "defi_operations",
+  "subcategory": "staking_farming",
+  "description": [
+    "Stake LP (Liquidity Provider) tokens to a SimpleLPStaking farming pool to earn rewards. LP tokens are obtained by providing liquidity to a DEX pair (e.g., USDT/BUSD on PancakeSwap).",
+    "",
+    "IMPORTANT: This is a SimpleLPStaking contract, NOT a MasterChef-style contract.",
+    "- Contract function: deposit(uint256 _amount) - ONLY ONE PARAMETER",
+    "- NO pool ID parameter required (unlike MasterChef)",
+    "- The pool_address parameter is the SimpleLPStaking contract address",
+    "",
+    "Required steps:",
+    "1. Check LP token balance: lpToken.balanceOf(user_address)",
+    "2. Check current allowance: lpToken.allowance(user_address, pool_address)",
+    "3. If allowance is insufficient, approve the pool: lpToken.approve(pool_address, amount)",
+    "4. Stake LP tokens: simpleLPStaking.deposit(amount)",
+    "",
+    "Contract details:",
+    "- SimpleLPStaking contract address: pool_address (dynamic parameter)",
+    "- LP token address: lp_token_address (USDT/BUSD pair: 0x7EFaEf62fDdCCa950418312c6C91Aef321375A00)",
+    "- Deposit function signature: deposit(uint256 _amount)",
+    "- Amount unit: wei (e.g., 0.5 LP tokens = 500000000000000000 wei)",
+    "",
+    "Function call construction:",
+    "```typescript",
+    "const SimpleLPStakingABI = [",
+    "  'function deposit(uint256 _amount) external'",
+    "];",
+    "const contract = new Contract interface(pool_address, SimpleLPStakingABI, provider);",
+    "const data = encode the function call('deposit', [amountInWei]);",
+    "```",
+    "",
+    "Common mistakes to avoid:",
+    "- DO NOT use deposit(uint256 _pid, uint256 _amount) - this is MasterChef, not SimpleLPStaking",
+    "- DO NOT pass a pool ID parameter",
+    "- DO ensure the LP token is approved before calling deposit",
+    "- DO convert the stake_amount to wei (multiply by 10^18)"
+  ],
+  "tags": [
+    "staking",
+    "farming",
+    "lp_tokens",
+    "defi",
+    "yield"
+  ],
+  "parameters": {
+    "pool_address": {
+      "type": "address",
+      "description": "SimpleLPStaking contract address",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_lp_staking_address"
+      },
+      "role": "address"
+    },
+    "stake_amount": {
+      "type": "number",
+      "description": "Amount of LP tokens to stake (in LP token units, e.g., 0.5)",
+      "example": 0.5,
+      "range": [
+        0.1,
+        1.0
+      ],
+      "generation": {
+        "method": "random",
+        "min": 0.2,
+        "max": 0.8,
+        "decimals": 1
+      },
+      "role": "transfer_amount"
+    },
+    "lp_token_address": {
+      "type": "address",
+      "description": "LP token address (USDT/BUSD pair)",
+      "example": "0x7EFaEf62fDdCCa950418312c6C91Aef321375A00",
+      "generation": {
+        "method": "fixed",
+        "value": "0x7EFaEf62fDdCCa950418312c6C91Aef321375A00"
+      },
+      "role": "receiver"
+    },
+    "user_address": {
+      "type": "address",
+      "description": "User's wallet address",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "test_address"
+      },
+      "role": "address"
+    },
+    "chain_id": {
+      "type": "integer",
+      "description": "Blockchain network ID (56 for BSC Mainnet)",
+      "example": 56,
+      "generation": {
+        "method": "fixed",
+        "value": 56
+      },
+      "role": "parameter"
+    }
+  },
+  "natural_language_templates": [
+    "Stake {stake_amount} USDT/BUSD LP tokens in the SimpleLPStaking pool",
+    "Deposit {stake_amount} LP tokens to the LP staking pool to earn farming rewards",
+    "Stake {stake_amount} USDT/BUSD LP tokens using the simple_lp_staking contract",
+    "Put {stake_amount} liquidity provider tokens into the LP staking pool to start earning"
+  ],
+  "contracts": {
+    "simple_lp_staking": {
+      "address": "dynamic",
+      "name": "SimpleLPStaking",
+      "abi_functions": [
+        "function deposit(uint256 _amount) external",
+        "function withdraw(uint256 _amount) external",
+        "function getUserInfo(address _user) external view returns (uint256 amount, uint256 depositTime)",
+        "function userInfo(address _user) external view returns (uint256 amount, uint256 depositTime)"
+      ]
+    },
+    "lp_token": {
+      "address": "0x7EFaEf62fDdCCa950418312c6C91Aef321375A00",
+      "name": "PancakeSwap LP Token (USDT/BUSD)",
+      "abi_functions": [
+        "function approve(address spender, uint256 amount) external returns (bool)",
+        "function allowance(address owner, address spender) external view returns (uint256)",
+        "function balanceOf(address account) external view returns (uint256)"
+      ]
+    }
+  },
+  "expected_behavior": {
+    "transaction_count": 1,
+    "state_changes": [
+      "LP token balance decreases by stake_amount",
+      "LP token allowance to pool decreases (or needs to be set)",
+      "User's staked amount in pool increases by stake_amount"
+    ],
+    "gas_estimate": 150000
+  },
+  "validation_criteria": {
+    "transaction_success": {
+      "weight": 25,
+      "description": "Transaction executed successfully without reverting"
+    },
+    "lp_token_approval": {
+      "weight": 20,
+      "description": "LP token properly approved for farming pool contract"
+    },
+    "lp_balance_decrease": {
+      "weight": 25,
+      "description": "User's LP token balance decreased by correct amount"
+    },
+    "staking_balance_increase": {
+      "weight": 30,
+      "description": "User's staked balance in pool increased correctly"
+    }
+  },
+  "hints": [
+    "You need to approve the farming pool contract before staking LP tokens",
+    "Use the deposit() function with the amount in wei (amount * 10^18)",
+    "Check the current allowance first to avoid unnecessary approve transactions",
+    "Query userInfo() to verify the staked amount after transaction"
+  ],
+  "test_script_template": "stake_lp_tokens.ts",
+  "version": "2.0.0",
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  }
+}

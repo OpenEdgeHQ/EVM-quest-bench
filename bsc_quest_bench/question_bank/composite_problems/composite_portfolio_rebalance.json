@@ -1,0 +1,253 @@
+{
+  "id": "composite_portfolio_rebalance",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "advanced_defi",
+  "difficulty": "hard",
+  "title": "Portfolio Rebalance: Query Holdings and Convert to BUSD",
+  "natural_language_templates": [
+    "Rebalance portfolio: check USDT and CAKE balances, swap {amount_usdt} USDT and {amount_cake} CAKE to BUSD, then verify",
+    "Query current holdings, convert {amount_usdt} USDT and {amount_cake} CAKE to BUSD",
+    "Portfolio management: query USDT at {usdt_address} and CAKE at {cake_address}, swap portions to BUSD, verify final balance"
+  ],
+  "description": [
+    "Advanced portfolio management workflow with multiple swaps.",
+    "",
+    "This is a 5-step process:",
+    "1. Query USDT balance to check holdings",
+    "2. Query CAKE balance to check holdings",
+    "3. Swap portion of USDT to BUSD",
+    "4. Swap portion of CAKE to BUSD (KEY OPERATION)",
+    "5. Query final BUSD balance to verify rebalancing",
+    "",
+    "Technical details:",
+    "- PancakeSwap Router: 0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "- USDT: 0x55d398326f99059fF775485246999027B3197955",
+    "- CAKE: 0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+    "- BUSD: 0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+    "- WBNB (for path): 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "",
+    "Swap paths:",
+    "- USDT → BUSD (direct pair exists)",
+    "- CAKE → WBNB → BUSD",
+    "",
+    "Note: Both USDT and CAKE must be approved to Router before swaps.",
+    "BSC does NOT support ENS. Use hex addresses directly."
+  ],
+  "composite_structure": {
+    "pattern": "query-swap-swap-verify",
+    "optimal_steps": 5,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "query_erc20_balance",
+        "role": "analysis",
+        "description": "Query USDT balance"
+      },
+      {
+        "step": 2,
+        "atomic_id": "query_erc20_balance",
+        "role": "analysis",
+        "description": "Query CAKE balance"
+      },
+      {
+        "step": 3,
+        "atomic_id": "swap_exact_tokens_for_tokens",
+        "role": "rebalance",
+        "description": "Swap USDT to BUSD"
+      },
+      {
+        "step": 4,
+        "atomic_id": "swap_exact_tokens_for_tokens",
+        "role": "key_operation",
+        "description": "Swap CAKE to BUSD"
+      },
+      {
+        "step": 5,
+        "atomic_id": "query_erc20_balance",
+        "role": "verification",
+        "description": "Query final BUSD balance"
+      }
+    ],
+    "interaction_config": {
+      "max_rounds": 10,
+      "optimal_steps": 5,
+      "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+      "forced_submit_at_max": true
+    }
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "usdt_address": {
+      "type": "address",
+      "role": "token",
+      "description": "USDT token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "cake_address": {
+      "type": "address",
+      "role": "token",
+      "description": "CAKE token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
+      }
+    },
+    "busd_address": {
+      "type": "address",
+      "role": "token",
+      "description": "BUSD token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      }
+    },
+    "wbnb_address": {
+      "type": "address",
+      "role": "intermediate",
+      "description": "WBNB address (for swap path)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "token_in_address": {
+      "type": "address",
+      "role": "token",
+      "description": "Key swap input token (CAKE)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
+      }
+    },
+    "token_out_address": {
+      "type": "address",
+      "role": "token",
+      "description": "Key swap output token (BUSD)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      }
+    },
+    "amount_usdt": {
+      "type": "number",
+      "unit": "USDT",
+      "role": "swap_amount",
+      "description": "Amount of USDT to swap to BUSD",
+      "generation": {
+        "method": "random",
+        "min": 10.0,
+        "max": 30.0,
+        "decimals": 1
+      }
+    },
+    "amount_cake": {
+      "type": "number",
+      "unit": "CAKE",
+      "role": "swap_amount",
+      "description": "Amount of CAKE to swap to BUSD",
+      "generation": {
+        "method": "random",
+        "min": 5.0,
+        "max": 20.0,
+        "decimals": 1
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance percentage",
+      "generation": {
+        "method": "fixed",
+        "value": 50.0
+      }
+    }
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "swap_exact_tokens_for_tokens",
+    "key_operation_step": 4
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "description": "Agent must have sufficient USDT",
+        "min_balance": "100 USDT"
+      },
+      {
+        "type": "token_balance",
+        "description": "Agent must have sufficient CAKE",
+        "min_balance": "50 CAKE"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.2,
+        "description": "Swap transactions executed successfully"
+      },
+      {
+        "type": "usdt_balance_decrease",
+        "weight": 0.2,
+        "description": "USDT balance decreased"
+      },
+      {
+        "type": "cake_balance_decrease",
+        "weight": 0.2,
+        "description": "CAKE balance decreased"
+      },
+      {
+        "type": "busd_balance_increase",
+        "weight": 0.3,
+        "description": "BUSD balance increased (combined from both swaps)"
+      },
+      {
+        "type": "balance_verified",
+        "weight": 0.1,
+        "description": "Final BUSD balance was verified"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "defi",
+      "portfolio",
+      "rebalance",
+      "multi-swap",
+      "query",
+      "advanced",
+      "hard"
+    ],
+    "estimated_gas": 600000,
+    "requires_approval": true,
+    "difficulty_notes": [
+      "Five-step portfolio management workflow",
+      "Requires querying multiple token balances",
+      "Two separate swap operations",
+      "Must handle different swap paths"
+    ]
+  }
+}
+

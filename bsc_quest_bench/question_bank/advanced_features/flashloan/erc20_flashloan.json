@@ -1,0 +1,184 @@
+{
+  "id": "erc20_flashloan",
+  "version": "2.0.0",
+  "category": "advanced_features",
+  "subcategory": "flashloan",
+  "difficulty": "hard",
+  "title": "ERC20 FlashLoan - Execute Flash Loan",
+  "natural_language_templates": [
+    "Execute a flash loan of {amount} {token_symbol} from the flash loan contract at {flashloan_contract_address}. The loan must be repaid with {fee_percentage}% fee in the same transaction.",
+    "Borrow {amount} {token_symbol} using flash loan from contract {flashloan_contract_address}, use the funds, and repay with fee.",
+    "Take a flash loan of {amount} {token_symbol} tokens from {flashloan_contract_address}. Remember to approve the contract to pull back the loan amount plus {fee_percentage}% fee.",
+    "I need to execute a flash loan: borrow {amount} {token_symbol} from {flashloan_contract_address} and repay it with the {fee_percentage}% fee in one transaction"
+  ],
+  "description": [
+    "Execute a flash loan by calling the FlashLoan contract's executeFlashLoan function.",
+    "",
+    "Technical context:",
+    "- Flash loan allows borrowing tokens without collateral in a single transaction",
+    "- The loan must be repaid with a fee (0.3%) in the same transaction",
+    "- Function signature: executeFlashLoan(address token, uint256 amount)",
+    "- Before calling, you must approve the flash loan contract to pull back tokens",
+    "- The approval amount should be: loan amount + fee",
+    "- After the flash loan call, the contract will transfer tokens to you, then pull them back with fee",
+    "- If repayment fails, the entire transaction reverts",
+    "- Recommended gas limit: 300000",
+    "",
+    "Transaction flow:",
+    "1. Calculate repayment amount: amount + (amount * 0.003)",
+    "2. Approve flash loan contract for repayment amount",
+    "3. Call executeFlashLoan(token_address, amount)",
+    "4. Contract transfers tokens to you (loan)",
+    "5. Contract immediately pulls back loan + fee",
+    "",
+    "Key considerations:",
+    "- You must have enough tokens to pay the fee",
+    "- The flash loan contract must have sufficient liquidity",
+    "- Set 'to' to the flash loan contract address",
+    "- Set 'value' to 0 (not sending BNB)",
+    "- The transaction data should contain the encoded executeFlashLoan call",
+    "- Use EIP-1559 transaction type (type: 2)"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "flashloan_contract_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "Flash loan provider contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "flashloan_receiver_address",
+        "comment": "Use dynamically deployed flash loan contract from environment"
+      }
+    },
+    "token_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "Token address to borrow (USDT)",
+      "generation": {
+        "method": "from_list",
+        "addresses": [
+          "0x55d398326f99059fF775485246999027B3197955"
+        ],
+        "comment": "USDT on BSC"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "description": "Token symbol for natural language",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      },
+      "role": "parameter"
+    },
+    "token_decimals": {
+      "type": "integer",
+      "description": "Token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18,
+        "comment": "BSC USDT uses 18 decimals (different from Ethereum USDT which uses 6)"
+      },
+      "role": "parameter"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount to borrow (in token units)",
+      "generation": {
+        "method": "random",
+        "min": 100,
+        "max": 1000,
+        "decimals": 2
+      },
+      "role": "transfer_amount"
+    },
+    "fee_percentage": {
+      "type": "number",
+      "description": "Flash loan fee percentage",
+      "generation": {
+        "method": "fixed",
+        "value": 0.3
+      },
+      "role": "parameter"
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "contract_exists",
+        "description": "Flash loan contract must exist",
+        "address": "{flashloan_contract_address}"
+      },
+      {
+        "type": "sufficient_balance",
+        "description": "Agent must have enough tokens to pay fee",
+        "token": "{token_address}",
+        "min_amount": "{amount * fee_percentage / 100}"
+      },
+      {
+        "type": "pool_liquidity",
+        "description": "Flash loan pool must have sufficient liquidity",
+        "contract": "{flashloan_contract_address}",
+        "token": "{token_address}",
+        "min_amount": "{amount}"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "contract_call",
+        "weight": 0.2,
+        "description": "Transaction calls correct flash loan contract",
+        "expected": "{flashloan_contract_address}"
+      },
+      {
+        "type": "function_signature",
+        "weight": 0.2,
+        "description": "Correct executeFlashLoan function signature",
+        "expected": "executeFlashLoan(address,uint256)"
+      },
+      {
+        "type": "fee_paid",
+        "weight": 0.15,
+        "description": "Flash loan fee paid correctly",
+        "expected_fee": "{amount * fee_percentage / 100}"
+      },
+      {
+        "type": "balance_unchanged",
+        "weight": 0.15,
+        "description": "Agent balance should decrease by fee amount only",
+        "token": "{token_address}",
+        "expected_change": "-{amount * fee_percentage / 100}"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "flashloan",
+      "defi",
+      "advanced",
+      "lending",
+      "borrowing"
+    ],
+    "estimated_gas": 300000,
+    "requires_contract": true,
+    "requires_approval": true,
+    "contract_requirements": {
+      "contract_type": "FlashLoan",
+      "required_functions": [
+        "executeFlashLoan"
+      ],
+      "note": "Agent must approve flash loan contract before calling executeFlashLoan"
+    },
+    "complexity": "high",
+    "educational_value": "Demonstrates understanding of flash loans, approvals, and atomic transactions"
+  }
+}

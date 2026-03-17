@@ -1,0 +1,145 @@
+{
+  "id": "composite_batch_query_2_balances",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "batch_query",
+  "difficulty": "easy",
+  "title": "Batch Query Two Token Balances",
+  "natural_language_templates": [
+    "Check your USDT balance and BUSD balance",
+    "Query the balance of USDT at {usdt_address} and BUSD at {busd_address}",
+    "Get both your USDT and BUSD token balances"
+  ],
+  "description": [
+    "Query two different ERC20 token balances in sequence.",
+    "",
+    "This is a 2-step query process:",
+    "1. Query USDT balance using balanceOf(address)",
+    "2. Query BUSD balance using balanceOf(address)",
+    "",
+    "Technical details:",
+    "- USDT address: 0x55d398326f99059fF775485246999027B3197955",
+    "- BUSD address: 0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+    "- Use balanceOf(address) view function",
+    "- No transaction required (read-only operations)",
+    "",
+    "Note: This is a pure query operation for testing batch query functionality."
+  ],
+  "composite_structure": {
+    "pattern": "batch-query",
+    "optimal_steps": 2,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "query_erc20_balance",
+        "role": "first_query",
+        "description": "Query USDT balance"
+      },
+      {
+        "step": 2,
+        "atomic_id": "query_erc20_balance",
+        "role": "key_operation",
+        "description": "Query BUSD balance"
+      }
+    ]
+  },
+  "parameters": {
+    "usdt_address": {
+      "type": "address",
+      "role": "token1",
+      "description": "USDT token contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "usdt_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "USDT token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "busd_address": {
+      "type": "address",
+      "role": "token2",
+      "description": "BUSD token contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      }
+    },
+    "busd_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "BUSD token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "BUSD"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimal places (both USDT and BUSD use 18)",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 4,
+    "optimal_steps": 2,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "query_result_validation",
+    "key_operation_id": "query_erc20_balance",
+    "key_operation_step": 2,
+    "validation_type": "query_success"
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "contract_exists",
+        "description": "Token contracts must exist",
+        "addresses": ["{usdt_address}", "{busd_address}"]
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "query_success",
+        "weight": 0.5,
+        "description": "Both queries executed successfully"
+      },
+      {
+        "type": "return_format",
+        "weight": 0.5,
+        "description": "Return values contain balance information"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "batch",
+      "query",
+      "balance",
+      "erc20",
+      "read-only",
+      "easy"
+    ],
+    "estimated_gas": 0,
+    "requires_approval": false,
+    "operation_type": "query",
+    "difficulty_notes": [
+      "Pure read-only operations",
+      "No transactions required",
+      "Simple batch query test"
+    ]
+  }
+}
+

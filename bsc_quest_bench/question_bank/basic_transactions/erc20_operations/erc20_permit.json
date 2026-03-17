@@ -1,0 +1,177 @@
+{
+  "id": "erc20_permit",
+  "category": "basic_transactions",
+  "subcategory": "erc20_operations",
+  "difficulty": "hard",
+  "title": "ERC20 Permit - Gasless Approval (EIP-2612)",
+  "description": [
+    "Test understanding of EIP-2612 permit concept by setting token allowance. This tests the same end goal as permit (setting allowance) using approve().",
+    "",
+    "Technical context:",
+    "- EIP-2612 extends ERC20 with permit() for gasless, signature-based approvals",
+    "- The goal is to set allowance for a spender to use tokens on behalf of owner",
+    "- approve(address spender, uint256 value) function sets the allowance",
+    "- After successful approval, spender can use up to 'value' tokens via transferFrom",
+    "",
+    "Real EIP-2612 permit would involve:",
+    "- Generating EIP-712 typed data signature off-chain",
+    "- Calling permit(owner, spender, value, deadline, v, r, s) on-chain",
+    "- Achieving gasless approval (no transaction from token owner)",
+    "",
+    "For testing purposes:",
+    "- Use approve() to achieve the same result (allowance is set)",
+    "- This validates understanding of the allowance mechanism",
+    "- Tests ability to interact with ERC20 approval system",
+    "",
+    "Key considerations:",
+    "- Function selector: approve(address,uint256) = 0x095ea7b3",
+    "- Amount must be converted to wei (multiply by 10^decimals)",
+    "- Transaction 'to' field should be the token contract address",
+    "- Transaction 'value' should be 0 (not sending native BNB)",
+    "- After approval, check allowance(owner, spender) to verify"
+  ],
+  "natural_language_templates": [
+    "Approve {value} tokens for spender {spender_address} at token address {token_address}",
+    "Set allowance of {value} tokens for spender {spender_address} using token contract {token_address}",
+    "Call approve function to authorize {spender_address} to spend {value} tokens from token {token_address}"
+  ],
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "role": "token_contract",
+      "description": "EIP-2612 compliant token contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc1363_token_address",
+        "comment": "Use ERC1363 token to simulate permit scenario (has approve functionality)"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "T1363"
+      }
+    },
+    "token_decimals": {
+      "type": "number",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "owner_address": {
+      "type": "address",
+      "role": "token_owner",
+      "description": "Token owner address (must sign the permit)",
+      "generation": {
+        "method": "from_env",
+        "env_key": "test_address",
+        "comment": "The agent is the owner who signs the permit"
+      }
+    },
+    "spender_address": {
+      "type": "address",
+      "role": "approved_spender",
+      "description": "Address to be approved for spending",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "value": {
+      "type": "number",
+      "unit": "token",
+      "role": "approval_amount",
+      "description": "Amount of tokens to approve",
+      "generation": {
+        "method": "random",
+        "min": 100.0,
+        "max": 1000.0,
+        "decimals": 2
+      }
+    },
+    "deadline": {
+      "type": "number",
+      "role": "signature_deadline",
+      "description": "Timestamp deadline for signature validity (use future timestamp)",
+      "generation": {
+        "method": "fixed",
+        "value": 2000000000,
+        "comment": "Fixed future timestamp (May 18, 2033)"
+      }
+    }
+  },
+  "pre_conditions": [
+    {
+      "type": "contract_check",
+      "address": "{token_address}",
+      "description": "Token must be a deployed EIP-2612 compliant contract"
+    },
+    {
+      "type": "function_exists",
+      "address": "{token_address}",
+      "function": "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)",
+      "description": "Token must implement permit function"
+    }
+  ],
+  "post_conditions": [
+    {
+      "type": "transaction_success",
+      "weight": 0.4,
+      "description": "Permit transaction executed successfully"
+    },
+    {
+      "type": "allowance_set",
+      "weight": 0.6,
+      "token": "{token_address}",
+      "owner": "{owner_address}",
+      "spender": "{spender_address}",
+      "expected_allowance": "{value}",
+      "tolerance": "0",
+      "description": "Allowance correctly set to approved value"
+    }
+  ],
+  "metadata": {
+    "tags": [
+      "eip-2612",
+      "permit",
+      "signature",
+      "eip-712",
+      "gasless-approval",
+      "meta-transaction",
+      "cryptography",
+      "advanced"
+    ],
+    "estimated_gas": 80000,
+    "requires_contract": true,
+    "requires_signature": true,
+    "network": "mainnet",
+    "erc_standard": "EIP-2612",
+    "known_limitations": [
+      "Most standard ERC20 tokens do NOT support EIP-2612",
+      "Requires proper EIP-712 signature generation",
+      "Complex cryptographic signature construction",
+      "Nonce must be queried from contract",
+      "Domain separator must match contract's domain"
+    ],
+    "implementation_status": "development",
+    "requires_custom_token": true,
+    "difficulty_notes": [
+      "Requires understanding of EIP-712 typed data",
+      "Must construct proper domain separator",
+      "Must query and use correct nonce",
+      "Signature must be from correct private key",
+      "Must handle deadline timestamp"
+    ]
+  },
+  "version": "2.0.0",
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  }
+}
+

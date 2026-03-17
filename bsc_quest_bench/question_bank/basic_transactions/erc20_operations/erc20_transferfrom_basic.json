@@ -1,0 +1,199 @@
+{
+  "id": "erc20_transferfrom_basic",
+  "title": "ERC20 TransferFrom - Authorized Transfer",
+  "difficulty": "medium",
+  "category": "basic_transactions",
+  "subcategory": "erc20_operations",
+  "description": [
+    "Execute an authorized ERC20 token transfer using the transferFrom function. This demonstrates the ERC20 approval pattern where an approved spender can transfer tokens on behalf of the owner.",
+    "",
+    "IMPORTANT: Authorization Pattern",
+    "- The from_address (token owner) has already approved you (agent) to spend tokens",
+    "- You need to call transferFrom(from, to, amount) to execute the transfer",
+    "- This is different from transfer() which only moves your own tokens",
+    "",
+    "Technical context:",
+    "- ERC20 transferFrom function signature: transferFrom(address from, address to, uint256 amount)",
+    "- Three addresses involved:",
+    "  1. from_address: Token owner (source of tokens)",
+    "  2. agent_address: Approved spender (you, executing the transfer)",
+    "  3. to_address: Recipient (destination of tokens)",
+    "- The agent must be approved by the owner beforehand (already done in test environment)",
+    "- The allowance will be decreased by the transfer amount",
+    "",
+    "Function call construction:",
+    "```typescript",
+    "const ERC20_ABI = ['function transferFrom(address from, address to, uint256 amount) external returns (bool)'];",
+    "const tokenContract = new Contract interface(token_address, ERC20_ABI, provider);",
+    "const amountWei = ethers.parseUnits(amount.toString(), token_decimals);",
+    "const data = tokenContract.interface.encodeFunctionData('transferFrom', [from_address, to_address, amountWei]);",
+    "```",
+    "",
+    "Key considerations:",
+    "- Parameter order: from, to, amount (NOT to, amount like transfer())",
+    "- Check allowance before attempting transfer",
+    "- Convert amount to wei using token decimals",
+    "- Transaction 'to' field should be the token contract address",
+    "- Transaction 'value' should be 0 (not sending native BNB)",
+    "",
+    "Common mistakes to avoid:",
+    "- DO NOT confuse with transfer(to, amount) - this is transferFrom(from, to, amount)",
+    "- DO NOT swap the order of from and to addresses",
+    "- DO ensure sufficient allowance exists",
+    "- DO convert amount to proper decimal representation"
+  ],
+  "tags": [
+    "erc20",
+    "transferfrom",
+    "approval",
+    "authorization",
+    "token"
+  ],
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "description": "ERC20 token contract address (USDT)",
+      "example": "0x55d398326f99059fF775485246999027B3197955",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      },
+      "role": "receiver"
+    },
+    "token_symbol": {
+      "type": "string",
+      "description": "Token symbol for display",
+      "example": "USDT",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      },
+      "role": "parameter"
+    },
+    "token_decimals": {
+      "type": "integer",
+      "description": "Token decimals",
+      "example": 18,
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      },
+      "role": "parameter"
+    },
+    "from_address": {
+      "type": "address",
+      "description": "Token owner address (has approved agent)",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "rich_address"
+      },
+      "role": "address"
+    },
+    "to_address": {
+      "type": "address",
+      "description": "Recipient address",
+      "generation": {
+        "method": "random"
+      },
+      "role": "receiver"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Transfer amount in tokens",
+      "example": 50.0,
+      "range": [
+        10.0,
+        100.0
+      ],
+      "generation": {
+        "method": "random",
+        "min": 10.0,
+        "max": 100.0,
+        "decimals": 2
+      },
+      "role": "transfer_amount"
+    },
+    "agent_address": {
+      "type": "address",
+      "description": "Agent address (approved spender)",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "test_address"
+      },
+      "role": "address"
+    },
+    "chain_id": {
+      "type": "integer",
+      "description": "Blockchain network ID (56 for BSC Mainnet)",
+      "example": 56,
+      "generation": {
+        "method": "fixed",
+        "value": 56
+      },
+      "role": "parameter"
+    }
+  },
+  "natural_language_templates": [
+    "Transfer {amount} {token_symbol} from {from_address} to {to_address} using transferFrom",
+    "Execute authorized transfer of {amount} {token_symbol} tokens from {from_address} to {to_address}",
+    "Move {amount} {token_symbol} from owner {from_address} to recipient {to_address}",
+    "Use transferFrom to send {amount} {token_symbol} from {from_address} to {to_address}"
+  ],
+  "contracts": {
+    "usdt_token": {
+      "address": "0x55d398326f99059fF775485246999027B3197955",
+      "name": "Tether USD (USDT)",
+      "abi_functions": [
+        "function transferFrom(address from, address to, uint256 amount) external returns (bool)",
+        "function allowance(address owner, address spender) external view returns (uint256)",
+        "function balanceOf(address account) external view returns (uint256)"
+      ]
+    }
+  },
+  "expected_behavior": {
+    "transaction_count": 1,
+    "state_changes": [
+      "From address token balance decreases by amount",
+      "To address token balance increases by amount",
+      "Allowance decreases by amount"
+    ],
+    "gas_estimate": 70000
+  },
+  "validation_criteria": {
+    "transaction_success": {
+      "weight": 20,
+      "description": "Transaction executed successfully without reverting"
+    },
+    "correct_function": {
+      "weight": 20,
+      "description": "Called transferFrom with correct parameters"
+    },
+    "allowance_decrease": {
+      "weight": 20,
+      "description": "Allowance decreased by transfer amount"
+    },
+    "from_balance_decrease": {
+      "weight": 20,
+      "description": "From address balance decreased correctly"
+    },
+    "to_balance_increase": {
+      "weight": 20,
+      "description": "To address balance increased correctly"
+    }
+  },
+  "hints": [
+    "Use transferFrom(from, to, amount) - note the three parameters",
+    "The from_address is the token owner, agent_address is you (the spender)",
+    "Check allowance first: token.allowance(from_address, agent_address)",
+    "Convert amount to wei: ethers.parseUnits(amount.toString(), 18)",
+    "Transaction 'to' field should be the token contract address, not the recipient"
+  ],
+  "test_script_template": "erc20_transferfrom_basic.ts",
+  "version": "2.0.0",
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  }
+}

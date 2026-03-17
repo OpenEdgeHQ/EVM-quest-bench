@@ -1,0 +1,87 @@
+{
+  "id": "query_nft_balance",
+  "category": "basic_transactions",
+  "subcategory": "nft_queries",
+  "difficulty": "easy",
+  "title": "Query NFT Balance",
+  "description": "Query the number of NFTs owned by a specific address by calling the ERC721 balanceOf(address) function. This function returns the total count of NFTs owned by the address, which is useful for checking ownership before transfers or displaying user collections. Note that ERC721 balanceOf returns the count of NFTs, while ERC1155 requires a token ID parameter.",
+  "natural_language_templates": [
+    "Query the NFT balance for address {{query_address}} from contract {{nft_address}}",
+    "Check how many NFTs address {{query_address}} owns in the collection at {{nft_address}}",
+    "Get the NFT count for address {{query_address}} from the ERC721 contract {{nft_address}}",
+    "Find out how many tokens {{query_address}} holds in the NFT collection {{nft_address}}"
+  ],
+  "blockchain": "bsc",
+  "parameters": {
+    "nft_address": {
+      "type": "address",
+      "description": "ERC721 NFT contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc721_token_address"
+      }
+    },
+    "query_address": {
+      "type": "address",
+      "description": "Address to query NFT balance for",
+      "generation": {
+        "method": "from_env",
+        "env_key": "test_address"
+      }
+    },
+    "expected_balance": {
+      "type": "integer",
+      "description": "Expected NFT balance (test account owns 10 NFTs)",
+      "generation": {
+        "method": "fixed",
+        "value": 10
+      }
+    }
+  },
+  "validation": {
+    "type": "query",
+    "rules": [
+      {
+        "field": "query_execution",
+        "condition": "success",
+        "error_message": "Failed to query NFT balance",
+        "weight": 40
+      },
+      {
+        "field": "return_format",
+        "condition": "has_required_fields",
+        "required_fields": ["balance"],
+        "error_message": "Missing required fields in query result",
+        "weight": 30
+      },
+      {
+        "field": "balance_correctness",
+        "condition": "matches_expected",
+        "error_message": "NFT balance does not match expected value",
+        "weight": 30
+      }
+    ]
+  },
+  "metadata": {
+    "tags": ["erc721", "nft", "balance", "balanceOf", "query"],
+    "estimated_gas": 0,
+    "prerequisites": [],
+    "related_questions": ["query_nft_owner", "query_erc20_balance"],
+    "learning_objectives": [
+      "Understand the ERC721 balanceOf(address) function",
+      "Learn the difference between ERC721 and ERC1155 balanceOf",
+      "Master querying NFT ownership counts",
+      "Understand how to verify user NFT holdings",
+      "Learn about NFT collection management"
+    ],
+    "operation_type": "query",
+    "notes": [
+      "ERC721 balanceOf(address) returns uint256 - total count of NFTs owned",
+      "ERC1155 balanceOf(address, uint256) requires token ID parameter",
+      "Balance represents count, not token IDs",
+      "Use enumeration extensions to get actual token IDs owned",
+      "Zero address will revert in most implementations"
+    ]
+  }
+}
+

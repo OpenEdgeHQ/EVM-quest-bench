@@ -1,0 +1,95 @@
+{
+  "id": "bnb_transfer_max_amount",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "native_transfer",
+  "difficulty": "medium",
+  "title": "BNB Transfer Maximum Amount",
+  
+  "natural_language_templates": [
+    "Transfer all my BNB to {to_address}",
+    "Send my entire BNB balance to {to_address}",
+    "Transfer the maximum amount of BNB to {to_address}",
+    "Send all available BNB to {to_address}",
+    "I want to transfer all my BNB to {to_address}"
+  ],
+  
+  "description": [
+    "Transfer the maximum possible amount of BNB to an address, which is the current balance minus the gas cost for the transaction.",
+    "",
+    "Technical context:",
+    "- Query the current balance using eth_getBalance RPC call",
+    "- Calculate the gas cost: gasLimit × gasPrice (or maxFeePerGas for EIP-1559)",
+    "- The maximum transferable amount = balance - gas cost",
+    "- This is a common pattern when users want to \"empty\" an address",
+    "- Estimated gas for simple transfer: 21000",
+    "",
+    "Key considerations:",
+    "- First query current balance",
+    "- Calculate gas cost accurately to avoid insufficient balance error",
+    "- For EIP-1559: gas cost = gasLimit × maxFeePerGas",
+    "- Transfer amount = balance - estimated_gas_cost",
+    "- Leave enough for gas, otherwise the transaction will fail"
+  ],
+  
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  
+  "parameters": {
+    "to_address": {
+      "type": "address",
+      "role": "recipient",
+      "description": "Recipient address",
+      "generation": {
+        "method": "random"
+      }
+    }
+  },
+  
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "balance",
+        "description": "Agent must have sufficient BNB balance",
+        "min_balance": "0.01 BNB"
+      }
+    ],
+    
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "recipient_correct",
+        "weight": 0.2,
+        "description": "Correct recipient address",
+        "expected": "{to_address}"
+      },
+      {
+        "type": "max_amount_transferred",
+        "weight": 0.3,
+        "description": "Transferred maximum amount (balance - gas)",
+        "tolerance": "0.1%"
+      },
+      {
+        "type": "sender_balance_minimal",
+        "weight": 0.2,
+        "description": "Sender balance should be close to 0 (only dust remaining)",
+        "max_remaining": "0.0001 BNB"
+      }
+    ]
+  },
+  
+  "metadata": {
+    "tags": ["bnb", "native", "transfer", "max", "balance", "query", "intermediate"],
+    "estimated_gas": 21000,
+    "requires_contract": false,
+    "requires_balance_query": true,
+    "requires_gas_calculation": true
+  }
+}
+

@@ -1,0 +1,3200 @@
+{
+  "erc20_flashloan": [
+    {
+      "template": "Execute a flash loan of {amount} {token_symbol} from the flash loan contract at {flashloan_contract_address}. The loan must be repaid with {fee_percentage}% fee in the same transaction.",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Borrow {amount} {token_symbol} using flash loan from contract {flashloan_contract_address}, use the funds, and repay with fee.",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Take a flash loan of {amount} {token_symbol} tokens from {flashloan_contract_address}. Remember to approve the contract to pull back the loan amount plus {fee_percentage}% fee.",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I need to execute a flash loan: borrow {amount} {token_symbol} from {flashloan_contract_address} and repay it with the {fee_percentage}% fee in one transaction",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "contract_payable_fallback": [
+    {
+      "template": "Send {amount} BNB to the contract at {contract_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Transfer {amount} BNB to contract {contract_address} without calling any function",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to send {amount} BNB directly to {contract_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send {amount} BNB to {contract_address} (no function call)",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "contract_delegate_call": [
+    {
+      "template": "Call the setValue function on the proxy contract at {proxy_address} with value {value}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Set the value to {value} using the proxy contract {proxy_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Execute setValue({value}) through the proxy at {proxy_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to call setValue on proxy {proxy_address} and pass {value}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_wrap_unwrap_cycle": [
+    {
+      "template": "Wrap {amount} BNB to WBNB, then immediately unwrap all WBNB back to BNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Deposit {amount} BNB to WBNB and withdraw it back to BNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Convert {amount} BNB to WBNB, then convert it back to native BNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_batch_mixed_transfers": [
+    {
+      "template": "Send {amount_bnb} BNB, {amount_usdt} USDT, and {amount_busd} BUSD to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Transfer multiple assets to {to_address}: {amount_bnb} BNB, {amount_usdt} USDT, {amount_busd} BUSD",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Pay {to_address} with {amount_bnb} BNB, {amount_usdt} USDT, and {amount_busd} BUSD",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_emergency_exit_workflow": [
+    {
+      "template": "Emergency exit: withdraw all staked LP tokens, remove liquidity, unwrap WBNB to BNB, and verify balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Panic sell: emergency withdraw from pool at {pool_address}, remove all liquidity, convert to BNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Exit DeFi position: emergency withdraw LP from {pool_address}, remove WBNB/USDT liquidity, unwrap WBNB, verify BNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_portfolio_rebalance": [
+    {
+      "template": "Rebalance portfolio: check USDT and CAKE balances, swap {amount_usdt} USDT and {amount_cake} CAKE to BUSD, then verify",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query current holdings, convert {amount_usdt} USDT and {amount_cake} CAKE to BUSD",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Portfolio management: query USDT at {usdt_address} and CAKE at {cake_address}, swap portions to BUSD, verify final balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 6.0
+      },
+      "average_score": 6.0,
+      "difficulty": "moderate"
+    }
+  ],
+  "composite_query_nft_transfer_verify": [
+    {
+      "template": "Check the owner of NFT token {token_id}, transfer it to {to_address}, then verify the new owner",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query who owns NFT #{token_id} from {nft_address}, transfer it to {to_address}, and confirm ownership changed",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_nft_bundle_sale": [
+    {
+      "template": "Bundle sale: transfer NFT #{token_id1} and NFT #{token_id2} to {buyer_address}, receive {payment} {token_symbol}, and verify transfers",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Sell NFT bundle: transfer two NFTs to {buyer_address} for {payment} {token_symbol} payment",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Complete NFT bundle sale: send NFT #{token_id1} and #{token_id2} from {nft_address} to buyer, get {payment} USDT, verify ownership",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    }
+  ],
+  "composite_optimized_swap_with_query": [
+    {
+      "template": "Query pair reserves, calculate optimal swap amount for {amount} {token_in_symbol}, execute the swap, then verify output",
+      "scores": {
+        "anthropic/claude-opus-4.6": 6.0
+      },
+      "average_score": 6.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Optimize swap: check reserves, calculate expected output, swap {amount} {token_in_symbol} to {token_out_symbol}, and confirm",
+      "scores": {
+        "anthropic/claude-opus-4.6": 5.0
+      },
+      "average_score": 5.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Advanced swap workflow: query {pair_address} reserves, estimate output for {amount} {token_in_symbol}, approve and swap to {token_out_symbol}, verify balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_wrap_swap_wbnb": [
+    {
+      "template": "Wrap {amount} BNB to WBNB, then swap the WBNB for {token_out_symbol} on PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Deposit {amount} BNB to WBNB, approve and swap for {token_out_symbol}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Convert {amount} BNB to WBNB and swap it for {token_out_symbol} using PancakeSwap Router",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_swap_approve_stake": [
+    {
+      "template": "Swap {amount_bnb} BNB for CAKE, approve the staking contract, then stake all received CAKE",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Exchange {amount_bnb} BNB for CAKE on PancakeSwap, then stake all CAKE in the pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Use {amount_bnb} BNB to buy CAKE, approve staking contract at {staking_contract}, and stake the CAKE",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_multi_approve_multi_swap": [
+    {
+      "template": "Swap {amount} USDT for CAKE, then swap all CAKE for BUSD on PancakeSwap, and verify the final BUSD balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Multi-hop swap: USDT → CAKE → BUSD through PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Approve {amount} USDT, swap to CAKE, approve CAKE, swap to BUSD, then query BUSD balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_batch_query_2_balances": [
+    {
+      "template": "Check your USDT balance and BUSD balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query the balance of USDT at {usdt_address} and BUSD at {busd_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Get both your USDT and BUSD token balances",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_query_balance_wrap_verify": [
+    {
+      "template": "Check your BNB balance, wrap {amount} BNB to WBNB, then verify your WBNB balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query BNB balance, deposit {amount} BNB to WBNB contract, and confirm WBNB received",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_approve_swap_tokens": [
+    {
+      "template": "Approve PancakeSwap to spend {amount_in} {token_in_symbol}, then swap {amount_in} {token_in_symbol} for {token_out_symbol}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "First approve the router, then swap {amount_in} {token_in_symbol} to {token_out_symbol} on PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_multi_token_swap": [
+    {
+      "template": "Swap {amount_bnb} BNB for USDT, then swap all USDT for BUSD on PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Exchange {amount_bnb} BNB to USDT, then convert all USDT to BUSD",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Convert {amount_bnb} BNB to USDT first, approve router, then swap USDT for BUSD",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_nft_transfer_with_payment": [
+    {
+      "template": "Transfer NFT token {token_id} to {buyer_address} and receive {payment} {token_symbol} as payment, then verify the transfer",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Sell NFT #{token_id} from {nft_address} to {buyer_address} for {payment} {token_symbol}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send NFT #{token_id} to {buyer_address}, collect {payment} {token_symbol} payment, and confirm ownership changed",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    }
+  ],
+  "composite_query_bnb_transfer_verify": [
+    {
+      "template": "Check your BNB balance, transfer {{amount}} BNB to {{to_address}}, then verify your remaining balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query your BNB balance, send {{amount}} BNB to {{to_address}}, and confirm the transfer succeeded",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "First check how much BNB you have, then send {{amount}} BNB to {{to_address}}, and verify the transaction",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Query your current BNB balance, transfer {{amount}} BNB to {{to_address}}, then check your balance again to verify",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_complete_swap_stake_workflow": [
+    {
+      "template": "Check your USDT balance, swap {amount_usdt} USDT for CAKE on PancakeSwap, then stake all received CAKE in the staking pool and verify the staked amount",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Complete DeFi workflow: query USDT balance, swap {amount_usdt} USDT to CAKE, stake all CAKE, and confirm the stake",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Execute full DeFi workflow: verify USDT, swap {amount_usdt} USDT for CAKE, approve staking, stake CAKE, confirm stake",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_query_allowance_approve_verify": [
+    {
+      "template": "Check the allowance for {{spender_address}}, approve {{amount}} {{token_symbol}}, then verify the allowance increased",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query current allowance, approve {{spender_address}} to spend {{amount}} {{token_symbol}}, and confirm the approval",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "First check how much {{token_symbol}} {{spender_address}} can spend, then approve {{amount}} {{token_symbol}}, and verify the approval succeeded",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Query the allowance for {{spender_address}} on {{token_symbol}}, approve {{amount}} {{token_symbol}}, then verify the new allowance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_full_liquidity_cycle": [
+    {
+      "template": "Add liquidity with {amount_bnb} BNB and {amount_token} {token_symbol}, stake LP, harvest rewards, then unstake and remove liquidity",
+      "scores": {
+        "anthropic/claude-opus-4.6": 6.0
+      },
+      "average_score": 6.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Complete liquidity cycle: provide liquidity, stake, harvest, unstake, and withdraw",
+      "scores": {
+        "anthropic/claude-opus-4.6": 6.0
+      },
+      "average_score": 6.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Full DeFi workflow: add {amount_bnb} BNB + {amount_token} {token_symbol} liquidity, stake LP at {reward_pool_address}, harvest CAKE rewards, unstake LP, remove liquidity",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_approve_swap_to_bnb": [
+    {
+      "template": "Approve PancakeSwap to spend {amount_in} {token_symbol}, then swap {amount_in} {token_symbol} for BNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "First approve the router, then swap {amount_in} {token_symbol} tokens to BNB on PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_approve_transferfrom": [
+    {
+      "template": "Approve {spender_address} to spend {amount} {token_symbol}, then transfer {amount} {token_symbol} from your account to {to_address} using transferFrom",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "First approve the spender, then execute transferFrom to move {amount} {token_symbol} tokens",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    }
+  ],
+  "composite_query_staked_stake_verify": [
+    {
+      "template": "Check your staked amount, stake {amount} CAKE tokens, then verify the new staked amount",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query your staked balance in the pool, stake {amount} tokens, and confirm the stake increased",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    }
+  ],
+  "composite_add_liquidity_stake_lp": [
+    {
+      "template": "Add liquidity with {amount_a} {token_a_symbol} and {amount_b} {token_b_symbol}, then stake the LP tokens received",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Provide liquidity to {token_a_symbol}/{token_b_symbol} pool, then stake all LP tokens in the farming pool at {staking_contract}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Add {amount_a} {token_a_symbol} and {amount_b} {token_b_symbol} to PancakeSwap, approve and stake the LP tokens",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_query_rewards_harvest_verify": [
+    {
+      "template": "Check your pending rewards in the pool, harvest them, then verify the reward tokens in your wallet",
+      "scores": {
+        "anthropic/claude-opus-4.6": 5.0
+      },
+      "average_score": 5.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Query pending rewards at {pool_address}, harvest all rewards, and confirm tokens received",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    }
+  ],
+  "composite_unstake_harvest_query": [
+    {
+      "template": "Unstake {unstake_amount} LP tokens, harvest rewards, then check your reward token balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Withdraw {unstake_amount} LP tokens from the pool, harvest all rewards, and verify rewards received",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Remove {unstake_amount} LP tokens from staking at {pool_address}, harvest pending CAKE rewards, then query your CAKE balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_split_and_transfer": [
+    {
+      "template": "Split your {token_symbol} balance: send 50% to {address1} and 50% to {address2}, then verify you transferred all",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Distribute your {token_symbol} equally between {address1} and {address2}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Transfer half of your {token_symbol} to {address1}, the other half to {address2}, and verify balance is zero",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    }
+  ],
+  "composite_approve_add_liquidity": [
+    {
+      "template": "Approve {token_a_symbol} and {token_b_symbol} for PancakeSwap, then add {amount_token_a} {token_a_symbol} and {amount_token_b} {token_b_symbol} as liquidity",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "First approve tokens, then add liquidity to the {token_a_symbol}/{token_b_symbol} pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    }
+  ],
+  "composite_batch_transfer_3_tokens": [
+    {
+      "template": "Transfer {amount1} {token_symbol} to {address1}, {amount2} to {address2}, and {amount3} to {address3}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Distribute {token_symbol} tokens: send {amount1} to {address1}, {amount2} to {address2}, {amount3} to {address3}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send {token_symbol} to three addresses: {amount1} to {address1}, {amount2} to {address2}, {amount3} to {address3}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_batch_transfer_2_tokens": [
+    {
+      "template": "Transfer {amount1} {token_symbol} to {address1} and {amount2} {token_symbol} to {address2}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send {amount1} {token_symbol} tokens to {address1}, then send {amount2} {token_symbol} tokens to {address2}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Make two {token_symbol} transfers: {amount1} to {address1} and {amount2} to {address2}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_harvest_reinvest_workflow": [
+    {
+      "template": "Harvest rewards from the pool, swap {swap_amount} CAKE for USDT, then re-stake the remaining CAKE",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Collect farming rewards, sell {swap_amount} CAKE for USDT on PancakeSwap, and re-stake the rest",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Claim CAKE rewards from {reward_pool_address}, swap {swap_amount} CAKE to USDT, then stake remaining CAKE at {staking_contract}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_batch_query_portfolio": [
+    {
+      "template": "Check your portfolio: BNB balance, USDT balance, and CAKE balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 6.0
+      },
+      "average_score": 6.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Query all your balances: BNB, USDT at {usdt_address}, and CAKE at {cake_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Get my portfolio summary: how much BNB, USDT, and CAKE do I have?",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_triple_pool_liquidity": [
+    {
+      "template": "Swap {amount} BNB to USDT, then swap half to BUSD, and add liquidity to USDT/BUSD pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Convert BNB to USDT and BUSD, then provide liquidity to the stablecoin pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 5.0
+      },
+      "average_score": 5.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Multi-step liquidity: BNB → USDT → BUSD, then add USDT/BUSD liquidity on PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_query_erc20_transfer_verify": [
+    {
+      "template": "Check your {token_symbol} balance, transfer {amount} {token_symbol} to {to_address}, then verify your new balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query your {token_symbol} balance, send {amount} tokens to {to_address}, and confirm the balance decreased correctly",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "First check how much {token_symbol} you have, then transfer {amount} {token_symbol} to {to_address}, and finally verify the transfer succeeded",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query balance of {token_symbol}, transfer {amount} to {to_address}, and check your remaining balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_query_swap_verify_output": [
+    {
+      "template": "Calculate expected output for {amount_bnb} BNB swap to {token_out_symbol}, execute the swap, then verify you got the expected amount",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Query expected swap output using getAmountsOut, swap {amount_bnb} BNB for {token_out_symbol}, and confirm the output matches",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "First check how much {token_out_symbol} you would get for {amount_bnb} BNB, then swap, and verify the received amount",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    }
+  ],
+  "composite_query_reserves_before_after_swap": [
+    {
+      "template": "Check the reserves of {token_symbol}/BNB pair, swap {amount} BNB for {token_symbol}, then verify reserves changed",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query pair reserves at {pair_address}, execute swap, and confirm the reserves updated correctly",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    }
+  ],
+  "composite_remove_liquidity_unwrap": [
+    {
+      "template": "Remove liquidity from BNB/{token_symbol} pool, unwrap the WBNB to BNB, then check your BNB balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Withdraw liquidity to get WBNB and {token_symbol}, then convert WBNB back to BNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Remove {liquidity_percentage}% of your LP tokens from BNB/{token_symbol} pool, unwrap received WBNB, and verify BNB balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_approve_stake_tokens": [
+    {
+      "template": "Approve the staking contract to spend {amount} CAKE, then stake {amount} CAKE tokens",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "First approve staking contract, then stake {amount} tokens in the pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_liquidity_provision_with_stake": [
+    {
+      "template": "Approve {token_a_symbol} and {token_b_symbol}, add liquidity to get LP tokens, then stake the LP tokens and verify",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Provide liquidity to {token_a_symbol}/{token_b_symbol} pool with {amount_token_a} and {amount_token_b}, then stake all LP tokens",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Add {amount_token_a} {token_a_symbol} + {amount_token_b} {token_b_symbol} as liquidity, approve and stake all received LP tokens",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_swap_unwrap_bnb": [
+    {
+      "template": "Swap {amount_in} {token_in_symbol} for WBNB on PancakeSwap, then unwrap all WBNB to BNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Exchange {amount_in} {token_in_symbol} tokens for WBNB, then withdraw WBNB to get BNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Convert {amount_in} {token_in_symbol} to WBNB using PancakeSwap, then unwrap to native BNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_wrap_add_liquidity": [
+    {
+      "template": "Wrap {amount_bnb} BNB to WBNB, then add liquidity to WBNB/{token_b_symbol} pool with {amount_wbnb} WBNB and {amount_token_b} {token_b_symbol}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Deposit BNB to WBNB, approve it, and provide liquidity to the WBNB/{token_b_symbol} pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Convert {amount_bnb} BNB to WBNB, approve PancakeSwap Router, then add {amount_wbnb} WBNB + {amount_token_b} {token_b_symbol} as liquidity",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_batch_transfer_3_bnb": [
+    {
+      "template": "Transfer {amount1} BNB to {address1}, {amount2} BNB to {address2}, and {amount3} BNB to {address3}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send BNB to three addresses: {amount1} to {address1}, {amount2} to {address2}, {amount3} to {address3}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Distribute BNB: send {amount1} BNB to {address1}, {amount2} BNB to {address2}, and {amount3} BNB to {address3}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_approve_remove_liquidity": [
+    {
+      "template": "Approve PancakeSwap Router to spend your LP tokens, then remove liquidity from {token_a_symbol}/{token_b_symbol} pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "First approve LP tokens, then remove {liquidity_percentage}% of your liquidity from the {token_a_symbol}/{token_b_symbol} pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_batch_transfer_2_bnb": [
+    {
+      "template": "Transfer {amount1} BNB to {address1} and {amount2} BNB to {address2}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send {amount1} BNB to {address1}, then send {amount2} BNB to {address2}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Make two BNB transfers: {amount1} BNB to {address1} and {amount2} BNB to {address2}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "composite_batch_approve_2_tokens": [
+    {
+      "template": "Approve {token_a_symbol} and {token_b_symbol} for PancakeSwap, then add liquidity to the pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Approve both tokens for the router, then add {amount_a} {token_a_symbol} and {amount_b} {token_b_symbol} as liquidity",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Batch approve {token_a_symbol} and {token_b_symbol}, then provide {amount_a} and {amount_b} as liquidity",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    }
+  ],
+  "composite_approve_swap_query_result": [
+    {
+      "template": "Approve {amount_in} {token_in_symbol}, swap it for {token_out_symbol}, then check how much {token_out_symbol} you received",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Approve PancakeSwap, swap {amount_in} {token_in_symbol} to {token_out_symbol}, and verify the output balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "First approve {amount_in} {token_in_symbol} for PancakeSwap Router, then swap for {token_out_symbol}, and finally query your {token_out_symbol} balance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc721_safe_transfer": [
+    {
+      "template": "Safely transfer NFT token ID {token_id} from {nft_name} (contract {nft_address}) to address {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Use safeTransferFrom to transfer {nft_name} NFT #{token_id} (contract: {nft_address}) to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Please safely transfer the NFT with token ID {token_id} from {nft_name} NFT collection at {nft_address} to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to safely send my {nft_name} NFT (token ID: {token_id}, contract: {nft_address}) to address {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc721_set_approval_for_all": [
+    {
+      "template": "Grant operator approval to address {operator_address} for all my NFTs in the {nft_name} collection (contract: {nft_address})",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Set approval for all NFTs in {nft_name} (contract {nft_address}) to operator {operator_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Please approve {operator_address} as an operator for all my {nft_name} NFTs at contract {nft_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to authorize address {operator_address} to manage all my NFTs from the {nft_name} collection at {nft_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc721_approve": [
+    {
+      "template": "Approve address {spender_address} to transfer NFT token ID {token_id} from {nft_name} collection (contract: {nft_address})",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Grant approval to {spender_address} for my {nft_name} NFT #{token_id} at contract {nft_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Please approve {spender_address} to manage my NFT with token ID {token_id} from the {nft_name} collection at {nft_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to authorize address {spender_address} to transfer my {nft_name} NFT (token ID: {token_id}, contract: {nft_address})",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc1155_transfer_single": [
+    {
+      "template": "Transfer {amount} units of token ID {token_id} from {nft_address} to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send {amount} of ERC1155 token #{token_id} at {nft_address} to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Transfer {amount} units of multi-token {token_id} from contract {nft_address} to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to transfer {amount} of token {token_id} (contract: {nft_address}) to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc1155_safe_transfer_with_data": [
+    {
+      "template": "Transfer {amount} units of token ID {token_id} from {nft_address} to {to_address} with data message: {data_message}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send {amount} of ERC1155 token #{token_id} at {nft_address} to {to_address} with attached data",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Transfer {amount} units of multi-token {token_id} from contract {nft_address} to {to_address} including custom data",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to transfer {amount} of token {token_id} (contract: {nft_address}) to {to_address} with additional data",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc721_transfer": [
+    {
+      "template": "Transfer NFT token {token_id} from contract {nft_address} to address {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send NFT #{token_id} at {nft_address} to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Transfer ERC721 token {token_id} from {nft_address} to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to transfer NFT {token_id} (contract: {nft_address}) to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "query_token_total_supply": [
+    {
+      "template": "Query the total supply of token at {{token_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Get the total supply for the ERC20 token at {{token_address}} with {{token_decimals}} decimals",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Check how many tokens exist in total for {{token_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Retrieve the totalSupply of token {{token_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "query_token_metadata": [
+    {
+      "template": "Query the metadata for token at {{token_address}} including name, symbol, decimals, and total supply",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Get comprehensive information about the ERC20 token at {{token_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Retrieve token details (name, symbol, decimals, totalSupply) for {{token_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 5.0
+      },
+      "average_score": 5.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Check the basic information of token {{token_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc20_transfer_fixed": [
+    {
+      "template": "Transfer {amount} {token_symbol} tokens to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 1.0
+      },
+      "average_score": 1.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send {amount} {token_symbol} to address {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 1.0
+      },
+      "average_score": 1.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Please transfer {amount} {token_symbol} tokens to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to send {amount} {token_symbol} to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc20_transfer_percentage": [
+    {
+      "template": "Transfer {percentage}% of my {token_symbol} tokens to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send {percentage} percent of {token_symbol} to address {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Please transfer {percentage}% of my {token_symbol} balance to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to send {percentage}% of the {token_symbol} I have to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc20_approve": [
+    {
+      "template": "Approve {spender_name} to spend {amount} {token_symbol} tokens from your account.",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Grant approval to {spender_name} for {amount} {token_symbol} tokens.",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Set allowance of {amount} {token_symbol} tokens for {spender_name}.",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Authorize {spender_name} to use up to {amount} {token_symbol} tokens on your behalf.",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc20_increase_allowance": [
+    {
+      "template": "Increase the allowance for {spender_name} by {added_value} {token_symbol} tokens.",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Add {added_value} {token_symbol} tokens to the allowance for {spender_name}.",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Top up the allowance for {spender_name} with an additional {added_value} {token_symbol}.",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Incrementally increase {spender_name}'s spending allowance by {added_value} {token_symbol}.",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc20_burn": [
+    {
+      "template": "Burn {amount} {token_symbol} tokens",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Destroy {amount} {token_symbol} tokens permanently by sending to zero address",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Remove {amount} {token_symbol} from circulation using the test token",
+      "scores": {
+        "anthropic/claude-opus-4.6": 5.0
+      },
+      "average_score": 5.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Burn {amount} {token_symbol} from the ERC1363 test token",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc20_approve_and_call_1363": [
+    {
+      "template": "Approve {spender_address} to spend {amount} {token_symbol} tokens with callback",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Use ERC1363 approveAndCall to authorize {spender_address} to use {amount} {token_symbol}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Grant approval to {spender_address} for {amount} {token_symbol} using the ERC1363 token's callback feature",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Approve {amount} {token_symbol} for {spender_address} with automatic onApprovalReceived callback",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc20_decrease_allowance": [
+    {
+      "template": "Decrease the allowance for {spender_name} by {subtracted_value} {token_symbol} tokens.",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Reduce {spender_name}'s allowance by {subtracted_value} {token_symbol}.",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Subtract {subtracted_value} {token_symbol} from the allowance for {spender_name}.",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Lower the spending limit for {spender_name} by {subtracted_value} {token_symbol}.",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc20_permit": [
+    {
+      "template": "Approve {value} tokens for spender {spender_address} at token address {token_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Set allowance of {value} tokens for spender {spender_address} using token contract {token_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Call approve function to authorize {spender_address} to spend {value} tokens from token {token_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc20_transfer_max_amount": [
+    {
+      "template": "Transfer all my {token_symbol} tokens at {token_address} to address {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send my entire {token_symbol} balance (token: {token_address}) to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Transfer the maximum amount of {token_symbol} from {token_address} to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to transfer all available {token_symbol} tokens at {token_address} to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc20_transferfrom_basic": [
+    {
+      "template": "Transfer {amount} {token_symbol} from {from_address} to {to_address} using transferFrom",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Execute authorized transfer of {amount} {token_symbol} tokens from {from_address} to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Move {amount} {token_symbol} from owner {from_address} to recipient {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Use transferFrom to send {amount} {token_symbol} from {from_address} to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc20_transfer_with_callback_1363": [
+    {
+      "template": "Transfer {amount} {token_symbol} tokens to contract {to_address} using ERC1363 transferAndCall",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send {amount} {token_symbol} to {to_address} with automatic callback using the ERC1363 token",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Use ERC1363 transferAndCall to send {amount} {token_symbol} tokens to contract {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Transfer {amount} {token_symbol} tokens to {to_address} with callback notification",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "erc20_revoke_approval": [
+    {
+      "template": "Revoke approval for spender address {spender_address} to spend my {token_symbol} tokens at {token_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Cancel the authorization for address {spender_address} to use my {token_symbol} token (contract: {token_address})",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Remove the spending permission for {spender_address} on {token_symbol} token at {token_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to revoke address {spender_address}'s access to my {token_symbol} (token address: {token_address})",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "query_nft_token_uri": [
+    {
+      "template": "Query the token URI for NFT token ID {{token_id}} from contract {{nft_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Get the metadata URI for token {{token_id}} in the NFT collection at {{nft_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Retrieve the tokenURI for NFT #{{token_id}} from {{nft_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Find the metadata location for token {{token_id}} in the ERC721 contract {{nft_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "query_nft_owner": [
+    {
+      "template": "Query the owner of NFT token ID {{token_id}} from contract {{nft_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Check who owns token {{token_id}} in the NFT collection at {{nft_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Get the owner address for NFT #{{token_id}} from {{nft_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Find out who currently owns token {{token_id}} in the ERC721 contract {{nft_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "query_nft_balance": [
+    {
+      "template": "Query the NFT balance for address {{query_address}} from contract {{nft_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Check how many NFTs address {{query_address}} owns in the collection at {{nft_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Get the NFT count for address {{query_address}} from the ERC721 contract {{nft_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Find out how many tokens {{query_address}} holds in the NFT collection {{nft_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "query_bnb_balance": [
+    {
+      "template": "Query the BNB balance of address {query_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Check the BNB balance for {query_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Get the BNB balance of {query_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "What is the BNB balance of address {query_address}?",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "query_erc20_balance": [
+    {
+      "template": "Query the {token_symbol} balance of address {query_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Check the {token_symbol} token balance for {query_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Get the balance of {token_symbol} (token address: {token_address}) for {query_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "What is the {token_symbol} balance of address {query_address}?",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "query_erc20_allowance": [
+    {
+      "template": "Query the {token_symbol} allowance that {owner_address} has approved for {spender_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Check how much {token_symbol} {spender_address} is allowed to spend from {owner_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Get the allowance of {token_symbol} (token address: {token_address}) from owner {owner_address} to spender {spender_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "What is the {token_symbol} allowance from {owner_address} to {spender_address}?",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "query_nft_approval_status": [
+    {
+      "template": "Check who is approved to transfer NFT token #{token_id} from the {nft_symbol} collection at {nft_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query the approval status for NFT #{token_id} in the {nft_symbol} collection",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Find out which address is authorized to manage NFT token {token_id} from contract {nft_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Get the approved operator for token ID {token_id} in the NFT collection {nft_symbol}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "wbnb_withdraw": [
+    {
+      "template": "Withdraw {amount} WBNB to get BNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Unwrap {amount} WBNB back to BNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Convert {amount} WBNB to native BNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to withdraw {amount} WBNB to receive BNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "bnb_transfer_basic": [
+    {
+      "template": "Transfer {amount} BNB to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 1.0
+      },
+      "average_score": 1.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send {amount} BNB to address {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 1.0
+      },
+      "average_score": 1.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Please send {amount} BNB to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to transfer {amount} BNB to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "bnb_transfer_percentage": [
+    {
+      "template": "Transfer {percentage}% of my BNB balance to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send {percentage} percent of BNB to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Please transfer {percentage}% of the BNB I have to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to send {percentage}% of my BNB to address {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "wbnb_deposit": [
+    {
+      "template": "Deposit {amount} BNB to WBNB contract",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Wrap {amount} BNB into WBNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Convert {amount} BNB to WBNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to deposit {amount} BNB to get WBNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "bnb_transfer_max_amount": [
+    {
+      "template": "Transfer all my BNB to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send my entire BNB balance to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Transfer the maximum amount of BNB to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send all available BNB to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to transfer all my BNB to {to_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "bnb_transfer_to_contract": [
+    {
+      "template": "Transfer {amount} BNB to contract address {contract_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send {amount} BNB to the smart contract at {contract_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Please transfer {amount} BNB to contract {contract_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to send {amount} BNB to the contract address {contract_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "bnb_transfer_with_message": [
+    {
+      "template": "Transfer {amount} BNB to {to_address} with message '{message}'",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send {amount} BNB to {to_address} and include the message: {message}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Please send {amount} BNB to address {to_address} with the note '{message}'",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to transfer {amount} BNB to {to_address} and attach message: {message}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "contract_call_with_value": [
+    {
+      "template": "Call the donate() function on contract {contract_address} and send {amount} BNB",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Donate {amount} BNB to the contract at {contract_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Send {amount} BNB to the donate function of contract {contract_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to call donate() on contract {contract_address} with {amount} BNB attached",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "contract_call_with_params": [
+    {
+      "template": "Call the setMessage function on contract {contract_address} with the message '{message}'",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Set the message to '{message}' on the contract at {contract_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Update the message in contract {contract_address} to '{message}'",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I want to call setMessage on contract {contract_address} and pass the string '{message}'",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "contract_call_simple": [
+    {
+      "template": "Call the increment() function on the contract at {contract_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Increment the counter in the smart contract {contract_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Execute the increment function on contract {contract_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "I need you to call increment() on the contract at address {contract_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "query_gas_price": [
+    {
+      "template": "Get the current gas price of the network",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query the current EIP-1559 fee parameters",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Check what is the current maxFeePerGas and maxPriorityFeePerGas",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Retrieve the current gas pricing information",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "query_current_block_number": [
+    {
+      "template": "Get the current block number of the blockchain",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query the latest block height",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Check what is the current block number",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Retrieve the most recent block number from the chain",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "query_transaction_count_nonce": [
+    {
+      "template": "Get the transaction count (nonce) for address {{query_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query the nonce for address {{query_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Check how many transactions address {{query_address}} has sent",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Retrieve the current nonce for address {{query_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 1.0
+      },
+      "average_score": 1.0,
+      "difficulty": "precise"
+    }
+  ],
+  "swap_tokens_for_exact_tokens": [
+    {
+      "template": "Swap tokens to get exactly {amount_out} {token_out_symbol} on PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Exchange tokens for precisely {amount_out} {token_out_symbol} using PancakeSwap Router",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Buy exactly {amount_out} {token_out_symbol} with {token_in_symbol} through PancakeSwap V2",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Trade {token_in_symbol} for exactly {amount_out} {token_out_symbol} on PancakeSwap with {slippage}% max slippage",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "swap_exact_tokens_for_tokens": [
+    {
+      "template": "Swap {amount_in} {token_in_symbol} for {token_out_symbol} on PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Exchange {amount_in} {token_in_symbol} to {token_out_symbol} using PancakeSwap Router",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Convert {amount_in} {token_in_symbol} tokens to {token_out_symbol} through PancakeSwap V2",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Trade {amount_in} {token_in_symbol} for {token_out_symbol} on PancakeSwap with {slippage}% slippage tolerance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "swap_exact_bnb_for_tokens": [
+    {
+      "template": "Swap {amount_in} BNB for {token_symbol} tokens on PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Exchange {amount_in} BNB to {token_symbol} using PancakeSwap Router",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Convert {amount_in} BNB to {token_symbol} tokens through PancakeSwap V2",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Trade {amount_in} BNB for {token_symbol} on PancakeSwap with {slippage}% slippage tolerance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "swap_exact_tokens_for_bnb": [
+    {
+      "template": "Swap {amount_in} {token_symbol} for BNB on PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Exchange {amount_in} {token_symbol} to BNB using PancakeSwap Router",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Convert {amount_in} {token_symbol} tokens to BNB through PancakeSwap V2",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Trade {amount_in} {token_symbol} for BNB on PancakeSwap with {slippage}% slippage tolerance",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "swap_multihop_routing": [
+    {
+      "template": "Swap {amount_in} {token_start_symbol} for {token_end_symbol} on PancakeSwap using a multi-hop routing path through WBNB and USDT",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Execute a multi-hop token swap: exchange {amount_in} {token_start_symbol} to {token_end_symbol} via intermediate tokens for better liquidity",
+      "scores": {
+        "anthropic/claude-opus-4.6": 5.0
+      },
+      "average_score": 5.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Perform a complex token swap on PancakeSwap: {amount_in} {token_start_symbol} → WBNB → USDT → {token_end_symbol}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Use PancakeSwap Router to swap {amount_in} {token_start_symbol} for {token_end_symbol} with optimal multi-hop routing",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "harvest_rewards": [
+    {
+      "template": "Harvest farming rewards from the pool at {pool_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Claim accumulated rewards from the farming pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Collect farming rewards without unstaking",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    },
+    {
+      "template": "Harvest CAKE rewards from the staking pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "emergency_withdraw": [
+    {
+      "template": "Emergency withdraw all staked LP tokens from the pool at {pool_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Quickly retrieve all LP tokens from staking pool {pool_address} (forfeit rewards)",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Execute emergency withdrawal from farming pool {pool_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Unstake all USDT/BUSD LP tokens immediately, forfeiting CAKE rewards",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "unstake_lp_tokens": [
+    {
+      "template": "Unstake {unstake_amount} USDT/BUSD LP tokens from the SimpleRewardPool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Withdraw {unstake_amount} LP tokens from the simple_reward_pool contract",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Remove {unstake_amount} LP tokens from the reward pool staking",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Unstake {unstake_amount} USDT/BUSD LP tokens from the reward distribution pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "stake_single_token": [
+    {
+      "template": "Stake {stake_amount} CAKE tokens in the SimpleStaking pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Deposit {stake_amount} CAKE to the simple_staking contract to earn rewards",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Put {stake_amount} CAKE tokens into the single-token staking pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Stake {stake_amount} CAKE in the single token farming pool to start earning",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "stake_lp_tokens": [
+    {
+      "template": "Stake {stake_amount} USDT/BUSD LP tokens in the SimpleLPStaking pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Deposit {stake_amount} LP tokens to the LP staking pool to earn farming rewards",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Stake {stake_amount} USDT/BUSD LP tokens using the simple_lp_staking contract",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Put {stake_amount} liquidity provider tokens into the LP staking pool to start earning",
+      "scores": {
+        "anthropic/claude-opus-4.6": 5.0
+      },
+      "average_score": 5.0,
+      "difficulty": "moderate"
+    }
+  ],
+  "query_staked_amount": [
+    {
+      "template": "Query the staked amount for address {{query_address}} in the SimpleStaking contract",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Check how much {{query_address}} has staked in the staking pool at {{pool_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Get the staked balance for user {{query_address}} from the SimpleStaking contract",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Retrieve staking information for address {{query_address}} including amount and deposit time",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "query_pending_rewards": [
+    {
+      "template": "Query the pending rewards for address {{query_address}} in the SimpleRewardPool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Check how much rewards {{query_address}} has earned in the reward pool at {{pool_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Get the accumulated rewards for user {{query_address}} from the SimpleRewardPool contract",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Retrieve pending CAKE rewards for address {{query_address}} that can be harvested",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "add_liquidity_bnb_token": [
+    {
+      "template": "Add {amount_bnb} BNB and {amount_token} {token_symbol} as liquidity to PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Provide liquidity to PancakeSwap: {amount_bnb} BNB + {amount_token} {token_symbol}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Deposit {amount_bnb} BNB and {amount_token} {token_symbol} into PancakeSwap liquidity pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Add liquidity pair on PancakeSwap: {amount_bnb} BNB paired with {amount_token} {token_symbol}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "remove_liquidity_bnb_token": [
+    {
+      "template": "Remove {liquidity_percentage}% of my liquidity from the BNB/{token_symbol} pool on PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Withdraw liquidity from PancakeSwap: {liquidity_percentage}% from BNB-{token_symbol} pair",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Remove {liquidity_percentage}% LP tokens from the BNB/{token_symbol} liquidity pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "remove_liquidity_tokens": [
+    {
+      "template": "Remove liquidity from the {token_a_symbol}/{token_b_symbol} pool on PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Withdraw {liquidity_percentage}% of my liquidity from the {token_a_symbol}-{token_b_symbol} pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Remove {liquidity_amount} LP tokens from the {token_a_symbol}/{token_b_symbol} pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "add_liquidity_tokens": [
+    {
+      "template": "Add {amount_token_a} {token_a_symbol} and {amount_token_b} {token_b_symbol} as liquidity to PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Provide liquidity to PancakeSwap: {amount_token_a} {token_a_symbol} + {amount_token_b} {token_b_symbol}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Deposit {amount_token_a} {token_a_symbol} and {amount_token_b} {token_b_symbol} into PancakeSwap liquidity pool",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Add liquidity pair on PancakeSwap: {amount_token_a} {token_a_symbol} paired with {amount_token_b} {token_b_symbol}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    }
+  ],
+  "query_pair_reserves": [
+    {
+      "template": "Get the reserves of the {token0_symbol}/{token1_symbol} pair at {pair_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query the liquidity reserves for pair {pair_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Check the reserve0 and reserve1 for the PancakeSwap pair {pair_address}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "What are the current reserves of the {token0_symbol}/{token1_symbol} liquidity pair?",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ],
+  "query_swap_output_amount": [
+    {
+      "template": "Calculate how much {token_out_symbol} you will receive for {amount_in} {token_in_symbol} on PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Query the output amount for swapping {amount_in} {token_in_symbol} to {token_out_symbol}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Get the estimated output for a {token_in_symbol} to {token_out_symbol} swap with input amount {amount_in}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "What is the expected output for swapping {amount_in} {token_in_symbol} for {token_out_symbol}?",
+      "scores": {
+        "anthropic/claude-opus-4.6": 4.0
+      },
+      "average_score": 4.0,
+      "difficulty": "moderate"
+    }
+  ],
+  "query_swap_input_amount": [
+    {
+      "template": "Query how much {{token_in_symbol}} is needed to get exactly {{amount_out}} {{token_out_symbol}} on PancakeSwap",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Calculate the input amount required to receive {{amount_out}} {{token_out_symbol}} when swapping from {{token_in_symbol}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Check how much {{token_in_symbol}} tokens are needed to get {{amount_out}} {{token_out_symbol}} via PancakeSwap Router at {{router_address}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 2.0
+      },
+      "average_score": 2.0,
+      "difficulty": "precise"
+    },
+    {
+      "template": "Get the required input amount for swapping to receive exactly {{amount_out}} {{token_out_symbol}}, starting from {{token_in_symbol}}",
+      "scores": {
+        "anthropic/claude-opus-4.6": 3.0
+      },
+      "average_score": 3.0,
+      "difficulty": "precise"
+    }
+  ]
+}

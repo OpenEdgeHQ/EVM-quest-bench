@@ -1,0 +1,149 @@
+{
+  "id": "composite_approve_swap_tokens",
+  "category": "composite_problems",
+  "difficulty": "medium",
+  "title": "Approve and Swap Tokens on PancakeSwap",
+  "description": [
+    "A composite problem that tests the LLM's ability to:",
+    "1. Execute an ERC20 approval for PancakeSwap Router",
+    "2. Execute a token-to-token swap using the approval",
+    "This demonstrates the DeFi approval pattern for token swaps."
+  ],
+  "natural_language_templates": [
+    "Approve PancakeSwap to spend {amount_in} {token_in_symbol}, then swap {amount_in} {token_in_symbol} for {token_out_symbol}",
+    "First approve the router, then swap {amount_in} {token_in_symbol} to {token_out_symbol} on PancakeSwap"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "composite_structure": {
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "erc20_approve",
+        "description": "Approve PancakeSwap Router to spend tokens"
+      },
+      {
+        "step": 2,
+        "atomic_id": "swap_exact_tokens_for_tokens",
+        "description": "Swap tokens on PancakeSwap"
+      }
+    ]
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+        "comment": "PancakeSwap V2 Router on BSC"
+      }
+    },
+    "token_in_address": {
+      "type": "address",
+      "role": "token_in",
+      "description": "Input token to swap (USDT)",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955",
+        "comment": "USDT on BSC"
+      }
+    },
+    "token_in_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Input token symbol",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_in_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Input token decimal places",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "token_out_address": {
+      "type": "address",
+      "role": "token_out",
+      "description": "Output token to receive (BUSD)",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+        "comment": "BUSD on BSC"
+      }
+    },
+    "token_out_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Output token symbol",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": "BUSD"
+      }
+    },
+    "token_out_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Output token decimal places",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "amount_in": {
+      "type": "number",
+      "unit": "tokens",
+      "role": "swap_amount",
+      "description": "Amount of input tokens to swap",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "random",
+        "min": 5.0,
+        "max": 20.0,
+        "decimals": 2
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance for the swap (e.g., 5 for 5%)",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": 5
+      }
+    }
+  },
+  "interaction_config": {
+    "optimal_steps": 2,
+    "max_rounds_multiplier": 2,
+    "comment": "max_rounds = optimal_steps * max_rounds_multiplier = 2 * 2 = 4"
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "description": "Directly reuse the atomic validator of the key operation - NO code duplication!",
+    "key_operation_step": 2,
+    "key_operation_id": "swap_exact_tokens_for_tokens",
+    "key_operation_alias": "token_swap",
+    "validator_class": "SwapExactTokensForTokensValidator",
+    "note": "The validator will load SwapExactTokensForTokensValidator and call its validate() method directly"
+  },
+  "tags": ["approve-execute", "defi", "swap"]
+}
+

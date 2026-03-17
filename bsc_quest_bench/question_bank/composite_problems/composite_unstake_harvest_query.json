@@ -1,0 +1,179 @@
+{
+  "id": "composite_unstake_harvest_query",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "complete_workflow",
+  "difficulty": "medium",
+  "title": "Unstake LP Tokens, Harvest Rewards, and Query Balance",
+  "natural_language_templates": [
+    "Unstake {unstake_amount} LP tokens, harvest rewards, then check your reward token balance",
+    "Withdraw {unstake_amount} LP tokens from the pool, harvest all rewards, and verify rewards received",
+    "Remove {unstake_amount} LP tokens from staking at {pool_address}, harvest pending CAKE rewards, then query your CAKE balance"
+  ],
+  "description": [
+    "Complete staking exit workflow: unstake LP tokens, harvest rewards, and verify.",
+    "",
+    "This is a 3-step process:",
+    "1. Unstake LP tokens from the reward pool using withdraw(uint256)",
+    "2. Harvest pending CAKE rewards using harvest()",
+    "3. Query CAKE balance to verify rewards received",
+    "",
+    "Technical details:",
+    "- SimpleRewardPool contract: deployed dynamically",
+    "- LP Token: USDT/BUSD LP (0x7EFaEf62fDdCCa950418312c6C91Aef321375A00)",
+    "- Reward Token: CAKE (0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82)",
+    "- withdraw(uint256 _amount): unstake LP tokens",
+    "- harvest(): claim pending rewards",
+    "",
+    "Note: The key operation is harvest_rewards since it's the main goal."
+  ],
+  "composite_structure": {
+    "pattern": "unstake-harvest-query",
+    "optimal_steps": 3,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "unstake_lp_tokens",
+        "role": "preparation",
+        "description": "Unstake LP tokens from the reward pool"
+      },
+      {
+        "step": 2,
+        "atomic_id": "harvest_rewards",
+        "role": "key_operation",
+        "description": "Harvest pending CAKE rewards"
+      },
+      {
+        "step": 3,
+        "atomic_id": "query_erc20_balance",
+        "role": "verification",
+        "description": "Query CAKE balance to verify rewards"
+      }
+    ]
+  },
+  "parameters": {
+    "pool_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "SimpleRewardPool contract address",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_reward_pool_address"
+      }
+    },
+    "lp_token_address": {
+      "type": "address",
+      "role": "token",
+      "description": "LP token address (USDT/BUSD LP)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x7EFaEf62fDdCCa950418312c6C91Aef321375A00"
+      }
+    },
+    "lp_token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "LP token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT-BUSD LP"
+      }
+    },
+    "reward_token_address": {
+      "type": "address",
+      "role": "reward",
+      "description": "Reward token address (CAKE)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
+      }
+    },
+    "reward_token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Reward token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "CAKE"
+      }
+    },
+    "unstake_amount": {
+      "type": "number",
+      "unit": "LP tokens",
+      "role": "unstake_amount",
+      "description": "Amount of LP tokens to unstake",
+      "generation": {
+        "method": "random",
+        "min": 0.1,
+        "max": 0.3,
+        "decimals": 2
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 6,
+    "optimal_steps": 3,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "harvest_rewards",
+    "key_operation_step": 2
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "staked_balance",
+        "description": "Agent must have staked LP tokens in the pool",
+        "min_balance": "0.5 LP"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Harvest transaction executed successfully"
+      },
+      {
+        "type": "reward_received",
+        "weight": 0.4,
+        "description": "CAKE rewards received"
+      },
+      {
+        "type": "lp_balance_increase",
+        "weight": 0.3,
+        "description": "LP token balance increased (unstaked)"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "defi",
+      "staking",
+      "farming",
+      "harvest",
+      "unstake",
+      "complete-workflow",
+      "medium"
+    ],
+    "estimated_gas": 300000,
+    "requires_approval": false,
+    "difficulty_notes": [
+      "Three-step staking exit workflow",
+      "Must have pre-staked LP tokens",
+      "Rewards accumulate over time"
+    ]
+  }
+}
+

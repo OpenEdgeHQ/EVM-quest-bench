@@ -1,0 +1,262 @@
+{
+  "id": "composite_full_liquidity_cycle",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "complex_defi",
+  "difficulty": "hard",
+  "title": "Full Liquidity Cycle: Add, Stake, Harvest, Unstake, Remove",
+  "natural_language_templates": [
+    "Add liquidity with {amount_bnb} BNB and {amount_token} {token_symbol}, stake LP, harvest rewards, then unstake and remove liquidity",
+    "Complete liquidity cycle: provide liquidity, stake, harvest, unstake, and withdraw",
+    "Full DeFi workflow: add {amount_bnb} BNB + {amount_token} {token_symbol} liquidity, stake LP at {reward_pool_address}, harvest CAKE rewards, unstake LP, remove liquidity"
+  ],
+  "description": [
+    "Complete liquidity provider lifecycle from start to finish.",
+    "",
+    "This is a 5-step process:",
+    "1. Add liquidity with BNB and USDT to get WBNB/USDT LP tokens",
+    "2. Stake LP tokens in SimpleRewardPool",
+    "3. Harvest pending CAKE rewards",
+    "4. Unstake LP tokens from the pool",
+    "5. Remove liquidity to get back BNB and USDT",
+    "",
+    "Technical details:",
+    "- PancakeSwap Router: 0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "- WBNB: 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "- USDT: 0x55d398326f99059fF775485246999027B3197955",
+    "- WBNB/USDT LP: 0x16b9a82891338f9bA80E2D6970FddA79D1eb0daE",
+    "- SimpleRewardPool: deployed dynamically",
+    "- Reward Token: CAKE (0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82)",
+    "",
+    "Functions:",
+    "- addLiquidityETH: Add BNB + token liquidity",
+    "- stake(uint256): Stake LP tokens",
+    "- harvest(): Claim pending rewards",
+    "- withdraw(uint256): Unstake LP tokens",
+    "- removeLiquidityETH: Remove liquidity to BNB + token",
+    "",
+    "Note: This uses WBNB/USDT LP which is compatible with SimpleRewardPool for testing."
+  ],
+  "composite_structure": {
+    "pattern": "full-liquidity-cycle",
+    "optimal_steps": 5,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "add_liquidity_bnb_token",
+        "role": "preparation",
+        "description": "Add BNB + USDT liquidity to get LP tokens"
+      },
+      {
+        "step": 2,
+        "atomic_id": "stake_lp_tokens",
+        "role": "staking",
+        "description": "Stake LP tokens in reward pool"
+      },
+      {
+        "step": 3,
+        "atomic_id": "harvest_rewards",
+        "role": "reward",
+        "description": "Harvest pending CAKE rewards"
+      },
+      {
+        "step": 4,
+        "atomic_id": "unstake_lp_tokens",
+        "role": "unstaking",
+        "description": "Unstake LP tokens from pool"
+      },
+      {
+        "step": 5,
+        "atomic_id": "remove_liquidity_bnb_token",
+        "role": "key_operation",
+        "description": "Remove liquidity to get back BNB and USDT"
+      }
+    ],
+    "interaction_config": {
+      "max_rounds": 10,
+      "optimal_steps": 5,
+      "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+      "forced_submit_at_max": true
+    }
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "wbnb_address": {
+      "type": "address",
+      "role": "token",
+      "description": "WBNB token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "token_address": {
+      "type": "address",
+      "role": "token",
+      "description": "USDT token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "lp_token_address": {
+      "type": "address",
+      "role": "token",
+      "description": "WBNB/USDT LP token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x16b9a82891338f9bA80E2D6970FddA79D1eb0daE"
+      }
+    },
+    "reward_pool_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "SimpleRewardPool contract address",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_reward_pool_address"
+      }
+    },
+    "reward_token_address": {
+      "type": "address",
+      "role": "token",
+      "description": "CAKE reward token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
+      }
+    },
+    "amount_bnb": {
+      "type": "number",
+      "unit": "BNB",
+      "role": "liquidity_amount",
+      "description": "Amount of BNB to add as liquidity",
+      "generation": {
+        "method": "random",
+        "min": 0.01,
+        "max": 0.05,
+        "decimals": 3
+      }
+    },
+    "amount_token": {
+      "type": "number",
+      "unit": "USDT",
+      "role": "liquidity_amount",
+      "description": "Amount of USDT to add as liquidity",
+      "generation": {
+        "method": "random",
+        "min": 5.0,
+        "max": 20.0,
+        "decimals": 1
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance percentage",
+      "generation": {
+        "method": "fixed",
+        "value": 50.0
+      }
+    },
+    "liquidity_percentage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "liquidity_amount",
+      "description": "Percentage of LP tokens to remove",
+      "generation": {
+        "method": "fixed",
+        "value": 100.0
+      }
+    }
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "remove_liquidity_bnb_token",
+    "key_operation_step": 5
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "bnb_balance",
+        "description": "Agent must have sufficient BNB",
+        "min_balance": "1.0 BNB"
+      },
+      {
+        "type": "token_balance",
+        "description": "Agent must have sufficient USDT",
+        "min_balance": "100 USDT"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.2,
+        "description": "Remove liquidity transaction executed successfully"
+      },
+      {
+        "type": "bnb_balance_increase",
+        "weight": 0.3,
+        "description": "BNB balance increased after removing liquidity"
+      },
+      {
+        "type": "token_balance_increase",
+        "weight": 0.3,
+        "description": "USDT balance increased after removing liquidity"
+      },
+      {
+        "type": "rewards_received",
+        "weight": 0.2,
+        "description": "CAKE rewards were harvested"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "defi",
+      "liquidity",
+      "staking",
+      "farming",
+      "harvest",
+      "complete-cycle",
+      "hard"
+    ],
+    "estimated_gas": 1000000,
+    "requires_approval": true,
+    "difficulty_notes": [
+      "Five-step complete DeFi lifecycle",
+      "Requires handling multiple contract interactions",
+      "Must manage LP tokens through full cycle",
+      "Complex workflow with staking and rewards"
+    ]
+  }
+}
+

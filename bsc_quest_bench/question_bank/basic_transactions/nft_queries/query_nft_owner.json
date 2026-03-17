@@ -1,0 +1,86 @@
+{
+  "id": "query_nft_owner",
+  "category": "basic_transactions",
+  "subcategory": "nft_queries",
+  "difficulty": "easy",
+  "title": "Query NFT Owner",
+  "description": "Query the owner of a specific NFT token by calling the ERC721 ownerOf(tokenId) function. This is a fundamental operation for checking NFT ownership before transfers or other operations. The function returns the address of the current owner.",
+  "natural_language_templates": [
+    "Query the owner of NFT token ID {{token_id}} from contract {{nft_address}}",
+    "Check who owns token {{token_id}} in the NFT collection at {{nft_address}}",
+    "Get the owner address for NFT #{{token_id}} from {{nft_address}}",
+    "Find out who currently owns token {{token_id}} in the ERC721 contract {{nft_address}}"
+  ],
+  "blockchain": "bsc",
+  "parameters": {
+    "nft_address": {
+      "type": "address",
+      "description": "ERC721 NFT contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc721_token_address"
+      }
+    },
+    "token_id": {
+      "type": "integer",
+      "description": "NFT token ID to query ownership for",
+      "generation": {
+        "method": "random",
+        "min": 1,
+        "max": 10
+      }
+    },
+    "expected_owner": {
+      "type": "address",
+      "description": "Expected owner address (test account)",
+      "generation": {
+        "method": "from_env",
+        "env_key": "test_address"
+      }
+    }
+  },
+  "validation": {
+    "type": "query",
+    "rules": [
+      {
+        "field": "query_execution",
+        "condition": "success",
+        "error_message": "Failed to query NFT owner",
+        "weight": 40
+      },
+      {
+        "field": "return_format",
+        "condition": "has_required_fields",
+        "required_fields": ["owner"],
+        "error_message": "Missing required fields in query result",
+        "weight": 30
+      },
+      {
+        "field": "owner_correctness",
+        "condition": "matches_expected",
+        "error_message": "NFT owner address does not match expected value",
+        "weight": 30
+      }
+    ]
+  },
+  "metadata": {
+    "tags": ["erc721", "nft", "owner", "query", "ownerOf"],
+    "estimated_gas": 0,
+    "prerequisites": [],
+    "related_questions": ["query_nft_approval_status", "erc721_transfer"],
+    "learning_objectives": [
+      "Understand the ERC721 ownerOf() function",
+      "Learn to query NFT ownership information",
+      "Master address comparison and checksum addresses",
+      "Understand the importance of ownership verification in NFT operations"
+    ],
+    "operation_type": "query",
+    "notes": [
+      "ownerOf(tokenId) returns the address of the owner",
+      "Will revert if token doesn't exist",
+      "Always use checksum addresses for comparison",
+      "Essential function for verifying NFT ownership before transfers"
+    ]
+  }
+}
+

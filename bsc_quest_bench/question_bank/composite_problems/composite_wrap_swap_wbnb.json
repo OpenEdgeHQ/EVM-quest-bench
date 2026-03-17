@@ -1,0 +1,220 @@
+{
+  "id": "composite_wrap_swap_wbnb",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "wrap_swap",
+  "difficulty": "medium",
+  "title": "Wrap BNB and Swap WBNB for Token",
+  "natural_language_templates": [
+    "Wrap {amount} BNB to WBNB, then swap the WBNB for {token_out_symbol} on PancakeSwap",
+    "Deposit {amount} BNB to WBNB, approve and swap for {token_out_symbol}",
+    "Convert {amount} BNB to WBNB and swap it for {token_out_symbol} using PancakeSwap Router"
+  ],
+  "description": [
+    "Wrap native BNB into WBNB and swap the WBNB for another token.",
+    "",
+    "This is a 3-step process:",
+    "1. Deposit BNB to WBNB contract using deposit() function",
+    "2. Approve PancakeSwap Router to spend the WBNB",
+    "3. Swap WBNB for the target token using swapExactTokensForTokens",
+    "",
+    "Technical details:",
+    "- WBNB contract address: 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "- WBNB deposit() function: 0xd0e30db0 (payable)",
+    "- PancakeSwap Router: 0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "- swapExactTokensForTokens: 0x38ed1739"
+  ],
+  "composite_structure": {
+    "pattern": "wrap-approve-swap",
+    "optimal_steps": 3,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "wbnb_deposit",
+        "role": "wrap_bnb",
+        "description": "Wrap BNB to WBNB by calling deposit() on WBNB contract"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_approve",
+        "role": "approve_token",
+        "description": "Approve PancakeSwap Router to spend WBNB"
+      },
+      {
+        "step": 3,
+        "atomic_id": "swap_exact_tokens_for_tokens",
+        "role": "key_operation",
+        "description": "Swap WBNB for target token using swapExactTokensForTokens"
+      }
+    ]
+  },
+  "parameters": {
+    "amount": {
+      "type": "number",
+      "unit": "BNB",
+      "description": "Amount of BNB to wrap and swap",
+      "generation": {
+        "method": "random",
+        "min": 0.01,
+        "max": 0.05,
+        "decimals": 3
+      },
+      "role": "swap_amount"
+    },
+    "wbnb_address": {
+      "type": "address",
+      "role": "token_in",
+      "description": "WBNB contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "token_in_address": {
+      "type": "address",
+      "role": "token_in",
+      "description": "Input token address (WBNB)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "token_in_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Input token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "WBNB"
+      }
+    },
+    "token_in_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Input token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "token_out_address": {
+      "type": "address",
+      "role": "token_out",
+      "description": "Output token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955",
+        "comment": "USDT on BSC"
+      }
+    },
+    "token_out_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Output token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_out_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Output token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance percentage",
+      "generation": {
+        "method": "fixed",
+        "value": 5.0
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 6,
+    "optimal_steps": 3,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "swap_exact_tokens_for_tokens",
+    "key_operation_step": 3
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "bnb_balance",
+        "description": "Agent must have sufficient BNB for wrap and gas",
+        "min_balance": "0.2 BNB"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.2,
+        "description": "Swap transaction executed successfully"
+      },
+      {
+        "type": "contract_called",
+        "weight": 0.1,
+        "address": "{router_address}",
+        "description": "Correct PancakeSwap Router called"
+      },
+      {
+        "type": "function_selector",
+        "weight": 0.1,
+        "selector": "0x38ed1739",
+        "description": "Correct function swapExactTokensForTokens called"
+      },
+      {
+        "type": "token_balance_decrease",
+        "weight": 0.25,
+        "token": "{wbnb_address}",
+        "expected_decrease": "{amount}",
+        "description": "WBNB balance decreased by swap amount"
+      },
+      {
+        "type": "token_balance_increase",
+        "weight": 0.35,
+        "token": "{token_out_address}",
+        "min_increase": 0,
+        "description": "Output token balance increased"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "wrap-swap",
+      "defi",
+      "wbnb",
+      "pancakeswap",
+      "swap",
+      "three-step"
+    ],
+    "estimated_gas": 280000,
+    "requires_approval": true,
+    "difficulty_notes": [
+      "Three-step process: wrap, approve, swap",
+      "Must correctly sequence all three operations",
+      "Must understand WBNB wrapping mechanism",
+      "Requires proper swap path construction"
+    ]
+  }
+}
+

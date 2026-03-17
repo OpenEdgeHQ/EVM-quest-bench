@@ -1,0 +1,250 @@
+{
+  "id": "composite_harvest_reinvest_workflow",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "complex_defi",
+  "difficulty": "hard",
+  "title": "Harvest Rewards, Sell Partial, and Re-stake",
+  "natural_language_templates": [
+    "Harvest rewards from the pool, swap {swap_amount} CAKE for USDT, then re-stake the remaining CAKE",
+    "Collect farming rewards, sell {swap_amount} CAKE for USDT on PancakeSwap, and re-stake the rest",
+    "Claim CAKE rewards from {reward_pool_address}, swap {swap_amount} CAKE to USDT, then stake remaining CAKE at {staking_contract}"
+  ],
+  "description": [
+    "Complex DeFi workflow: harvest rewards, take profit, and compound remaining.",
+    "",
+    "This is a 5-step process:",
+    "1. Harvest pending CAKE rewards from SimpleRewardPool using harvest()",
+    "2. Approve CAKE tokens to PancakeSwap Router for swapping",
+    "3. Swap {swap_amount} CAKE for USDT using swapExactTokensForTokens",
+    "4. Approve remaining CAKE tokens to SimpleStaking contract",
+    "5. Re-stake remaining CAKE tokens using deposit(uint256)",
+    "",
+    "Technical details:",
+    "- SimpleRewardPool contract: deployed dynamically (harvest())",
+    "- SimpleStaking contract: deployed dynamically (deposit(uint256))",
+    "- PancakeSwap Router: 0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "- CAKE Token: 0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+    "- USDT Token: 0x55d398326f99059fF775485246999027B3197955",
+    "- WBNB (for path): 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "",
+    "IMPORTANT:",
+    "- harvest() returns CAKE rewards to the agent",
+    "- The swap path is: CAKE -> WBNB -> USDT",
+    "- After swap, approve remaining CAKE to staking contract, NOT router",
+    "- SimpleStaking uses deposit(uint256) function",
+    "",
+    "BSC does NOT support ENS. Use hex addresses directly."
+  ],
+  "composite_structure": {
+    "pattern": "harvest-swap-restake",
+    "optimal_steps": 5,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "harvest_rewards",
+        "role": "preparation",
+        "description": "Harvest pending CAKE rewards from SimpleRewardPool"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_approve",
+        "role": "approval",
+        "description": "Approve CAKE to PancakeSwap Router for swap"
+      },
+      {
+        "step": 3,
+        "atomic_id": "swap_exact_tokens_for_tokens",
+        "role": "profit_taking",
+        "description": "Swap portion of CAKE for USDT"
+      },
+      {
+        "step": 4,
+        "atomic_id": "erc20_approve",
+        "role": "approval",
+        "description": "Approve remaining CAKE to staking contract"
+      },
+      {
+        "step": 5,
+        "atomic_id": "stake_single_token",
+        "role": "key_operation",
+        "description": "Re-stake remaining CAKE tokens"
+      }
+    ],
+    "interaction_config": {
+      "max_rounds": 10,
+      "optimal_steps": 5,
+      "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+      "forced_submit_at_max": true
+    }
+  },
+  "parameters": {
+    "reward_pool_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "SimpleRewardPool contract address (for harvesting)",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_reward_pool_address"
+      }
+    },
+    "staking_contract": {
+      "type": "address",
+      "role": "contract",
+      "description": "SimpleStaking contract address (for re-staking)",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_staking_address"
+      }
+    },
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "cake_address": {
+      "type": "address",
+      "role": "token",
+      "description": "CAKE token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
+      }
+    },
+    "cake_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "CAKE token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "CAKE"
+      }
+    },
+    "usdt_address": {
+      "type": "address",
+      "role": "token",
+      "description": "USDT token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "usdt_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "USDT token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "wbnb_address": {
+      "type": "address",
+      "role": "intermediate",
+      "description": "WBNB address (for swap path)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "swap_amount": {
+      "type": "number",
+      "unit": "CAKE",
+      "role": "swap_amount",
+      "description": "Amount of CAKE to swap for USDT (take profit)",
+      "generation": {
+        "method": "random",
+        "min": 1.0,
+        "max": 5.0,
+        "decimals": 1
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance percentage",
+      "generation": {
+        "method": "fixed",
+        "value": 50.0
+      }
+    }
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "stake_single_token",
+    "key_operation_step": 5
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "staked_lp_balance",
+        "description": "Agent must have staked LP tokens in SimpleRewardPool",
+        "min_balance": "0.5 LP"
+      },
+      {
+        "type": "pending_rewards",
+        "description": "Pending CAKE rewards must be available",
+        "min_balance": "1.0 CAKE"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.2,
+        "description": "Re-stake transaction executed successfully"
+      },
+      {
+        "type": "usdt_balance_increase",
+        "weight": 0.3,
+        "description": "USDT balance increased (profit taken)"
+      },
+      {
+        "type": "staking_balance_increase",
+        "weight": 0.3,
+        "description": "Staking balance increased (re-staked)"
+      },
+      {
+        "type": "cake_balance_stable",
+        "weight": 0.2,
+        "description": "CAKE wallet balance reduced (swapped + staked)"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "defi",
+      "harvest",
+      "reinvest",
+      "compound",
+      "swap",
+      "staking",
+      "complex",
+      "hard"
+    ],
+    "estimated_gas": 600000,
+    "requires_approval": true,
+    "difficulty_notes": [
+      "Five-step complex DeFi workflow",
+      "Requires harvesting rewards first",
+      "Must approve to different contracts (Router vs Staking)",
+      "Partial profit taking with re-investment"
+    ]
+  }
+}
+

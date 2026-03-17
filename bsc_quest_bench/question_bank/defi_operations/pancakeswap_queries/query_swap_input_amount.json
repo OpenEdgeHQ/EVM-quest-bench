@@ -1,0 +1,122 @@
+{
+  "id": "query_swap_input_amount",
+  "category": "defi_operations",
+  "subcategory": "pancakeswap_queries",
+  "difficulty": "medium",
+  "title": "Query Swap Input Amount",
+  "description": "Calculate the required input amount to achieve a target output amount before executing a swap on PancakeSwap. This involves calling the Router's getAmountsIn function with the desired output amount and token path.",
+  "natural_language_templates": [
+    "Query how much {{token_in_symbol}} is needed to get exactly {{amount_out}} {{token_out_symbol}} on PancakeSwap",
+    "Calculate the input amount required to receive {{amount_out}} {{token_out_symbol}} when swapping from {{token_in_symbol}}",
+    "Check how much {{token_in_symbol}} tokens are needed to get {{amount_out}} {{token_out_symbol}} via PancakeSwap Router at {{router_address}}",
+    "Get the required input amount for swapping to receive exactly {{amount_out}} {{token_out_symbol}}, starting from {{token_in_symbol}}"
+  ],
+  "blockchain": "bsc",
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "description": "PancakeSwap V2 Router address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "amount_out": {
+      "type": "number",
+      "description": "Desired output amount (in token units, not wei)",
+      "generation": {
+        "method": "random",
+        "min": 10,
+        "max": 100,
+        "decimals": 2
+      }
+    },
+    "token_in_address": {
+      "type": "address",
+      "description": "Input token address (USDT)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_out_address": {
+      "type": "address",
+      "description": "Output token address (BUSD)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      }
+    },
+    "token_in_symbol": {
+      "type": "string",
+      "description": "Input token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_out_symbol": {
+      "type": "string",
+      "description": "Output token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "BUSD"
+      }
+    },
+    "token_in_decimals": {
+      "type": "integer",
+      "description": "Input token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "token_out_decimals": {
+      "type": "integer",
+      "description": "Output token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    }
+  },
+  "validation": {
+    "type": "query",
+    "rules": [
+      {
+        "field": "query_execution",
+        "condition": "success",
+        "error_message": "Failed to query swap input amount",
+        "weight": 30
+      },
+      {
+        "field": "return_format",
+        "condition": "has_required_fields",
+        "required_fields": ["amounts", "amount_in", "amount_out"],
+        "error_message": "Missing required fields in query result",
+        "weight": 30
+      },
+      {
+        "field": "input_amount_correctness",
+        "condition": "matches_expected",
+        "tolerance_percent": 1,
+        "error_message": "Input amount does not match expected value",
+        "weight": 40
+      }
+    ]
+  },
+  "metadata": {
+    "tags": ["defi", "pancakeswap", "swap", "query", "router", "getAmountsIn"],
+    "estimated_gas": 0,
+    "prerequisites": [],
+    "related_questions": ["query_swap_output_amount", "query_pair_reserves"],
+    "learning_objectives": [
+      "Understand how to use PancakeSwap Router's getAmountsIn function",
+      "Learn to calculate required input amount for a target output",
+      "Master reverse swap calculation with path arrays",
+      "Understand the importance of slippage consideration in DeFi swaps"
+    ],
+    "operation_type": "query"
+  }
+}
+

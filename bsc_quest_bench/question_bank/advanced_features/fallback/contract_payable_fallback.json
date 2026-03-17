@@ -1,0 +1,136 @@
+{
+  "id": "contract_payable_fallback",
+  "version": "2.0.0",
+  "category": "advanced_features",
+  "subcategory": "fallback",
+  "difficulty": "medium",
+  "title": "Payable Fallback - Send BNB to Contract",
+  "natural_language_templates": [
+    "Send {amount} BNB to the contract at {contract_address}",
+    "Transfer {amount} BNB to contract {contract_address} without calling any function",
+    "I want to send {amount} BNB directly to {contract_address}",
+    "Send {amount} BNB to {contract_address} (no function call)"
+  ],
+  "description": [
+    "Send BNB directly to a contract without calling any specific function.",
+    "This will trigger the contract's receive() or fallback() function.",
+    "",
+    "Technical context:",
+    "- When you send BNB to a contract without calldata, it triggers receive() if it exists",
+    "- If receive() doesn't exist, it triggers fallback() if it's payable",
+    "- The transaction 'to' field is the contract address",
+    "- The 'value' field contains the BNB amount to send",
+    "- The 'data' field should be empty (0x) or omitted",
+    "- Recommended gas limit: 100000",
+    "",
+    "Fallback vs Receive:",
+    "- receive() external payable: Called when BNB is sent with empty calldata",
+    "- fallback() external payable: Called when function doesn't exist or as fallback for receive()",
+    "- At least one must be payable for the contract to receive BNB",
+    "",
+    "Key considerations:",
+    "- Do NOT include any function call data",
+    "- Set transaction 'value' to the BNB amount (in wei)",
+    "- Leave 'data' field empty or set to '0x'",
+    "- The contract must have a payable receive() or fallback() function",
+    "",
+    "Success criteria:",
+    "- Transaction executes successfully",
+    "- Correct contract address is used",
+    "- Correct BNB amount is sent",
+    "- No function call data (empty data field)",
+    "- Contract balance increases by the sent amount"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "contract_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "Contract address with payable fallback/receive",
+      "generation": {
+        "method": "from_env",
+        "env_key": "fallback_receiver_address",
+        "comment": "Use dynamically deployed FallbackReceiver contract from environment"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "unit": "BNB",
+      "description": "Amount of BNB to send",
+      "generation": {
+        "method": "random",
+        "min": 0.001,
+        "max": 0.05,
+        "decimals": 4
+      },
+      "role": "transfer_amount"
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "contract_exists",
+        "description": "Contract must exist",
+        "address": "{contract_address}"
+      },
+      {
+        "type": "sufficient_balance",
+        "description": "Agent must have sufficient BNB balance",
+        "required": "{amount}"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "contract_address",
+        "weight": 0.2,
+        "description": "Transaction sent to correct contract",
+        "expected": "{contract_address}"
+      },
+      {
+        "type": "value_sent",
+        "weight": 0.2,
+        "description": "Correct BNB amount sent",
+        "expected": "{amount}"
+      },
+      {
+        "type": "empty_data",
+        "weight": 0.15,
+        "description": "No function call data (empty or 0x)",
+        "expected": "empty"
+      },
+      {
+        "type": "balance_increase",
+        "weight": 0.15,
+        "description": "Contract balance increased by sent amount",
+        "expected": "{amount}"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "fallback",
+      "receive",
+      "payable",
+      "direct_transfer",
+      "advanced"
+    ],
+    "estimated_gas": 100000,
+    "requires_contract": true,
+    "contract_requirements": {
+      "contract_type": "FallbackReceiver",
+      "required_functions": [
+        "receive() or fallback()"
+      ],
+      "note": "Tests understanding of fallback/receive functions"
+    },
+    "educational_value": "Understanding fallback/receive is important for contract interactions and DeFi protocols"
+  }
+}

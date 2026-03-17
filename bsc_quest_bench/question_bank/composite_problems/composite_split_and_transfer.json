@@ -1,0 +1,175 @@
+{
+  "id": "composite_split_and_transfer",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "distribution_workflows",
+  "difficulty": "medium",
+  "title": "Split and Transfer Token Balance",
+  "natural_language_templates": [
+    "Split your {token_symbol} balance: send 50% to {address1} and 50% to {address2}, then verify you transferred all",
+    "Distribute your {token_symbol} equally between {address1} and {address2}",
+    "Transfer half of your {token_symbol} to {address1}, the other half to {address2}, and verify balance is zero"
+  ],
+  "description": [
+    "Split your entire token balance between two recipients.",
+    "",
+    "This is a 3-step process:",
+    "1. Transfer 50% of your {token_symbol} balance to {address1}",
+    "2. Transfer the remaining 50% (all remaining) to {address2}",
+    "3. Query your balance to verify it is zero (or near zero)",
+    "",
+    "Token: {token_symbol} at {token_address}",
+    "Token decimals: 18",
+    "",
+    "IMPORTANT:",
+    "- First calculate your current balance",
+    "- Transfer exactly 50% to address1",
+    "- Transfer remaining balance (100% of what's left) to address2",
+    "- The key operation is the second transfer (step 2)",
+    "",
+    "ERC20 transfer function:",
+    "- transfer(address to, uint256 amount)",
+    "- Function selector: 0xa9059cbb",
+    "",
+    "Example: If you have 100 tokens:",
+    "- Step 1: Transfer 50 tokens to address1",
+    "- Step 2: Transfer 50 tokens to address2",
+    "- Result: Your balance should be 0"
+  ],
+  "composite_structure": {
+    "pattern": "split-transfer",
+    "optimal_steps": 3,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "erc20_transfer_percentage",
+        "role": "first_transfer",
+        "description": "Transfer 50% to address 1"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_transfer_percentage",
+        "role": "key_operation",
+        "description": "Transfer remaining 50% to address 2"
+      },
+      {
+        "step": 3,
+        "atomic_id": "query_erc20_balance",
+        "role": "verification",
+        "description": "Verify balance is zero"
+      }
+    ]
+  },
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "role": "token",
+      "description": "ERC20 token contract address (USDT)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "address1": {
+      "type": "address",
+      "role": "recipient_1",
+      "description": "First recipient address (receives 50%)",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "address2": {
+      "type": "address",
+      "role": "recipient_2",
+      "description": "Second recipient address (receives remaining 50%)",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "to_address": {
+      "type": "address",
+      "role": "key_recipient",
+      "description": "Key operation recipient (same as address2)",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "percentage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "transfer_percentage",
+      "description": "Percentage to transfer (100% of remaining for key operation)",
+      "generation": {
+        "method": "fixed",
+        "value": 100
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 6,
+    "optimal_steps": 3,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "erc20_transfer_percentage",
+    "key_operation_step": 2
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "description": "Agent must have token balance to split",
+        "min_balance": "100 tokens"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "balance_split",
+        "weight": 0.7,
+        "description": "Balance split equally between recipients"
+      },
+      {
+        "type": "final_balance_zero",
+        "weight": 0.3,
+        "description": "Agent balance should be zero after transfers"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "split",
+      "distribution",
+      "percentage",
+      "erc20",
+      "medium"
+    ],
+    "estimated_gas": 120000,
+    "requires_approval": false,
+    "difficulty_notes": [
+      "Requires balance calculation",
+      "Two sequential transfers",
+      "Verification step included"
+    ]
+  }
+}
+

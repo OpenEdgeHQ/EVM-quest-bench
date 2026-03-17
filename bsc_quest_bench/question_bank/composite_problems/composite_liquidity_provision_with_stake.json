@@ -1,0 +1,262 @@
+{
+  "id": "composite_liquidity_provision_with_stake",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "complex_defi_workflows",
+  "difficulty": "hard",
+  "title": "Liquidity Provision with LP Staking",
+  "natural_language_templates": [
+    "Approve {token_a_symbol} and {token_b_symbol}, add liquidity to get LP tokens, then stake the LP tokens and verify",
+    "Provide liquidity to {token_a_symbol}/{token_b_symbol} pool with {amount_token_a} and {amount_token_b}, then stake all LP tokens",
+    "Add {amount_token_a} {token_a_symbol} + {amount_token_b} {token_b_symbol} as liquidity, approve and stake all received LP tokens"
+  ],
+  "description": [
+    "Complete liquidity provision workflow: add liquidity and stake LP tokens.",
+    "",
+    "This is a 6-step workflow:",
+    "1. Approve {token_a_symbol} for PancakeSwap Router",
+    "2. Approve {token_b_symbol} for PancakeSwap Router",
+    "3. Add liquidity with {amount_token_a} {token_a_symbol} + {amount_token_b} {token_b_symbol}",
+    "4. Approve received LP tokens for staking pool",
+    "5. Stake all LP tokens",
+    "6. Query staked amount to verify",
+    "",
+    "Contract addresses:",
+    "- Token A ({token_a_symbol}): {token_a_address}",
+    "- Token B ({token_b_symbol}): {token_b_address}",
+    "- PancakeSwap Router V2: {router_address}",
+    "- LP Staking Pool: {pool_address}",
+    "",
+    "The KEY OPERATION is step 5 (stake_lp_tokens).",
+    "",
+    "Functions:",
+    "- ERC20 approve(address spender, uint256 amount): 0x095ea7b3",
+    "- Router addLiquidity(tokenA, tokenB, amountADesired, amountBDesired, amountAMin, amountBMin, to, deadline): 0xe8e33700",
+    "- Staking deposit(uint256 amount): 0xb6b55f25",
+    "",
+    "LP Token: Query from PancakeSwap Factory using getPair(tokenA, tokenB)",
+    "Factory: 0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+    "",
+    "IMPORTANT:",
+    "- Use high slippage (50%) for liquidity provision",
+    "- Stake ALL received LP tokens",
+    "- The LP token address can be obtained from Factory.getPair()"
+  ],
+  "composite_structure": {
+    "pattern": "approve-liquidity-stake-verify",
+    "optimal_steps": 6,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "erc20_approve",
+        "role": "authorization",
+        "description": "Approve Token A for Router"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_approve",
+        "role": "authorization",
+        "description": "Approve Token B for Router"
+      },
+      {
+        "step": 3,
+        "atomic_id": "add_liquidity_tokens",
+        "role": "liquidity_provision",
+        "description": "Add liquidity to get LP tokens"
+      },
+      {
+        "step": 4,
+        "atomic_id": "erc20_approve",
+        "role": "authorization",
+        "description": "Approve LP tokens for staking pool"
+      },
+      {
+        "step": 5,
+        "atomic_id": "stake_lp_tokens",
+        "role": "key_operation",
+        "description": "Stake all LP tokens"
+      },
+      {
+        "step": 6,
+        "atomic_id": "query_staked_amount",
+        "role": "verification",
+        "description": "Verify staked LP amount"
+      }
+    ],
+    "interaction_config": {
+      "optimal_steps": 6,
+      "max_rounds_multiplier": 2
+    }
+  },
+  "parameters": {
+    "token_a_address": {
+      "type": "address",
+      "role": "token_a",
+      "description": "Token A address (USDT)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_a_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token A symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_b_address": {
+      "type": "address",
+      "role": "token_b",
+      "description": "Token B address (BUSD)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      }
+    },
+    "token_b_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token B symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "BUSD"
+      }
+    },
+    "lp_token_address": {
+      "type": "address",
+      "role": "lp_token",
+      "description": "USDT/BUSD LP token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x7EFaEf62fDdCCa950418312c6C91Aef321375A00"
+      }
+    },
+    "router_address": {
+      "type": "address",
+      "role": "router",
+      "description": "PancakeSwap Router V2 address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "pool_address": {
+      "type": "address",
+      "role": "staking_pool",
+      "description": "LP staking pool address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_lp_staking_address"
+      }
+    },
+    "amount_token_a": {
+      "type": "number",
+      "unit": "ether",
+      "role": "liquidity_amount_a",
+      "description": "Amount of Token A to add",
+      "generation": {
+        "method": "random",
+        "min": "50",
+        "max": "100",
+        "decimals": 0
+      }
+    },
+    "amount_token_b": {
+      "type": "number",
+      "unit": "ether",
+      "role": "liquidity_amount_b",
+      "description": "Amount of Token B to add",
+      "generation": {
+        "method": "random",
+        "min": "50",
+        "max": "100",
+        "decimals": 0
+      }
+    },
+    "token_a_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token A decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "token_b_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token B decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "tolerance",
+      "description": "Slippage tolerance",
+      "generation": {
+        "method": "fixed",
+        "value": 50
+      }
+    }
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "stake_lp_tokens",
+    "key_operation_step": 5
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "description": "Agent must have Token A balance",
+        "min_balance": "100 tokens"
+      },
+      {
+        "type": "token_balance",
+        "description": "Agent must have Token B balance",
+        "min_balance": "100 tokens"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "lp_staked",
+        "weight": 0.5,
+        "description": "LP tokens staked in pool"
+      },
+      {
+        "type": "liquidity_added",
+        "weight": 0.3,
+        "description": "Liquidity added to pool"
+      },
+      {
+        "type": "tokens_approved",
+        "weight": 0.2,
+        "description": "All tokens properly approved"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "defi",
+      "liquidity",
+      "staking",
+      "complete-workflow",
+      "hard"
+    ],
+    "estimated_gas": 800000,
+    "requires_approval": true,
+    "difficulty_notes": [
+      "6-step complex workflow",
+      "Multiple token approvals",
+      "LP token management",
+      "Staking integration"
+    ]
+  }
+}
+

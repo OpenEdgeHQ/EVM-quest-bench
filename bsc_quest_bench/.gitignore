@@ -1,0 +1,48 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Node modules
+node_modules/
+bsc_gym_env/node_modules/
+bsc_gym_env/skill_runner/node_modules/
+
+# Temporary skill files generated at runtime
+bsc_gym_env/skill_runner/temp/
+
+# Development/testing directories
+doc/
+log/
+results/
+tools/
+test_transactions/
+
+# IDE
+.idea
+.vscode
+.cursor
+*.swp
+*.swo
+*~
+
+# Environment variables & secrets
+.env
+.env.local
+*.env
+*api_key*
+*secret*
+*credentials*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Personal files with sensitive info
+nohup.out
+# Exclude personal documentation with sensitive info
+doc/cwy.md
+doc/cwy2.md
+nohup.out

@@ -1,0 +1,115 @@
+{
+  "id": "bnb_transfer_to_contract",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "native_transfer",
+  "difficulty": "easy",
+  "title": "BNB Transfer to Contract",
+  "natural_language_templates": [
+    "Transfer {amount} BNB to contract address {contract_address}",
+    "Send {amount} BNB to the smart contract at {contract_address}",
+    "Please transfer {amount} BNB to contract {contract_address}",
+    "I want to send {amount} BNB to the contract address {contract_address}"
+  ],
+  "description": [
+    "Test the agent's ability to transfer BNB to a smart contract address.",
+    "",
+    "Technical context:",
+    "- The target is a WBNB (Wrapped BNB) contract that accepts BNB transfers",
+    "- WBNB has a receive() function that calls deposit() internally",
+    "- This requires more gas than a simple transfer due to storage writes and event emissions",
+    "- Recommended gasLimit: 60000 or higher (vs 21000 for EOA transfers)",
+    "",
+    "Key considerations:",
+    "- Verify the target address is a contract before sending",
+    "- Set appropriate gas limit for contract interaction",
+    "- Use standard EIP-1559 transaction format"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "contract_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "Target contract address (must be a contract, not EOA)",
+      "generation": {
+        "method": "from_list",
+        "addresses": [
+          "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+        ],
+        "comment": "BSC Mainnet WBNB - guaranteed to accept BNB transfers via receive() function"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "unit": "BNB",
+      "description": "Transfer amount in BNB",
+      "generation": {
+        "min": 0.001,
+        "max": 0.05,
+        "decimals": 3
+      },
+      "role": "transfer_amount"
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "balance",
+        "description": "Agent must have sufficient BNB balance",
+        "min_balance": "0.2 BNB"
+      },
+      {
+        "type": "contract_exists",
+        "description": "Target address must be a contract",
+        "address": "{contract_address}"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "value_transfer",
+        "weight": 0.3,
+        "description": "Correct amount of BNB transferred",
+        "expected": "{amount}",
+        "tolerance": "0"
+      },
+      {
+        "type": "recipient_check",
+        "weight": 0.2,
+        "description": "BNB sent to correct contract address",
+        "expected": "{contract_address}"
+      },
+      {
+        "type": "contract_balance_change",
+        "weight": 0.2,
+        "description": "Contract balance increased correctly",
+        "expected_change": "+{amount}",
+        "tolerance": "0"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "native_transfer",
+      "bnb",
+      "contract",
+      "payable",
+      "basic",
+      "wbnb"
+    ],
+    "estimated_gas": 60000,
+    "requires_contract": true,
+    "contract_requirements": {
+      "must_be_payable": true,
+      "must_accept_bnb": true,
+      "note": "WBNB deposit requires ~50-60k gas for storage write and event emission"
+    }
+  }
+}

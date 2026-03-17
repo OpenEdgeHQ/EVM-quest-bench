@@ -1,0 +1,192 @@
+{
+  "id": "composite_query_erc20_transfer_verify",
+  "version": "2.0.0",
+  "category": "composite_problems",
+  "subcategory": "basic_workflows",
+  "difficulty": "medium",
+  "title": "Query-Transfer-Verify ERC20 Workflow",
+  
+  "description": [
+    "A composite problem that tests the LLM's ability to:",
+    "1. Query initial ERC20 token balance",
+    "2. Execute a token transfer",
+    "3. Query final balance to verify the transfer",
+    "",
+    "Scoring is based DIRECTLY on the atomic validator of step 2 (erc20_transfer_fixed).",
+    "This eliminates code duplication and ensures consistency with atomic problem scoring."
+  ],
+  
+  "natural_language_templates": [
+    "Check your {token_symbol} balance, transfer {amount} {token_symbol} to {to_address}, then verify your new balance",
+    "Query your {token_symbol} balance, send {amount} tokens to {to_address}, and confirm the balance decreased correctly",
+    "First check how much {token_symbol} you have, then transfer {amount} {token_symbol} to {to_address}, and finally verify the transfer succeeded",
+    "Query balance of {token_symbol}, transfer {amount} to {to_address}, and check your remaining balance"
+  ],
+  
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  
+  "composite_structure": {
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "query_erc20_balance",
+        "alias": "pre_balance_query",
+        "description": "Query initial token balance",
+        "purpose": "information_gathering"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_transfer_fixed",
+        "alias": "token_transfer",
+        "description": "Transfer tokens to recipient",
+        "purpose": "main_operation"
+      },
+      {
+        "step": 3,
+        "atomic_id": "query_erc20_balance",
+        "alias": "post_balance_query",
+        "description": "Query final token balance to verify transfer",
+        "purpose": "verification"
+      }
+    ],
+    
+    "interaction_config": {
+      "optimal_steps": 2,
+      "max_rounds_multiplier": 2,
+      "allow_error_report": true,
+      "require_submit": true,
+      "comment": "max_rounds = optimal_steps * max_rounds_multiplier = 2 * 2 = 4"
+    },
+    
+    "scoring_strategy": {
+      "method": "atomic_validator_reuse",
+      "description": "Directly reuse the atomic validator of the key operation - NO code duplication!",
+      "key_operation_step": 2,
+      "key_operation_id": "erc20_transfer_fixed",
+      "key_operation_alias": "token_transfer",
+      "validator_class": "ERC20TransferValidator",
+      "note": "The validator will load ERC20TransferValidator and call its validate() method directly"
+    }
+  },
+  
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "ERC20 token contract address",
+      "shared_across_steps": [1, 2, 3],
+      "generation": {
+        "method": "from_list",
+        "addresses": ["0x55d398326f99059fF775485246999027B3197955"],
+        "comment": "BSC Mainnet USDT"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "shared_across_steps": [1, 2, 3],
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "shared_across_steps": [1, 2, 3],
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "query_address": {
+      "type": "address",
+      "role": "query_target",
+      "description": "Address to query balance for (will be set in test environment)",
+      "shared_across_steps": [1, 3],
+      "generation": {
+        "method": "random",
+        "comment": "Random address, balance will be set up in test environment"
+      }
+    },
+    "to_address": {
+      "type": "address",
+      "role": "receiver",
+      "description": "Recipient address (CRITICAL: must not be modified)",
+      "used_in_step": 2,
+      "compliance_check": "strict",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "role": "transfer_amount",
+      "description": "Transfer amount in tokens (CRITICAL: must not be modified)",
+      "used_in_step": 2,
+      "compliance_check": "strict",
+      "generation": {
+        "method": "random",
+        "min": 1.0,
+        "max": 50.0,
+        "decimals": 2
+      }
+    }
+  },
+  
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "description": "Agent must have token balance",
+        "setup": "Set balance based on test scenario"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "composite_validation",
+        "weight": 1.0,
+        "description": "Two-track validation: error report OR task completion",
+        "validation_modes": {
+          "error_report": {
+            "description": "If LLM reports error, verify it's valid",
+            "score_if_valid": 100,
+            "score_if_invalid": 0
+          },
+          "task_completion": {
+            "description": "Parameter compliance + atomic validator scoring",
+            "checks": [
+              {
+                "type": "parameter_compliance",
+                "critical": true,
+                "score_if_violated": 0
+              },
+              {
+                "type": "atomic_validator_scoring",
+                "reuse_validator": "erc20_transfer_fixed"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  
+  "metadata": {
+    "tags": ["composite", "query-write-verify", "basic", "token", "P0"],
+    "estimated_gas": 150000,
+    "requires_contract": true,
+    "composite_type": "sequential",
+    "atomic_count": 3,
+    "priority": "P0",
+    "difficulty_notes": [
+      "Tests basic multi-step workflow",
+      "Scoring reuses ERC20TransferValidator directly",
+      "Parameter compliance is enforced separately"
+    ]
+  }
+}
+

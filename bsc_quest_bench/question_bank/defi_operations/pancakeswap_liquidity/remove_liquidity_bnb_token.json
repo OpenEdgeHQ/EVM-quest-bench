@@ -1,0 +1,167 @@
+{
+  "id": "remove_liquidity_bnb_token",
+  "category": "defi_operations",
+  "subcategory": "pancakeswap_liquidity",
+  "difficulty": "medium",
+  "title": "PancakeSwap Remove Liquidity - BNB + Token",
+  "natural_language_templates": [
+    "Remove {liquidity_percentage}% of my liquidity from the BNB/{token_symbol} pool on PancakeSwap",
+    "Withdraw liquidity from PancakeSwap: {liquidity_percentage}% from BNB-{token_symbol} pair",
+    "Remove {liquidity_percentage}% LP tokens from the BNB/{token_symbol} liquidity pool"
+  ],
+  "description": "Remove liquidity from a BNB/Token pair on PancakeSwap V2.\n\nThis task requires:\n1. Query the LP token address for the WBNB/Token pair from PancakeSwap Factory using Factory.getPair(WBNB, token)\n2. Check your current LP token balance using LPToken.balanceOf(agent)\n3. Calculate the liquidity amount to remove based on percentage: liquidity = (balance × percentage) / 100\n4. Query the pair's reserves using Pair.getReserves() and total supply using Pair.totalSupply()\n5. Determine which reserve is WBNB and which is Token by comparing Pair.token0() with addresses\n6. Estimate output amounts: amountToken = (liquidity × reserveToken) / totalSupply, amountETH = (liquidity × reserveWBNB) / totalSupply\n7. Calculate minimum amounts with slippage tolerance: amountTokenMin = estimatedToken × (100 - slippage) / 100, amountETHMin = estimatedETH × (100 - slippage) / 100\n8. Ensure LP tokens are approved for the Router (check allowance and approve if needed)\n9. Call Router.removeLiquidityETH(token, liquidity, amountTokenMin, amountETHMin, to, deadline)\n\nKey PancakeSwap V2 Router function:\n- removeLiquidityETH(address token, uint liquidity, uint amountTokenMin, uint amountETHMin, address to, uint deadline) returns (uint amountToken, uint amountETH)\n\nIMPORTANT:\n- This is NOT a payable function - don't send BNB value with the transaction\n- You MUST approve the Router to spend your LP tokens before calling removeLiquidityETH\n- The LP token is the PancakeSwap pair contract for WBNB/Token\n- Use WBNB address (0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c) when querying the Factory\n- Set a reasonable deadline (e.g., current timestamp + 20 minutes)\n- The 'to' address should be the agent's address to receive both Token and BNB\n- After removing liquidity, you'll receive the Token and BNB directly\n\nContract Addresses (BSC Mainnet):\n- PancakeSwap Router V2: 0x10ED43C718714eb63d5aA57B78B54704E256024E\n- PancakeSwap Factory: 0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73\n- WBNB: 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c\n\nExample:\n- If you have 2.0 LP tokens and want to remove 50%:\n  - liquidity = 2.0 × 0.5 = 1.0 LP tokens\n- If pool has 1000 WBNB, 500,000 USDT, and 100 total LP supply:\n  - You'll get: (1.0 × 1000) / 100 = 10 BNB\n  - You'll get: (1.0 × 500,000) / 100 = 5,000 USDT\n- With 5% slippage:\n  - amountETHMin = 10 × 0.95 = 9.5 BNB\n  - amountTokenMin = 5,000 × 0.95 = 4,750 USDT",
+  "blockchain": {
+    "network": "bsc",
+    "contract_address": "{{router_address}}",
+    "function_name": "removeLiquidityETH",
+    "function_signature": "removeLiquidityETH(address,uint256,uint256,uint256,address,uint256)"
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "description": "PancakeSwap Router V2 contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      },
+      "role": "address"
+    },
+    "token_address": {
+      "type": "address",
+      "description": "Token address paired with BNB",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      },
+      "role": "receiver"
+    },
+    "token_symbol": {
+      "type": "string",
+      "description": "Token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      },
+      "role": "parameter"
+    },
+    "token_decimals": {
+      "type": "integer",
+      "description": "Token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      },
+      "role": "parameter"
+    },
+    "liquidity_percentage": {
+      "type": "number",
+      "description": "Percentage of LP tokens to remove (0-100)",
+      "generation": {
+        "method": "fixed",
+        "value": 50.0
+      },
+      "role": "parameter"
+    },
+    "slippage": {
+      "type": "number",
+      "description": "Maximum acceptable slippage percentage (e.g., 5.0 for 5%)",
+      "generation": {
+        "method": "fixed",
+        "value": 5.0
+      },
+      "role": "parameter"
+    }
+  },
+  "preconditions": {
+    "lp_token_balance": {
+      "description": "Test account must have LP tokens for BNB/Token pair",
+      "minimum_balance": "> 0"
+    },
+    "lp_token_approval": {
+      "description": "LP tokens should be approved for PancakeSwap Router",
+      "spender": "{{router_address}}"
+    }
+  },
+  "validation": {
+    "rules": [
+      {
+        "type": "transaction_success",
+        "description": "Transaction must be successfully executed and confirmed"
+      },
+      {
+        "type": "lp_token_approval",
+        "description": "LP token must have been approved for Router",
+        "spender": "{{router_address}}"
+      },
+      {
+        "type": "contract_interaction",
+        "description": "Must interact with PancakeSwap Router contract",
+        "contract": "{{router_address}}"
+      },
+      {
+        "type": "function_call",
+        "description": "Must call removeLiquidityETH function",
+        "function_selector": "0x02751cec"
+      },
+      {
+        "type": "lp_balance_change",
+        "description": "LP token balance must decrease by the removed liquidity amount",
+        "change": "decrease"
+      },
+      {
+        "type": "balance_change",
+        "description": "Token balance must increase (receive tokens from pool)",
+        "token": "{{token_address}}",
+        "change": "increase"
+      },
+      {
+        "type": "balance_change",
+        "description": "BNB balance must increase (receive BNB from pool, after gas)",
+        "asset": "BNB",
+        "change": "net_increase_expected"
+      }
+    ],
+    "scoring": {
+      "transaction_success": 20,
+      "lp_token_approval": 10,
+      "correct_router": 10,
+      "correct_function": 10,
+      "lp_token_decrease": 20,
+      "token_increase": 15,
+      "bnb_increase": 15
+    },
+    "pre_conditions": [],
+    "post_conditions": []
+  },
+  "metadata": {
+    "estimated_gas": "200000-250000",
+    "requires_native_token": false,
+    "complexity": "medium",
+    "tags": [
+      "defi",
+      "dex",
+      "liquidity",
+      "pancakeswap",
+      "amm",
+      "lp-token",
+      "remove"
+    ],
+    "learning_objectives": [
+      "Understanding liquidity removal from AMM DEXes",
+      "Managing LP token approvals",
+      "Calculating liquidity removal amounts and slippage",
+      "Handling BNB redemption from WBNB pairs",
+      "Multi-step DeFi operations"
+    ],
+    "common_pitfalls": [
+      "Not approving LP tokens before removing liquidity",
+      "Sending BNB value with transaction (this is NOT payable)",
+      "Using wrong token address (should use Token, not WBNB)",
+      "Setting amountTokenMin/amountETHMin too high",
+      "Not querying reserves to estimate output amounts",
+      "Forgetting to set deadline parameter"
+    ],
+    "requires_contract": false
+  },
+  "version": "2.0.0"
+}

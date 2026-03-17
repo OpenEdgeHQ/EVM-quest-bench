@@ -1,0 +1,200 @@
+{
+  "id": "erc20_increase_allowance",
+  "title": "ERC20 Increase Allowance",
+  "difficulty": "easy",
+  "category": "basic_transactions",
+  "subcategory": "erc20_operations",
+  "description": [
+    "Increase the allowance for a spender (Router or Contract) by a specified amount. This is safer than calling approve() directly as it prevents race conditions.",
+    "",
+    "The increaseAllowance function adds to the existing allowance instead of overwriting it.",
+    "",
+    "Key Points:",
+    "- Function: increaseAllowance(address spender, uint256 addedValue)",
+    "- Adds addedValue to the current allowance",
+    "- Safer than approve() for incremental changes",
+    "- Prevents front-running race conditions",
+    "- Common use case: topping up an existing allowance",
+    "",
+    "Technical Details:",
+    "- Function selector: 0x39509351",
+    "- New allowance = current allowance + addedValue",
+    "- No risk of underflow (only addition)",
+    "- Automatically prevents overflow (Solidity 0.8+)",
+    "",
+    "Transaction Requirements:",
+    "- Call increaseAllowance() on the ERC20 token contract",
+    "- Pass spender address and amount to add",
+    "- Wait for transaction confirmation",
+    "- No BNB value needed (not payable)",
+    "- Gas: ~50,000",
+    "",
+    "Example Workflow:",
+    "1. Query current allowance (optional)",
+    "2. Call increaseAllowance(spenderAddress, addedValueInWei)",
+    "3. Wait for confirmation",
+    "4. Verify allowance increased by addedValue"
+  ],
+  "tags": [
+    "erc20",
+    "allowance",
+    "increase",
+    "safe",
+    "approval"
+  ],
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "description": "ERC20 token contract address",
+      "example": "0x55d398326f99059fF775485246999027B3197955",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      },
+      "role": "receiver"
+    },
+    "token_symbol": {
+      "type": "string",
+      "description": "Token symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      },
+      "role": "parameter"
+    },
+    "token_decimals": {
+      "type": "integer",
+      "description": "Token decimals (all BSC tokens use 18)",
+      "example": 18,
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      },
+      "role": "parameter"
+    },
+    "spender_address": {
+      "type": "address",
+      "description": "Address to increase allowance for (spender)",
+      "example": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      },
+      "role": "address"
+    },
+    "spender_name": {
+      "type": "string",
+      "description": "Spender name for display",
+      "generation": {
+        "method": "fixed",
+        "value": "PancakeSwap Router V2"
+      },
+      "role": "parameter"
+    },
+    "added_value": {
+      "type": "number",
+      "description": "Amount to add to allowance (in token units)",
+      "example": 100.0,
+      "generation": {
+        "method": "random",
+        "min": 50.0,
+        "max": 200.0,
+        "decimals": 2
+      },
+      "role": "parameter"
+    },
+    "agent_address": {
+      "type": "address",
+      "description": "Agent address (token owner)",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "test_address"
+      },
+      "role": "address"
+    },
+    "chain_id": {
+      "type": "integer",
+      "description": "BSC Mainnet chain ID",
+      "example": 56,
+      "generation": {
+        "method": "fixed",
+        "value": 56
+      },
+      "role": "parameter"
+    }
+  },
+  "natural_language_templates": [
+    "Increase the allowance for {spender_name} by {added_value} {token_symbol} tokens.",
+    "Add {added_value} {token_symbol} tokens to the allowance for {spender_name}.",
+    "Top up the allowance for {spender_name} with an additional {added_value} {token_symbol}.",
+    "Incrementally increase {spender_name}'s spending allowance by {added_value} {token_symbol}."
+  ],
+  "contracts": {
+    "erc20_token": {
+      "address": "dynamic",
+      "name": "ERC20 Token (USDT)",
+      "abi_functions": [
+        "function increaseAllowance(address spender, uint256 addedValue) external returns (bool)",
+        "function allowance(address owner, address spender) external view returns (uint256)",
+        "function balanceOf(address account) external view returns (uint256)"
+      ]
+    },
+    "spender_contract": {
+      "address": "dynamic",
+      "name": "Spender Contract (Router/Pool)",
+      "description": "The contract whose allowance will be increased"
+    }
+  },
+  "expected_behavior": {
+    "transaction_count": 1,
+    "state_changes": [
+      "Allowance for spender increases by addedValue",
+      "Token balance remains unchanged",
+      "Approval event is emitted"
+    ],
+    "gas_estimate": 50000
+  },
+  "validation_criteria": {
+    "transaction_success": {
+      "weight": 30,
+      "description": "Transaction executed successfully without reverting"
+    },
+    "correct_function_called": {
+      "weight": 20,
+      "description": "Called increaseAllowance(address,uint256) with correct selector"
+    },
+    "allowance_increased_correctly": {
+      "weight": 40,
+      "description": "Allowance increased by the specified addedValue"
+    },
+    "no_token_transfer": {
+      "weight": 10,
+      "description": "Token balance unchanged (only allowance modified)"
+    }
+  },
+  "hints": [
+    "Use the ERC20 increaseAllowance function: increaseAllowance(address spender, uint256 addedValue)",
+    "Convert the addedValue to wei units (multiply by 10^18)",
+    "The new allowance will be: current allowance + addedValue",
+    "No BNB value should be sent with this transaction (not payable)",
+    "This is safer than approve() for incremental changes"
+  ],
+  "common_mistakes": [
+    "Using approve() instead of increaseAllowance()",
+    "Forgetting to convert addedValue to wei",
+    "Sending BNB value with the transaction (not needed)",
+    "Confusing spender address with token address",
+    "Not understanding this ADDS to existing allowance (not sets)"
+  ],
+  "references": [
+    "https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20-increaseAllowance-address-uint256-",
+    "https://eips.ethereum.org/EIPS/eip-20"
+  ],
+  "test_script_template": "erc20_increase_allowance.ts",
+  "version": "2.0.0",
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  }
+}

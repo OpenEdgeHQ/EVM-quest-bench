@@ -1,0 +1,139 @@
+{
+  "id": "stake_single_token",
+  "title": "Stake Single Token to Syrup Pool",
+  "difficulty": "medium",
+  "category": "defi_operations",
+  "subcategory": "staking_farming",
+  "description": "Stake CAKE tokens to a PancakeSwap Syrup Pool to earn rewards. This operation requires approving the Syrup Pool contract to spend your CAKE tokens, then calling the deposit function with the pool ID and amount. You need to query the pool information to get the staking token address and ensure you have sufficient balance and allowance.",
+  "tags": [
+    "staking",
+    "farming",
+    "pancakeswap",
+    "defi",
+    "yield"
+  ],
+  "parameters": {
+    "pool_address": {
+      "type": "address",
+      "description": "SimpleStaking contract address",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_staking_address"
+      },
+      "role": "address"
+    },
+    "stake_amount": {
+      "type": "number",
+      "description": "Amount of CAKE to stake (in CAKE units, e.g., 5.0)",
+      "example": 5.0,
+      "range": [
+        1.0,
+        10.0
+      ],
+      "generation": {
+        "method": "random",
+        "min": 2.0,
+        "max": 8.0,
+        "decimals": 1
+      },
+      "role": "transfer_amount"
+    },
+    "token_address": {
+      "type": "address",
+      "description": "CAKE token address (staking token)",
+      "example": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
+      },
+      "role": "receiver"
+    },
+    "user_address": {
+      "type": "address",
+      "description": "User's wallet address",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "test_address"
+      },
+      "role": "address"
+    },
+    "chain_id": {
+      "type": "integer",
+      "description": "Blockchain network ID (56 for BSC Mainnet)",
+      "example": 56,
+      "generation": {
+        "method": "fixed",
+        "value": 56
+      },
+      "role": "parameter"
+    }
+  },
+  "natural_language_templates": [
+    "Stake {stake_amount} CAKE tokens in the SimpleStaking pool",
+    "Deposit {stake_amount} CAKE to the simple_staking contract to earn rewards",
+    "Put {stake_amount} CAKE tokens into the single-token staking pool",
+    "Stake {stake_amount} CAKE in the single token farming pool to start earning"
+  ],
+  "contracts": {
+    "simple_staking": {
+      "address": "dynamic",
+      "name": "SimpleStaking",
+      "abi_functions": [
+        "function deposit(uint256 _amount) external",
+        "function withdraw(uint256 _amount) external",
+        "function getUserInfo(address _user) external view returns (uint256 amount, uint256 depositTime)",
+        "function userInfo(address _user) external view returns (uint256 amount, uint256 depositTime)"
+      ]
+    },
+    "cake_token": {
+      "address": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+      "name": "PancakeSwap Token (CAKE)",
+      "abi_functions": [
+        "function approve(address spender, uint256 amount) external returns (bool)",
+        "function allowance(address owner, address spender) external view returns (uint256)",
+        "function balanceOf(address account) external view returns (uint256)"
+      ]
+    }
+  },
+  "expected_behavior": {
+    "transaction_count": 1,
+    "state_changes": [
+      "CAKE token balance decreases by stake_amount",
+      "CAKE token allowance to pool decreases (or needs to be set)",
+      "User's staked amount in pool increases by stake_amount"
+    ],
+    "gas_estimate": 150000
+  },
+  "validation_criteria": {
+    "transaction_success": {
+      "weight": 25,
+      "description": "Transaction executed successfully without reverting"
+    },
+    "token_approval": {
+      "weight": 20,
+      "description": "CAKE token properly approved for Syrup Pool contract"
+    },
+    "token_balance_decrease": {
+      "weight": 25,
+      "description": "User's CAKE balance decreased by correct amount"
+    },
+    "staking_balance_increase": {
+      "weight": 30,
+      "description": "User's staked balance in pool increased correctly"
+    }
+  },
+  "hints": [
+    "You need to approve the Syrup Pool contract before staking",
+    "Use the deposit() function with the amount in wei (amount * 10^18)",
+    "Check the current allowance first to avoid unnecessary approve transactions",
+    "Query userInfo() to verify the staked amount after transaction"
+  ],
+  "test_script_template": "stake_single_token.ts",
+  "version": "2.0.0",
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  }
+}

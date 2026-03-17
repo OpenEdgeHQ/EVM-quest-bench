@@ -1,0 +1,121 @@
+{
+  "id": "wbnb_deposit",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "native_transfer",
+  "difficulty": "medium",
+  "title": "WBNB Deposit (Wrap BNB)",
+  "natural_language_templates": [
+    "Deposit {amount} BNB to WBNB contract",
+    "Wrap {amount} BNB into WBNB",
+    "Convert {amount} BNB to WBNB",
+    "I want to deposit {amount} BNB to get WBNB"
+  ],
+  "description": [
+    "Deposit native BNB into the WBNB (Wrapped BNB) contract to receive an equivalent amount of WBNB tokens.",
+    "",
+    "Technical context:",
+    "- WBNB is an ERC20 wrapper for native BNB, allowing BNB to be used in DeFi protocols",
+    "- The deposit() function is payable and mints WBNB tokens equal to msg.value",
+    "- Function signature: deposit() payable",
+    "- This requires calling a contract function, not just sending BNB",
+    "- Recommended gas limit: 60000",
+    "",
+    "Key considerations:",
+    "- Call the deposit() function on WBNB contract",
+    "- Encode function call: deposit() has no parameters",
+    "- Function selector: 0xd0e30db0",
+    "- Set transaction 'to' to the WBNB contract address",
+    "- Set transaction 'value' to the amount of BNB to deposit",
+    "- After deposit, WBNB token balance increases by the deposit amount",
+    "- Native BNB balance decreases by the deposit amount (plus gas)"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "wbnb_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "WBNB contract address",
+      "generation": {
+        "method": "from_list",
+        "addresses": [
+          "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+        ],
+        "comment": "BSC Mainnet WBNB contract"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "unit": "BNB",
+      "description": "Amount of BNB to deposit",
+      "generation": {
+        "min": 0.001,
+        "max": 0.05,
+        "decimals": 3
+      },
+      "role": "transfer_amount"
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "balance",
+        "description": "Agent must have sufficient BNB balance",
+        "min_balance": "0.2 BNB"
+      },
+      {
+        "type": "contract_exists",
+        "description": "WBNB contract must exist",
+        "address": "{wbnb_address}"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "contract_call",
+        "weight": 0.2,
+        "description": "Transaction calls WBNB contract",
+        "expected": "{wbnb_address}"
+      },
+      {
+        "type": "function_signature",
+        "weight": 0.2,
+        "description": "Correct deposit function signature",
+        "expected": "deposit()"
+      },
+      {
+        "type": "wbnb_balance_increase",
+        "weight": 0.3,
+        "description": "WBNB token balance increased by deposit amount",
+        "expected_increase": "{amount}"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "wbnb",
+      "wrap",
+      "deposit",
+      "native_token",
+      "contract_call",
+      "intermediate"
+    ],
+    "estimated_gas": 60000,
+    "requires_contract": true,
+    "contract_requirements": {
+      "contract_type": "WBNB",
+      "required_functions": [
+        "deposit",
+        "balanceOf"
+      ],
+      "note": "WBNB is a specific contract that wraps native BNB into an ERC20 token"
+    }
+  }
+}

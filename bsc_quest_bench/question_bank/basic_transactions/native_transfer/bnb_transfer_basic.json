@@ -1,0 +1,104 @@
+{
+  "id": "bnb_transfer_basic",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "native_transfer",
+  "difficulty": "easy",
+  "title": "Basic BNB Transfer",
+  
+  "description": [
+    "Transfer a fixed amount of BNB from one address to another.",
+    "",
+    "Technical context:",
+    "- This is a simple EOA (Externally Owned Account) to EOA transfer",
+    "- Standard gas limit for simple transfers: 21000",
+    "- Use EIP-1559 transaction format (type: 2)",
+    "- Amount must be converted to Wei: amount_bnb × 10^18",
+    "",
+    "Key considerations:",
+    "- Set transaction 'to' field to recipient address",
+    "- Set transaction 'value' field to amount in Wei",
+    "- Set appropriate gas parameters (maxFeePerGas, maxPriorityFeePerGas)",
+    "- For simple transfers, data field can be '0x' or empty"
+  ],
+  
+  "natural_language_templates": [
+    "Transfer {amount} BNB to {to_address}",
+    "Send {amount} BNB to address {to_address}",
+    "Please send {amount} BNB to {to_address}",
+    "I want to transfer {amount} BNB to {to_address}"
+  ],
+  
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  
+  "parameters": {
+    "to_address": {
+      "type": "address",
+      "role": "receiver",
+      "description": "Recipient address",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "role": "transfer_amount",
+      "description": "Transfer amount in BNB",
+      "generation": {
+        "method": "random",
+        "min": 0.001,
+        "max": 0.1,
+        "decimals": 3
+      }
+    }
+  },
+  
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "balance_check",
+        "description": "Agent must have sufficient BNB balance (amount + gas)",
+        "required": "{amount}"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "address_check",
+        "weight": 0.25,
+        "field": "to",
+        "expected": "{to_address}",
+        "description": "Target address must be correct"
+      },
+      {
+        "type": "value_check",
+        "weight": 0.25,
+        "field": "value",
+        "expected": "{amount}",
+        "tolerance": 0.001,
+        "description": "Transfer amount must be correct"
+      },
+      {
+        "type": "balance_change",
+        "weight": 0.2,
+        "address": "sender",
+        "expected_change": "-{amount}",
+        "tolerance_type": "gas_only",
+        "description": "Sender balance decreased by amount (plus gas)"
+      }
+    ]
+  },
+  
+  "metadata": {
+    "tags": ["native_transfer", "bnb", "basic", "simple"],
+    "estimated_gas": 21000,
+    "requires_contract": false
+  }
+}

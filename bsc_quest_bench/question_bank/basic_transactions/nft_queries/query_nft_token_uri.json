@@ -1,0 +1,80 @@
+{
+  "id": "query_nft_token_uri",
+  "category": "basic_transactions",
+  "subcategory": "nft_queries",
+  "difficulty": "easy",
+  "title": "Query NFT Token URI",
+  "description": "Query the metadata URI of a specific NFT token by calling the ERC721 tokenURI(tokenId) function. The token URI typically points to a JSON file containing the NFT's metadata such as name, description, image, and attributes. This is essential for displaying NFT information in wallets and marketplaces.",
+  "natural_language_templates": [
+    "Query the token URI for NFT token ID {{token_id}} from contract {{nft_address}}",
+    "Get the metadata URI for token {{token_id}} in the NFT collection at {{nft_address}}",
+    "Retrieve the tokenURI for NFT #{{token_id}} from {{nft_address}}",
+    "Find the metadata location for token {{token_id}} in the ERC721 contract {{nft_address}}"
+  ],
+  "blockchain": "bsc",
+  "parameters": {
+    "nft_address": {
+      "type": "address",
+      "description": "ERC721 NFT contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc721_token_address"
+      }
+    },
+    "token_id": {
+      "type": "integer",
+      "description": "NFT token ID to query URI for",
+      "generation": {
+        "method": "random",
+        "min": 1,
+        "max": 10
+      }
+    }
+  },
+  "validation": {
+    "type": "query",
+    "rules": [
+      {
+        "field": "query_execution",
+        "condition": "success",
+        "error_message": "Failed to query NFT token URI",
+        "weight": 40
+      },
+      {
+        "field": "return_format",
+        "condition": "has_required_fields",
+        "required_fields": ["tokenURI"],
+        "error_message": "Missing required fields in query result",
+        "weight": 30
+      },
+      {
+        "field": "token_uri_format",
+        "condition": "is_valid_string",
+        "error_message": "Token URI must be a non-empty string",
+        "weight": 30
+      }
+    ]
+  },
+  "metadata": {
+    "tags": ["erc721", "nft", "metadata", "tokenURI", "query"],
+    "estimated_gas": 0,
+    "prerequisites": [],
+    "related_questions": ["query_nft_owner", "erc721_transfer"],
+    "learning_objectives": [
+      "Understand the ERC721 tokenURI() function",
+      "Learn about NFT metadata storage and URIs",
+      "Master handling string return types from smart contracts",
+      "Understand the importance of metadata in NFT ecosystems",
+      "Learn about IPFS, HTTP, and data URIs for NFT metadata"
+    ],
+    "operation_type": "query",
+    "notes": [
+      "tokenURI(tokenId) returns a string (the metadata URI)",
+      "URIs can be HTTP(S), IPFS, or data URIs",
+      "Will revert if token doesn't exist",
+      "Some NFTs use base URI + token ID concatenation",
+      "Token URI typically points to JSON metadata following ERC721 metadata standard"
+    ]
+  }
+}
+

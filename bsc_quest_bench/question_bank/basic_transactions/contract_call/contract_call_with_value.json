@@ -1,0 +1,132 @@
+{
+  "id": "contract_call_with_value",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "contract_call",
+  "difficulty": "medium",
+  "title": "Contract Call with Value - Send BNB to Payable Function",
+  "natural_language_templates": [
+    "Call the donate() function on contract {contract_address} and send {amount} BNB",
+    "Donate {amount} BNB to the contract at {contract_address}",
+    "Send {amount} BNB to the donate function of contract {contract_address}",
+    "I want to call donate() on contract {contract_address} with {amount} BNB attached"
+  ],
+  "description": [
+    "Call a payable contract function with BNB value attached.",
+    "",
+    "Technical context:",
+    "- The target contract is a DonationBox with a payable donate() function",
+    "- Function signature: donate() payable",
+    "- This function accepts BNB and records donations",
+    "- You must set the transaction 'value' field to send BNB",
+    "- Function selector: 0xed88c68e (keccak256('donate()') first 4 bytes)",
+    "- Recommended gas limit: 100000 (storage writes and event emission)",
+    "",
+    "Key considerations:",
+    "- Create a Contract instance with the contract address and ABI",
+    "- Use encode the function call('donate', []) to encode the call",
+    "- Set transaction 'to' to the contract address",
+    "- Set transaction 'data' to the encoded function call",
+    "- Set transaction 'value' to the BNB amount to send (in wei)",
+    "- The contract's BNB balance will increase by the donation amount",
+    "",
+    "Success criteria:",
+    "- Transaction executes successfully",
+    "- Correct contract is called",
+    "- Correct function selector is used",
+    "- Correct amount of BNB is sent",
+    "- Contract balance increases by the donation amount"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "contract_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "DonationBox contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "donation_box_address",
+        "comment": "Use dynamically deployed DonationBox contract from environment"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "unit": "BNB",
+      "description": "Amount of BNB to donate",
+      "generation": {
+        "method": "random",
+        "min": 0.001,
+        "max": 0.05,
+        "decimals": 3
+      },
+      "role": "transfer_amount"
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "contract_exists",
+        "description": "DonationBox contract must exist",
+        "address": "{contract_address}"
+      },
+      {
+        "type": "balance",
+        "description": "Agent must have sufficient BNB balance",
+        "min_balance": "0.2 BNB"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "contract_call",
+        "weight": 0.2,
+        "description": "Transaction calls correct contract",
+        "expected": "{contract_address}"
+      },
+      {
+        "type": "function_signature",
+        "weight": 0.2,
+        "description": "Correct donate function signature",
+        "expected": "donate()"
+      },
+      {
+        "type": "value_sent",
+        "weight": 0.15,
+        "description": "Correct amount of BNB sent",
+        "expected": "{amount}"
+      },
+      {
+        "type": "contract_balance_increased",
+        "weight": 0.15,
+        "description": "Contract balance increased by donation amount",
+        "expected_increase": "{amount}"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "contract_call",
+      "payable",
+      "value",
+      "donation",
+      "bnb",
+      "intermediate"
+    ],
+    "estimated_gas": 100000,
+    "requires_contract": true,
+    "contract_requirements": {
+      "contract_type": "DonationBox",
+      "required_functions": [
+        "donate"
+      ],
+      "note": "A simple donation box contract that accepts BNB via payable function"
+    }
+  }
+}

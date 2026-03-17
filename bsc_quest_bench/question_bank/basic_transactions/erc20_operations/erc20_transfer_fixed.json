@@ -1,0 +1,138 @@
+{
+  "id": "erc20_transfer_fixed",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "erc20_operations",
+  "difficulty": "medium",
+  "title": "ERC20 Token Transfer",
+  
+  "description": [
+    "Transfer ERC20 tokens from one address to another by calling the token contract's transfer function.",
+    "",
+    "Technical context:",
+    "- ERC20 tokens are smart contracts implementing a standard interface",
+    "- Function signature: transfer(address to, uint256 amount)",
+    "- Function selector: 0xa9059cbb (first 4 bytes of keccak256('transfer(address,uint256)'))",
+    "- Token amounts must be converted to token's decimal representation",
+    "- Recommended gas limit: 65000",
+    "",
+    "Key considerations:",
+    "- Encode the function call: selector + padded_address + padded_amount",
+    "- Convert amount to wei: amount × 10^decimals",
+    "- Transaction 'to' field should be the token contract address",
+    "- Transaction 'data' field contains the encoded function call",
+    "- Transaction 'value' should be 0 (not sending native BNB)"
+  ],
+  
+  "natural_language_templates": [
+    "Transfer {amount} {token_symbol} tokens to {to_address}",
+    "Send {amount} {token_symbol} to address {to_address}",
+    "Please transfer {amount} {token_symbol} tokens to {to_address}",
+    "I want to send {amount} {token_symbol} to {to_address}"
+  ],
+  
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "ERC20 token contract address",
+      "generation": {
+        "method": "from_list",
+        "addresses": ["0x55d398326f99059fF775485246999027B3197955"],
+        "comment": "BSC Mainnet USDT - widely used stablecoin"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18,
+        "comment": "BSC USDT uses 18 decimals (different from Ethereum USDT which uses 6)"
+      }
+    },
+    "to_address": {
+      "type": "address",
+      "role": "receiver",
+      "description": "Recipient address",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "role": "transfer_amount",
+      "description": "Transfer amount in tokens",
+      "generation": {
+        "method": "random",
+        "min": 1.0,
+        "max": 100.0,
+        "decimals": 2
+      }
+    }
+  },
+  
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "description": "Agent must have sufficient token balance",
+        "min_balance": "200 tokens"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "contract_call",
+        "weight": 0.2,
+        "description": "Transaction calls the correct token contract",
+        "expected": "{token_address}"
+      },
+      {
+        "type": "function_signature",
+        "weight": 0.2,
+        "description": "Correct ERC20 transfer function signature",
+        "expected": "transfer(address,uint256)",
+        "selector": "0xa9059cbb"
+      },
+      {
+        "type": "token_balance_change",
+        "weight": 0.3,
+        "description": "Token balance changed correctly",
+        "sender_change": "-{amount}",
+        "receiver_change": "+{amount}",
+        "tolerance": "0"
+      }
+    ]
+  },
+  
+  "metadata": {
+    "tags": ["erc20", "token", "transfer", "contract_call", "intermediate"],
+    "estimated_gas": 65000,
+    "requires_contract": true,
+    "erc_standard": "ERC20",
+    "contract_requirements": {
+      "standard": "ERC20",
+      "required_functions": ["transfer", "balanceOf"]
+    }
+  }
+}

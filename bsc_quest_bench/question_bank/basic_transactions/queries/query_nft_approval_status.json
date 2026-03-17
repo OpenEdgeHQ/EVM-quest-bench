@@ -1,0 +1,90 @@
+{
+  "id": "query_nft_approval_status",
+  "category": "basic_transactions",
+  "subcategory": "queries",
+  "difficulty": "easy",
+  "title": "Query NFT Approval Status",
+  "description": "Query the approved address for a specific NFT token ID before transfer",
+  "natural_language_templates": [
+    "Check who is approved to transfer NFT token #{token_id} from the {nft_symbol} collection at {nft_address}",
+    "Query the approval status for NFT #{token_id} in the {nft_symbol} collection",
+    "Find out which address is authorized to manage NFT token {token_id} from contract {nft_address}",
+    "Get the approved operator for token ID {token_id} in the NFT collection {nft_symbol}"
+  ],
+  "blockchain": "bsc",
+  "parameters": {
+    "nft_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "ERC721 NFT contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc721_token_address",
+        "comment": "Use locally deployed ERC721 test NFT"
+      }
+    },
+    "nft_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "NFT collection symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "NFT"
+      }
+    },
+    "token_id": {
+      "type": "integer",
+      "role": "parameter",
+      "description": "NFT token ID to query approval for",
+      "generation": {
+        "method": "random",
+        "min": 1,
+        "max": 10,
+        "comment": "Test NFT has tokens 1-10"
+      }
+    },
+    "expected_approved_address": {
+      "type": "address",
+      "role": "validation",
+      "description": "Expected approved address (randomly generated)",
+      "generation": {
+        "method": "random",
+        "comment": "Random address to be set as approved operator"
+      }
+    }
+  },
+  "validation": {
+    "type": "query_validation",
+    "checks": [
+      {
+        "name": "query_execution",
+        "description": "Query executed successfully",
+        "points": 30
+      },
+      {
+        "name": "return_format",
+        "description": "Return format correct (includes approved_address field)",
+        "points": 30
+      },
+      {
+        "name": "approval_correctness",
+        "description": "Approved address matches expected value",
+        "points": 40
+      }
+    ]
+  },
+  "metadata": {
+    "operation_type": "query",
+    "estimated_gas": 24000,
+    "requires_native_token": false,
+    "requires_contract": true,
+    "contract_type": "erc721",
+    "tags": ["query", "nft", "erc721", "approval", "read-only"],
+    "learning_objectives": [
+      "Query NFT approval status using getApproved()",
+      "Understand ERC721 approval mechanism",
+      "Handle address return types"
+    ]
+  }
+}
+

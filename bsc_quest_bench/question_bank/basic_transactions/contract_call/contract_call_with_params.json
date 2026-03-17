@@ -1,0 +1,123 @@
+{
+  "id": "contract_call_with_params",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "contract_call",
+  "difficulty": "medium",
+  "title": "Contract Call with Parameters - Set Message",
+  "natural_language_templates": [
+    "Call the setMessage function on contract {contract_address} with the message '{message}'",
+    "Set the message to '{message}' on the contract at {contract_address}",
+    "Update the message in contract {contract_address} to '{message}'",
+    "I want to call setMessage on contract {contract_address} and pass the string '{message}'"
+  ],
+  "description": [
+    "Call a contract function with parameters (string argument).",
+    "",
+    "Technical context:",
+    "- The target contract is a MessageBoard with a setMessage(string) function",
+    "- Function signature: setMessage(string message)",
+    "- This function accepts a string parameter and stores it",
+    "- You must encode both the function selector and the parameter data",
+    "- Function selector: 0x368b8772 (keccak256('setMessage(string)') first 4 bytes)",
+    "- Recommended gas limit: 80000 (storage write + dynamic data)",
+    "",
+    "Key considerations:",
+    "- Create a Contract instance with the contract address and ABI",
+    "- Use encode the function call('setMessage', [message]) to encode the call",
+    "- Set transaction 'to' to the contract address",
+    "- Set transaction 'data' to the encoded function call (selector + encoded parameters)",
+    "- Set transaction 'value' to 0 (not sending BNB)",
+    "- String parameters are dynamically sized and require ABI encoding",
+    "",
+    "Success criteria:",
+    "- Transaction executes successfully",
+    "- Correct contract is called",
+    "- Correct function selector is used",
+    "- Message is correctly stored in the contract"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "contract_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "MessageBoard contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "message_board_address",
+        "comment": "Use dynamically deployed MessageBoard contract from environment"
+      }
+    },
+    "message": {
+      "type": "string",
+      "description": "Message to set in the contract",
+      "generation": {
+        "method": "from_list",
+        "values": [
+          "Hello, Blockchain!",
+          "GM, Web3!",
+          "Testing smart contract calls",
+          "Decentralization is the future",
+          "Building on BSC"
+        ]
+      },
+      "role": "parameter"
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "contract_exists",
+        "description": "MessageBoard contract must exist",
+        "address": "{contract_address}"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.4,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "contract_call",
+        "weight": 0.2,
+        "description": "Transaction calls correct contract",
+        "expected": "{contract_address}"
+      },
+      {
+        "type": "function_signature",
+        "weight": 0.2,
+        "description": "Correct setMessage function signature",
+        "expected": "setMessage(string)"
+      },
+      {
+        "type": "message_stored",
+        "weight": 0.2,
+        "description": "Message correctly stored in contract",
+        "expected": "{message}"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "contract_call",
+      "parameters",
+      "string",
+      "abi_encoding",
+      "intermediate"
+    ],
+    "estimated_gas": 80000,
+    "requires_contract": true,
+    "contract_requirements": {
+      "contract_type": "MessageBoard",
+      "required_functions": [
+        "setMessage",
+        "getMessage"
+      ],
+      "note": "A simple message board contract that stores and retrieves messages"
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "id": "query_gas_price",
+  "category": "basic_transactions",
+  "subcategory": "blockchain_queries",
+  "difficulty": "easy",
+  "title": "Query Gas Price",
+  "description": "Query the current gas price and EIP-1559 fee parameters by calling eth_gasPrice or getFeeData() methods. This returns the current network gas pricing information including maxFeePerGas and maxPriorityFeePerGas for EIP-1559 transactions. Understanding gas prices is crucial for estimating transaction costs and optimizing transaction submission timing.",
+  "natural_language_templates": [
+    "Get the current gas price of the network",
+    "Query the current EIP-1559 fee parameters",
+    "Check what is the current maxFeePerGas and maxPriorityFeePerGas",
+    "Retrieve the current gas pricing information"
+  ],
+  "blockchain": "bsc",
+  "parameters": {},
+  "validation": {
+    "type": "query",
+    "rules": [
+      {
+        "field": "query_execution",
+        "condition": "success",
+        "error_message": "Failed to query gas price",
+        "weight": 40
+      },
+      {
+        "field": "return_format",
+        "condition": "has_required_fields",
+        "required_fields": ["maxFeePerGas", "maxPriorityFeePerGas"],
+        "error_message": "Missing required EIP-1559 fields in query result",
+        "weight": 30
+      },
+      {
+        "field": "gas_price_validity",
+        "condition": "is_valid_price",
+        "error_message": "Gas prices must be valid positive values",
+        "weight": 30
+      }
+    ]
+  },
+  "metadata": {
+    "tags": ["blockchain", "gas", "eth_gasPrice", "getFeeData", "EIP-1559", "query", "rpc"],
+    "estimated_gas": 0,
+    "prerequisites": [],
+    "related_questions": ["query_current_block_number"],
+    "learning_objectives": [
+      "Understand the eth_gasPrice and getFeeData RPC methods",
+      "Learn about EIP-1559 gas pricing mechanism",
+      "Master maxFeePerGas and maxPriorityFeePerGas parameters",
+      "Understand how to optimize transaction gas costs",
+      "Learn about base fee and priority fee concepts"
+    ],
+    "operation_type": "query",
+    "notes": [
+      "EIP-1559 introduced a new gas pricing mechanism with base fee + priority fee",
+      "maxFeePerGas = base fee + maxPriorityFeePerGas (tip)",
+      "maxPriorityFeePerGas is the tip paid to miners/validators",
+      "BSC supports EIP-1559 since the Bruno hard fork",
+      "Gas prices fluctuate based on network demand",
+      "getFeeData() returns both EIP-1559 and legacy gas price",
+      "Prices are returned in wei (1 Gwei = 10^9 wei)",
+      "Higher priority fee means faster transaction inclusion",
+      "Base fee is burned, priority fee goes to validators"
+    ]
+  }
+}
+

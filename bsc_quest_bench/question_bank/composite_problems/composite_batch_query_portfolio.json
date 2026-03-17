@@ -1,0 +1,152 @@
+{
+  "id": "composite_batch_query_portfolio",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "query_workflows",
+  "difficulty": "easy",
+  "title": "Batch Query Portfolio Balances",
+  "natural_language_templates": [
+    "Check your portfolio: BNB balance, USDT balance, and CAKE balance",
+    "Query all your balances: BNB, USDT at {usdt_address}, and CAKE at {cake_address}",
+    "Get my portfolio summary: how much BNB, USDT, and CAKE do I have?"
+  ],
+  "description": [
+    "Query multiple asset balances to get portfolio summary.",
+    "",
+    "This is a 3-step query process:",
+    "1. Query BNB balance using provider.getBalance(agentAddress)",
+    "2. Query USDT balance using balanceOf on USDT contract",
+    "3. Query CAKE balance using balanceOf on CAKE contract",
+    "",
+    "IMPORTANT - Token contract addresses (use these EXACT addresses):",
+    "- USDT: 0x55d398326f99059fF775485246999027B3197955",
+    "- CAKE: 0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+    "",
+    "CRITICAL: BSC does NOT support ENS. Always use hex addresses directly.",
+    "Do NOT use token symbols like 'USDT' or 'CAKE' as addresses.",
+    "",
+    "Example code pattern:",
+    "```",
+    "const usdtAddress = '0x55d398326f99059fF775485246999027B3197955';",
+    "const cakeAddress = '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82';",
+    "const erc20Abi = ['function balanceOf(address) view returns (uint256)'];",
+    "const usdtContract = new ethers.Contract(usdtAddress, erc20Abi, provider);",
+    "const cakeContract = new ethers.Contract(cakeAddress, erc20Abi, provider);",
+    "const bnbBalance = await provider.getBalance(agentAddress);",
+    "const usdtBalance = await usdtContract.balanceOf(agentAddress);",
+    "const cakeBalance = await cakeContract.balanceOf(agentAddress);",
+    "```",
+    "",
+    "This is a READ-ONLY operation. No transactions needed.",
+    "Return the query results as QUERY_RESULT type."
+  ],
+  "composite_structure": {
+    "pattern": "batch-query",
+    "optimal_steps": 3,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "query_bnb_balance",
+        "role": "query_bnb",
+        "description": "Query BNB balance"
+      },
+      {
+        "step": 2,
+        "atomic_id": "query_erc20_balance",
+        "role": "query_usdt",
+        "description": "Query USDT balance"
+      },
+      {
+        "step": 3,
+        "atomic_id": "query_erc20_balance",
+        "role": "query_cake",
+        "description": "Query CAKE balance"
+      }
+    ]
+  },
+  "parameters": {
+    "usdt_address": {
+      "type": "address",
+      "role": "token_usdt",
+      "description": "USDT token contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "usdt_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "USDT symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "cake_address": {
+      "type": "address",
+      "role": "token_cake",
+      "description": "CAKE token contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
+      }
+    },
+    "cake_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "CAKE symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "CAKE"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimals (both USDT and CAKE are 18)",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 6,
+    "optimal_steps": 3,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "custom_scoring",
+    "description": "Custom scoring for query operations based on returned data"
+  },
+  "validation": {
+    "pre_conditions": [],
+    "post_conditions": [
+      {
+        "type": "query_success",
+        "weight": 1.0,
+        "description": "All queries executed successfully"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "batch",
+      "query",
+      "portfolio",
+      "read-only",
+      "balance",
+      "easy"
+    ],
+    "estimated_gas": 0,
+    "requires_approval": false,
+    "difficulty_notes": [
+      "Pure query operation",
+      "No transactions needed",
+      "Simple balance checks"
+    ]
+  }
+}
+

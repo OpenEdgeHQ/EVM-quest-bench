@@ -1,0 +1,189 @@
+{
+  "id": "composite_swap_approve_stake",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "complete_workflow",
+  "difficulty": "medium",
+  "title": "Swap BNB for CAKE, Approve, and Stake",
+  "natural_language_templates": [
+    "Swap {amount_bnb} BNB for CAKE, approve the staking contract, then stake all received CAKE",
+    "Exchange {amount_bnb} BNB for CAKE on PancakeSwap, then stake all CAKE in the pool",
+    "Use {amount_bnb} BNB to buy CAKE, approve staking contract at {staking_contract}, and stake the CAKE"
+  ],
+  "description": [
+    "Complete DeFi workflow: swap BNB for tokens, approve, and stake.",
+    "",
+    "This is a 3-step process:",
+    "1. Swap BNB for CAKE using PancakeSwap swapExactETHForTokens",
+    "2. Approve the staking contract to spend CAKE",
+    "3. Stake the received CAKE tokens",
+    "",
+    "Technical details:",
+    "- PancakeSwap Router: 0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "- CAKE Token: 0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+    "- swapExactETHForTokens: 0x7ff36ab5 (sends BNB, receives tokens)",
+    "- approve(address spender, uint256 amount): 0x095ea7b3",
+    "- Staking function: deposit(uint256 amount)",
+    "",
+    "IMPORTANT: The staking contract uses deposit(uint256) function, NOT stake().",
+    "The key operation is the stake (step 3) since it's the final goal."
+  ],
+  "composite_structure": {
+    "pattern": "swap-approve-stake",
+    "optimal_steps": 3,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "swap_exact_bnb_for_tokens",
+        "role": "preparation",
+        "description": "Swap BNB for CAKE tokens"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_approve",
+        "role": "approval",
+        "description": "Approve staking contract to spend CAKE"
+      },
+      {
+        "step": 3,
+        "atomic_id": "stake_single_token",
+        "role": "key_operation",
+        "description": "Stake CAKE tokens"
+      }
+    ]
+  },
+  "parameters": {
+    "amount_bnb": {
+      "type": "number",
+      "unit": "BNB",
+      "role": "swap_amount",
+      "description": "Amount of BNB to swap for CAKE",
+      "generation": {
+        "method": "random",
+        "min": 0.01,
+        "max": 0.05,
+        "decimals": 3
+      }
+    },
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "wbnb_address": {
+      "type": "address",
+      "role": "intermediate",
+      "description": "WBNB address (for swap path)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "cake_address": {
+      "type": "address",
+      "role": "token",
+      "description": "CAKE token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
+      }
+    },
+    "cake_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "CAKE token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "CAKE"
+      }
+    },
+    "cake_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "CAKE token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "staking_contract": {
+      "type": "address",
+      "role": "contract",
+      "description": "Staking contract address (SimpleStaking)",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_staking_address"
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance percentage",
+      "generation": {
+        "method": "fixed",
+        "value": 10.0
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 6,
+    "optimal_steps": 3,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "stake_single_token",
+    "key_operation_step": 3
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "bnb_balance",
+        "description": "Agent must have sufficient BNB for swap",
+        "min_balance": "0.1 BNB"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Stake transaction executed successfully"
+      },
+      {
+        "type": "staking_balance_increase",
+        "weight": 0.4,
+        "description": "Staking balance increased"
+      },
+      {
+        "type": "cake_balance_decrease",
+        "weight": 0.3,
+        "description": "CAKE balance decreased (staked)"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "defi",
+      "swap-stake",
+      "complete-workflow",
+      "pancakeswap",
+      "staking",
+      "medium"
+    ],
+    "estimated_gas": 400000,
+    "requires_approval": true,
+    "difficulty_notes": [
+      "Three-step complete workflow",
+      "Must handle dynamic CAKE amount from swap",
+      "Requires understanding of staking mechanism"
+    ]
+  }
+}
+

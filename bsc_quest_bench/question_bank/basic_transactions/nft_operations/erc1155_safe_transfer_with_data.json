@@ -1,0 +1,176 @@
+{
+  "id": "erc1155_safe_transfer_with_data",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "nft_operations",
+  "difficulty": "medium",
+  "title": "ERC1155 Safe Transfer with Data",
+  "natural_language_templates": [
+    "Transfer {amount} units of token ID {token_id} from {nft_address} to {to_address} with data message: {data_message}",
+    "Send {amount} of ERC1155 token #{token_id} at {nft_address} to {to_address} with attached data",
+    "Transfer {amount} units of multi-token {token_id} from contract {nft_address} to {to_address} including custom data",
+    "I want to transfer {amount} of token {token_id} (contract: {nft_address}) to {to_address} with additional data"
+  ],
+  "description": [
+    "Transfer ERC1155 tokens with additional data bytes using the safeTransferFrom function.",
+    "",
+    "Technical context:",
+    "- ERC1155 is the multi-token standard supporting both fungible and non-fungible tokens",
+    "- Function signature: safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data)",
+    "- The 'data' parameter allows passing arbitrary bytes to the recipient",
+    "- If 'to' is a contract, it must implement ERC1155TokenReceiver interface",
+    "- The receiver's onERC1155Received function will be called with the data",
+    "- The 'from' address must be the current owner or approved operator",
+    "- Recommended gas limit: 200000",
+    "",
+    "Key considerations:",
+    "- Create a Contract instance with ERC1155 address and ERC1155 ABI",
+    "- Use encode the function call('safeTransferFrom', [from, to, id, amount, data])",
+    "- The 'data' parameter should be properly encoded bytes (e.g., using ethers.toUtf8Bytes)",
+    "- Set transaction 'to' to the ERC1155 contract address",
+    "- Set transaction 'value' to 0 (not sending BNB)",
+    "- After transfer, balanceOf(to, id) should increase by amount",
+    "- The agent's balance balanceOf(from, id) should decrease by amount"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "nft_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "ERC1155 multi-token contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc1155_token_address",
+        "comment": "Use dynamically deployed ERC1155 token from environment"
+      }
+    },
+    "nft_name": {
+      "type": "string",
+      "description": "Multi-token collection name for natural language",
+      "generation": {
+        "method": "fixed",
+        "value": "TestMultiToken"
+      },
+      "role": "parameter"
+    },
+    "token_id": {
+      "type": "integer",
+      "description": "Token ID to transfer (token type within the collection)",
+      "generation": {
+        "method": "fixed",
+        "value": 1
+      },
+      "role": "parameter"
+    },
+    "amount": {
+      "type": "integer",
+      "description": "Amount of tokens to transfer",
+      "generation": {
+        "method": "fixed",
+        "value": 5
+      },
+      "role": "transfer_amount"
+    },
+    "to_address": {
+      "type": "address",
+      "role": "recipient",
+      "description": "Recipient address",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "data_message": {
+      "type": "string",
+      "description": "Custom data message to include with transfer",
+      "generation": {
+        "method": "from_list",
+        "values": [
+          "Transfer with metadata",
+          "NFT batch transfer",
+          "Game item transfer",
+          "Token migration"
+        ]
+      },
+      "role": "parameter"
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "erc1155_balance_check",
+        "description": "Agent must own sufficient tokens of this ID",
+        "nft_contract": "{nft_address}",
+        "token_id": "{token_id}",
+        "min_balance": "{amount}"
+      },
+      {
+        "type": "contract_exists",
+        "description": "ERC1155 contract must exist",
+        "address": "{nft_address}"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.25,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "contract_call",
+        "weight": 0.15,
+        "description": "Transaction calls correct ERC1155 contract",
+        "expected": "{nft_address}"
+      },
+      {
+        "type": "function_signature",
+        "weight": 0.2,
+        "description": "Correct safeTransferFrom function signature",
+        "expected": "safeTransferFrom(address,address,uint256,uint256,bytes)"
+      },
+      {
+        "type": "data_parameter_check",
+        "weight": 0.1,
+        "description": "Data parameter is non-empty",
+        "expected": "non_empty_bytes"
+      },
+      {
+        "type": "erc1155_balance_transferred",
+        "weight": 0.3,
+        "description": "Token balance transferred correctly",
+        "nft_contract": "{nft_address}",
+        "token_id": "{token_id}",
+        "from_address": "{agent_address}",
+        "to_address": "{to_address}",
+        "expected_amount": "{amount}"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "erc1155",
+      "multi-token",
+      "nft",
+      "transfer",
+      "data",
+      "callback",
+      "advanced"
+    ],
+    "estimated_gas": 200000,
+    "requires_contract": true,
+    "requires_token_ownership": true,
+    "contract_requirements": {
+      "contract_type": "ERC1155",
+      "required_functions": [
+        "safeTransferFrom",
+        "balanceOf",
+        "balanceOfBatch"
+      ],
+      "note": "Agent must own sufficient tokens to transfer; recipient may need to implement ERC1155Receiver"
+    },
+    "erc_standard": "ERC1155",
+    "requires_custom_token": true
+  }
+}

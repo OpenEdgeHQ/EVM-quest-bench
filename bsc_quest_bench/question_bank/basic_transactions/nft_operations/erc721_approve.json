@@ -1,0 +1,118 @@
+{
+  "id": "erc721_approve",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "nft_operations",
+  "difficulty": "medium",
+  "title": "ERC721 Approve",
+  "description": [
+    "Approve another address to transfer a specific ERC721 NFT token on your behalf.",
+    "",
+    "Technical context:",
+    "- Use ERC721's approve(address to, uint256 tokenId) function",
+    "- Grants permission for the approved address to transfer the specific NFT",
+    "- Only one address can be approved per token at a time",
+    "- Setting approval to address(0) clears the approval",
+    "- Function selector: 0x095ea7b3",
+    "- Parameters: to (address, 32 bytes) + tokenId (uint256, 32 bytes)",
+    "- Recommended gas limit: 80000"
+  ],
+  "natural_language_templates": [
+    "Approve address {spender_address} to transfer NFT token ID {token_id} from {nft_name} collection (contract: {nft_address})",
+    "Grant approval to {spender_address} for my {nft_name} NFT #{token_id} at contract {nft_address}",
+    "Please approve {spender_address} to manage my NFT with token ID {token_id} from the {nft_name} collection at {nft_address}",
+    "I want to authorize address {spender_address} to transfer my {nft_name} NFT (token ID: {token_id}, contract: {nft_address})"
+  ],
+  "parameters": {
+    "nft_address": {
+      "type": "address",
+      "role": "nft_contract",
+      "description": "ERC721 NFT contract address",
+      "generation": {
+        "method": "from_list",
+        "addresses": [
+          "0x0a8901b0E25DEb55A87524f0cC164E9644020EBA"
+        ],
+        "comment": "PancakeSquad NFT on BSC Mainnet"
+      }
+    },
+    "nft_name": {
+      "type": "string",
+      "role": "display",
+      "description": "Human-readable name of the NFT collection",
+      "generation": {
+        "method": "fixed",
+        "value": "PancakeSquad"
+      }
+    },
+    "token_id": {
+      "type": "integer",
+      "role": "nft_token_id",
+      "description": "Unique token ID of the NFT to approve",
+      "generation": {
+        "method": "fixed",
+        "value": 1,
+        "comment": "Using token ID 1 which will be pre-setup in test environment"
+      }
+    },
+    "spender_address": {
+      "type": "address",
+      "role": "spender",
+      "description": "Address to approve for transferring the NFT",
+      "generation": {
+        "method": "random"
+      }
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "nft_ownership",
+        "description": "Agent must own the NFT token",
+        "nft_address": "{nft_address}",
+        "token_id": "{token_id}"
+      },
+      {
+        "type": "balance",
+        "description": "Agent must have sufficient BNB for gas",
+        "min_balance": "0.01 BNB"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.4,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "approval_check",
+        "weight": 0.4,
+        "description": "Approved address set correctly",
+        "expected_approved": "{spender_address}"
+      },
+      {
+        "type": "function_selector",
+        "weight": 0.2,
+        "description": "Correct function selector for approve",
+        "expected_selector": "0x095ea7b3"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "nft",
+      "erc721",
+      "approve",
+      "authorization",
+      "onchain"
+    ],
+    "estimated_gas": 80000,
+    "requires_contract": true,
+    "network": "mainnet",
+    "erc_standard": "ERC721"
+  },
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  }
+}

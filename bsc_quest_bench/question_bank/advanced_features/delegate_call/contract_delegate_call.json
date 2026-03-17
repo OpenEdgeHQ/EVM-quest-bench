@@ -1,0 +1,148 @@
+{
+  "id": "contract_delegate_call",
+  "version": "2.0.0",
+  "category": "advanced_features",
+  "subcategory": "delegate_call",
+  "difficulty": "hard",
+  "title": "DelegateCall - Proxy Pattern",
+  "natural_language_templates": [
+    "Call the setValue function on the proxy contract at {proxy_address} with value {value}",
+    "Set the value to {value} using the proxy contract {proxy_address}",
+    "Execute setValue({value}) through the proxy at {proxy_address}",
+    "I want to call setValue on proxy {proxy_address} and pass {value}"
+  ],
+  "description": [
+    "Call a function through a proxy contract that uses delegatecall to execute logic from an implementation contract.",
+    "",
+    "Technical context:",
+    "- The proxy contract forwards calls to an implementation contract using delegatecall",
+    "- DelegateCall executes the implementation's code in the proxy's context",
+    "- Storage changes affect the proxy contract, not the implementation",
+    "- msg.sender remains the original caller",
+    "- Function signature: setValue(uint256 value)",
+    "- Function selector: 0x55241077 (keccak256('setValue(uint256)') first 4 bytes)",
+    "- Recommended gas limit: 100000",
+    "",
+    "Key considerations:",
+    "- You call the PROXY contract, not the implementation contract",
+    "- The proxy forwards your call using delegatecall",
+    "- Use encode the function call('setValue', [value]) to encode",
+    "- Set transaction 'to' to the PROXY address",
+    "- Set transaction 'value' to 0 (not sending BNB)",
+    "- The value will be stored in the proxy's storage",
+    "",
+    "DelegateCall explained:",
+    "- Regular call: Implementation contract modifies its own storage",
+    "- DelegateCall: Implementation's code runs, but modifies caller's (proxy's) storage",
+    "- This is the foundation of upgradeable contracts",
+    "",
+    "Success criteria:",
+    "- Transaction executes successfully",
+    "- Correct proxy contract is called",
+    "- Correct function selector is used",
+    "- Value is stored in the PROXY contract (not implementation)",
+    "- Implementation contract's storage remains unchanged"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "proxy_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "Proxy contract address (uses delegatecall)",
+      "generation": {
+        "method": "from_env",
+        "env_key": "delegate_call_proxy_address",
+        "comment": "Use dynamically deployed proxy contract from environment"
+      }
+    },
+    "implementation_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "Implementation contract address (contains logic)",
+      "generation": {
+        "method": "from_env",
+        "env_key": "delegate_call_implementation_address",
+        "comment": "Implementation contract for verification"
+      }
+    },
+    "value": {
+      "type": "number",
+      "description": "Value to set (uint256)",
+      "generation": {
+        "method": "random",
+        "min": 100,
+        "max": 9999,
+        "decimals": 0
+      },
+      "role": "parameter"
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "contract_exists",
+        "description": "Proxy contract must exist",
+        "address": "{proxy_address}"
+      },
+      {
+        "type": "contract_exists",
+        "description": "Implementation contract must exist",
+        "address": "{implementation_address}"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "contract_call",
+        "weight": 0.2,
+        "description": "Transaction calls PROXY contract (not implementation)",
+        "expected": "{proxy_address}"
+      },
+      {
+        "type": "function_signature",
+        "weight": 0.2,
+        "description": "Correct setValue function signature",
+        "expected": "setValue(uint256)"
+      },
+      {
+        "type": "proxy_storage_updated",
+        "weight": 0.15,
+        "description": "Value stored in PROXY contract",
+        "expected": "{value}"
+      },
+      {
+        "type": "implementation_storage_unchanged",
+        "weight": 0.15,
+        "description": "Implementation contract storage remains unchanged",
+        "expected": "unchanged"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "delegatecall",
+      "proxy",
+      "upgradeable",
+      "advanced",
+      "storage_context"
+    ],
+    "estimated_gas": 100000,
+    "requires_contract": true,
+    "contract_requirements": {
+      "contract_type": "DelegateCallProxy + Implementation",
+      "required_functions": [
+        "setValue",
+        "getValue"
+      ],
+      "note": "Tests understanding of delegatecall and proxy patterns"
+    },
+    "educational_value": "Understanding delegatecall is crucial for upgradeable contracts and many DeFi protocols"
+  }
+}

@@ -1,0 +1,201 @@
+{
+  "id": "composite_batch_mixed_transfers",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "batch_operations",
+  "difficulty": "medium",
+  "title": "Batch Mixed Asset Transfers",
+  "natural_language_templates": [
+    "Send {amount_bnb} BNB, {amount_usdt} USDT, and {amount_busd} BUSD to {to_address}",
+    "Transfer multiple assets to {to_address}: {amount_bnb} BNB, {amount_usdt} USDT, {amount_busd} BUSD",
+    "Pay {to_address} with {amount_bnb} BNB, {amount_usdt} USDT, and {amount_busd} BUSD"
+  ],
+  "description": [
+    "Transfer multiple asset types to the same recipient.",
+    "",
+    "This is a 3-step process:",
+    "1. Transfer {amount_bnb} BNB (native token)",
+    "2. Transfer {amount_usdt} USDT (ERC20)",
+    "3. Transfer {amount_busd} BUSD (ERC20)",
+    "",
+    "All transfers go to the same address: {to_address}",
+    "",
+    "Token contracts:",
+    "- USDT: 0x55d398326f99059fF775485246999027B3197955",
+    "- BUSD: 0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+    "",
+    "The key operation is the last transfer (BUSD, step 3).",
+    "",
+    "IMPORTANT: Execute all 3 transfers in sequence."
+  ],
+  "composite_structure": {
+    "pattern": "batch-mixed-transfer",
+    "optimal_steps": 3,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "bnb_transfer_basic",
+        "role": "transfer_bnb",
+        "description": "Transfer BNB to recipient"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_transfer_fixed",
+        "role": "transfer_usdt",
+        "description": "Transfer USDT to recipient"
+      },
+      {
+        "step": 3,
+        "atomic_id": "erc20_transfer_fixed",
+        "role": "key_operation",
+        "description": "Transfer BUSD to recipient"
+      }
+    ]
+  },
+  "parameters": {
+    "to_address": {
+      "type": "address",
+      "role": "recipient",
+      "description": "Recipient address for all transfers",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "amount_bnb": {
+      "type": "number",
+      "unit": "BNB",
+      "role": "transfer_amount_bnb",
+      "description": "Amount of BNB to transfer",
+      "generation": {
+        "method": "random",
+        "min": 0.01,
+        "max": 0.05,
+        "decimals": 3
+      }
+    },
+    "amount_usdt": {
+      "type": "number",
+      "unit": "USDT",
+      "role": "transfer_amount_usdt",
+      "description": "Amount of USDT to transfer",
+      "generation": {
+        "method": "random",
+        "min": 5.0,
+        "max": 20.0,
+        "decimals": 2
+      }
+    },
+    "amount_busd": {
+      "type": "number",
+      "unit": "BUSD",
+      "role": "transfer_amount_busd",
+      "description": "Amount of BUSD to transfer",
+      "generation": {
+        "method": "random",
+        "min": 5.0,
+        "max": 20.0,
+        "decimals": 2
+      }
+    },
+    "usdt_address": {
+      "type": "address",
+      "role": "token_usdt",
+      "description": "USDT token contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "busd_address": {
+      "type": "address",
+      "role": "token_busd",
+      "description": "BUSD token contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      }
+    },
+    "token_address": {
+      "type": "address",
+      "role": "token",
+      "description": "Key operation token address (BUSD)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimals (both USDT and BUSD are 18)",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 6,
+    "optimal_steps": 3,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "erc20_transfer_fixed",
+    "key_operation_step": 3
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "bnb_balance",
+        "description": "Agent must have sufficient BNB",
+        "min_balance": "1.0 BNB"
+      },
+      {
+        "type": "token_balance",
+        "token": "USDT",
+        "description": "Agent must have sufficient USDT",
+        "min_balance": "100 tokens"
+      },
+      {
+        "type": "token_balance",
+        "token": "BUSD",
+        "description": "Agent must have sufficient BUSD",
+        "min_balance": "100 tokens"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "All transfers executed successfully"
+      },
+      {
+        "type": "recipient_balance_increase",
+        "weight": 0.7,
+        "description": "Recipient received all assets"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "batch",
+      "mixed",
+      "payment",
+      "bnb",
+      "erc20",
+      "multi-asset",
+      "medium"
+    ],
+    "estimated_gas": 120000,
+    "requires_approval": false,
+    "difficulty_notes": [
+      "Mixed asset type transfers",
+      "Single recipient, multiple asset types",
+      "No approvals needed",
+      "Sequential execution required"
+    ]
+  }
+}
+

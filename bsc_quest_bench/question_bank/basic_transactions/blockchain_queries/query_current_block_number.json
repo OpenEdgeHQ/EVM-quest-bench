@@ -1,0 +1,64 @@
+{
+  "id": "query_current_block_number",
+  "category": "basic_transactions",
+  "subcategory": "blockchain_queries",
+  "difficulty": "easy",
+  "title": "Query Current Block Number",
+  "description": "Query the current block height of the blockchain by calling eth_blockNumber RPC method. This is a fundamental blockchain query that returns the latest block number, useful for tracking blockchain state, calculating block intervals, and determining transaction timing. The block number increases with each new block mined.",
+  "natural_language_templates": [
+    "Get the current block number of the blockchain",
+    "Query the latest block height",
+    "Check what is the current block number",
+    "Retrieve the most recent block number from the chain"
+  ],
+  "blockchain": "bsc",
+  "parameters": {},
+  "validation": {
+    "type": "query",
+    "rules": [
+      {
+        "field": "query_execution",
+        "condition": "success",
+        "error_message": "Failed to query current block number",
+        "weight": 50
+      },
+      {
+        "field": "return_format",
+        "condition": "has_required_fields",
+        "required_fields": ["block_number"],
+        "error_message": "Missing required fields in query result",
+        "weight": 25
+      },
+      {
+        "field": "block_number_validity",
+        "condition": "is_valid_number",
+        "error_message": "Block number must be a valid positive integer",
+        "weight": 25
+      }
+    ]
+  },
+  "metadata": {
+    "tags": ["blockchain", "block", "eth_blockNumber", "query", "rpc"],
+    "estimated_gas": 0,
+    "prerequisites": [],
+    "related_questions": ["query_bnb_balance", "query_block_timestamp"],
+    "learning_objectives": [
+      "Understand the eth_blockNumber RPC method",
+      "Learn how to query blockchain state without contracts",
+      "Master block height tracking",
+      "Understand blockchain time progression",
+      "Learn about block-based timing mechanisms"
+    ],
+    "operation_type": "query",
+    "notes": [
+      "eth_blockNumber returns the latest block number as hex string",
+      "Block number always increases (never decreases)",
+      "Different nodes may return slightly different values due to sync status",
+      "This is a lightweight RPC call with minimal overhead",
+      "Block number can be used to estimate time (BSC: ~3 seconds per block)",
+      "Useful for checking if transaction has been mined",
+      "Returns the block number at the time of query, not a specific block"
+    ]
+  }
+}
+

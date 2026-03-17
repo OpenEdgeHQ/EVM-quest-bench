@@ -1,0 +1,144 @@
+{
+  "id": "composite_batch_transfer_2_bnb",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "batch_transfer",
+  "difficulty": "easy",
+  "title": "Batch Transfer BNB to 2 Addresses",
+  "natural_language_templates": [
+    "Transfer {amount1} BNB to {address1} and {amount2} BNB to {address2}",
+    "Send {amount1} BNB to {address1}, then send {amount2} BNB to {address2}",
+    "Make two BNB transfers: {amount1} BNB to {address1} and {amount2} BNB to {address2}"
+  ],
+  "description": [
+    "Execute two consecutive BNB transfers to different addresses.",
+    "",
+    "This is a 2-step process:",
+    "1. Transfer BNB to the first address",
+    "2. Transfer BNB to the second address",
+    "",
+    "Technical details:",
+    "- Simple native BNB transfers (no contract calls)",
+    "- Each transfer is a separate transaction",
+    "- Agent must have sufficient BNB for both transfers plus gas",
+    "",
+    "Note: The key operation is the second transfer since it completes the batch."
+  ],
+  "composite_structure": {
+    "pattern": "batch-transfer",
+    "optimal_steps": 2,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "bnb_transfer_basic",
+        "role": "first_transfer",
+        "description": "Transfer BNB to the first address"
+      },
+      {
+        "step": 2,
+        "atomic_id": "bnb_transfer_basic",
+        "role": "key_operation",
+        "description": "Transfer BNB to the second address"
+      }
+    ]
+  },
+  "parameters": {
+    "address1": {
+      "type": "address",
+      "role": "recipient1",
+      "description": "First recipient address",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "amount1": {
+      "type": "number",
+      "unit": "BNB",
+      "description": "Amount of BNB to send to first address",
+      "generation": {
+        "method": "random",
+        "min": 0.01,
+        "max": 0.1,
+        "decimals": 3
+      },
+      "role": "transfer_amount1"
+    },
+    "address2": {
+      "type": "address",
+      "role": "recipient2",
+      "description": "Second recipient address",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "amount2": {
+      "type": "number",
+      "unit": "BNB",
+      "description": "Amount of BNB to send to second address",
+      "generation": {
+        "method": "random",
+        "min": 0.01,
+        "max": 0.1,
+        "decimals": 3
+      },
+      "role": "transfer_amount2"
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 4,
+    "optimal_steps": 2,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "bnb_transfer_basic",
+    "key_operation_step": 2
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "bnb_balance",
+        "description": "Agent must have sufficient BNB for both transfers and gas",
+        "min_balance": "1 BNB"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Second transfer transaction executed successfully"
+      },
+      {
+        "type": "bnb_received",
+        "weight": 0.35,
+        "address": "{address2}",
+        "expected_amount": "{amount2}",
+        "description": "Second recipient received correct amount"
+      },
+      {
+        "type": "bnb_sent",
+        "weight": 0.35,
+        "description": "Agent's BNB balance decreased correctly"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "batch",
+      "native",
+      "bnb",
+      "transfer",
+      "easy",
+      "two-step"
+    ],
+    "estimated_gas": 42000,
+    "requires_approval": false,
+    "difficulty_notes": [
+      "Simple batch transfer of native BNB",
+      "Two separate transactions",
+      "No contract interaction required"
+    ]
+  }
+}
+

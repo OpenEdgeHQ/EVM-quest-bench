@@ -1,0 +1,88 @@
+{
+  "id": "composite_query_nft_transfer_verify",
+  "category": "composite_problems",
+  "difficulty": "medium",
+  "title": "Query NFT Owner, Transfer NFT, and Verify",
+  "description": [
+    "A composite problem that tests the LLM's ability to:",
+    "1. Query initial NFT token owner",
+    "2. Execute an ERC721 NFT transfer",
+    "3. Query final NFT token owner to verify the transfer"
+  ],
+  "natural_language_templates": [
+    "Check the owner of NFT token {token_id}, transfer it to {to_address}, then verify the new owner",
+    "Query who owns NFT #{token_id} from {nft_address}, transfer it to {to_address}, and confirm ownership changed"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "composite_structure": {
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "query_nft_owner",
+        "description": "Query initial NFT owner"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc721_transfer",
+        "description": "Transfer NFT"
+      },
+      {
+        "step": 3,
+        "atomic_id": "query_nft_owner",
+        "description": "Query final NFT owner"
+      }
+    ]
+  },
+  "parameters": {
+    "nft_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "ERC721 NFT contract address",
+      "shared_across_steps": [1, 2, 3],
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc721_token_address",
+        "comment": "Use dynamically deployed ERC721 test NFT contract from environment"
+      }
+    },
+    "token_id": {
+      "type": "integer",
+      "role": "token_identifier",
+      "description": "NFT token ID to transfer",
+      "shared_across_steps": [1, 2, 3],
+      "generation": {
+        "method": "fixed",
+        "value": 1,
+        "comment": "Use token ID 1 which is pre-minted to test address"
+      }
+    },
+    "to_address": {
+      "type": "address",
+      "role": "receiver",
+      "description": "Recipient address for NFT transfer",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "random"
+      }
+    }
+  },
+  "interaction_config": {
+    "optimal_steps": 2,
+    "max_rounds_multiplier": 2,
+    "comment": "max_rounds = optimal_steps * max_rounds_multiplier = 2 * 2 = 4"
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "description": "Directly reuse the atomic validator of the key operation - NO code duplication!",
+    "key_operation_step": 2,
+    "key_operation_id": "erc721_transfer",
+    "key_operation_alias": "nft_transfer",
+    "validator_class": "ERC721TransferValidator",
+    "note": "The validator will load ERC721TransferValidator and call its validate() method directly"
+  },
+  "tags": ["query-write-verify", "nft"]
+}
+

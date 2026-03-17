@@ -1,0 +1,162 @@
+{
+  "id": "composite_approve_add_liquidity",
+  "category": "composite_problems",
+  "difficulty": "medium",
+  "title": "Approve and Add Liquidity to PancakeSwap",
+  "description": [
+    "A composite problem that tests the LLM's ability to:",
+    "1. Execute ERC20 approvals for both tokens to PancakeSwap Router",
+    "2. Execute add liquidity operation using the approvals",
+    "This demonstrates the DeFi approval pattern for liquidity provision."
+  ],
+  "natural_language_templates": [
+    "Approve {token_a_symbol} and {token_b_symbol} for PancakeSwap, then add {amount_token_a} {token_a_symbol} and {amount_token_b} {token_b_symbol} as liquidity",
+    "First approve tokens, then add liquidity to the {token_a_symbol}/{token_b_symbol} pool"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "composite_structure": {
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "erc20_approve",
+        "description": "Approve PancakeSwap Router to spend token A"
+      },
+      {
+        "step": 2,
+        "atomic_id": "add_liquidity_tokens",
+        "description": "Add liquidity to token pair"
+      }
+    ]
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+        "comment": "PancakeSwap V2 Router on BSC"
+      }
+    },
+    "token_a_address": {
+      "type": "address",
+      "role": "token_a",
+      "description": "First token address (USDT)",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955",
+        "comment": "USDT on BSC"
+      }
+    },
+    "token_a_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "First token symbol",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_a_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "First token decimal places",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "token_b_address": {
+      "type": "address",
+      "role": "token_b",
+      "description": "Second token address (BUSD)",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+        "comment": "BUSD on BSC"
+      }
+    },
+    "token_b_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Second token symbol",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": "BUSD"
+      }
+    },
+    "token_b_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Second token decimal places",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "amount_token_a": {
+      "type": "number",
+      "unit": "tokens",
+      "role": "liquidity_amount",
+      "description": "Amount of token A to add as liquidity",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "random",
+        "min": 5.0,
+        "max": 15.0,
+        "decimals": 2
+      }
+    },
+    "amount_token_b": {
+      "type": "number",
+      "unit": "tokens",
+      "role": "liquidity_amount",
+      "description": "Amount of token B to add as liquidity",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "random",
+        "min": 5.0,
+        "max": 15.0,
+        "decimals": 2
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance (e.g., 5 for 5%)",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": 5.0
+      }
+    }
+  },
+  "interaction_config": {
+    "optimal_steps": 2,
+    "max_rounds_multiplier": 2,
+    "comment": "max_rounds = optimal_steps * max_rounds_multiplier = 2 * 2 = 4"
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "description": "Directly reuse the atomic validator of the key operation - NO code duplication!",
+    "key_operation_step": 2,
+    "key_operation_id": "add_liquidity_tokens",
+    "key_operation_alias": "add_liquidity",
+    "validator_class": "AddLiquidityTokensValidator",
+    "note": "The validator will load AddLiquidityTokensValidator and call its validate() method directly"
+  },
+  "tags": ["approve-execute", "defi", "liquidity"]
+}
+

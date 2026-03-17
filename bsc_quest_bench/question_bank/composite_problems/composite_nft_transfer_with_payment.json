@@ -1,0 +1,180 @@
+{
+  "id": "composite_nft_transfer_with_payment",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "nft_workflows",
+  "difficulty": "medium",
+  "title": "NFT Transfer with Token Payment",
+  "natural_language_templates": [
+    "Transfer NFT token {token_id} to {buyer_address} and receive {payment} {token_symbol} as payment, then verify the transfer",
+    "Sell NFT #{token_id} from {nft_address} to {buyer_address} for {payment} {token_symbol}",
+    "Send NFT #{token_id} to {buyer_address}, collect {payment} {token_symbol} payment, and confirm ownership changed"
+  ],
+  "description": [
+    "Execute an NFT sale: transfer NFT to buyer and collect payment.",
+    "",
+    "This is a 3-step process:",
+    "1. Transfer NFT #{token_id} to the buyer address",
+    "2. Transfer {payment} {token_symbol} tokens (simulated payment receipt)",
+    "3. Query NFT owner to verify the transfer succeeded",
+    "",
+    "NFT Contract (ERC721 Test NFT): Use the deployed test NFT contract",
+    "Payment Token: USDT (0x55d398326f99059fF775485246999027B3197955)",
+    "",
+    "ERC721 transfer function:",
+    "- transferFrom(address from, address to, uint256 tokenId)",
+    "- Function selector: 0x23b872dd",
+    "",
+    "IMPORTANT:",
+    "- You own NFT #{token_id} initially",
+    "- Transfer the NFT to {buyer_address}",
+    "- The payment is a simulated receipt (you send tokens to yourself)",
+    "",
+    "The key operation is the NFT transfer (step 1)."
+  ],
+  "composite_structure": {
+    "pattern": "nft-sale",
+    "optimal_steps": 3,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "erc721_transfer",
+        "role": "key_operation",
+        "description": "Transfer NFT to buyer"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_transfer_fixed",
+        "role": "payment",
+        "description": "Receive token payment"
+      },
+      {
+        "step": 3,
+        "atomic_id": "query_nft_owner",
+        "role": "verification",
+        "description": "Verify NFT ownership changed"
+      }
+    ]
+  },
+  "parameters": {
+    "nft_address": {
+      "type": "address",
+      "role": "nft_contract",
+      "description": "ERC721 NFT contract address (deployed test NFT)",
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc721_token_address"
+      }
+    },
+    "token_id": {
+      "type": "integer",
+      "role": "nft_token_id",
+      "description": "NFT token ID to transfer",
+      "generation": {
+        "method": "random",
+        "min": 1,
+        "max": 10
+      }
+    },
+    "buyer_address": {
+      "type": "address",
+      "role": "recipient",
+      "description": "Buyer address to receive the NFT",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "payment": {
+      "type": "number",
+      "unit": "token",
+      "role": "payment_amount",
+      "description": "Payment amount in tokens",
+      "generation": {
+        "method": "random",
+        "min": 10.0,
+        "max": 50.0,
+        "decimals": 2
+      }
+    },
+    "token_address": {
+      "type": "address",
+      "role": "payment_token",
+      "description": "Payment token contract address (USDT)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Payment token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 6,
+    "optimal_steps": 3,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "erc721_transfer",
+    "key_operation_step": 1
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "nft_ownership",
+        "description": "Agent must own NFT #{token_id}"
+      },
+      {
+        "type": "token_balance",
+        "description": "Agent must have token balance for payment simulation"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "nft_transferred",
+        "weight": 0.7,
+        "description": "NFT ownership transferred to buyer"
+      },
+      {
+        "type": "payment_received",
+        "weight": 0.3,
+        "description": "Payment tokens transferred"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "nft",
+      "payment",
+      "cross-domain",
+      "erc721",
+      "sale",
+      "medium"
+    ],
+    "estimated_gas": 150000,
+    "requires_approval": false,
+    "difficulty_notes": [
+      "Cross-domain operation (NFT + Token)",
+      "Requires understanding of ERC721 transfer",
+      "Verification step included"
+    ]
+  }
+}
+

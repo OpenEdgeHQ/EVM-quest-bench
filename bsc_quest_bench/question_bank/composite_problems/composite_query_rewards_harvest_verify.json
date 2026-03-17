@@ -1,0 +1,88 @@
+{
+  "id": "composite_query_rewards_harvest_verify",
+  "category": "composite_problems",
+  "difficulty": "medium",
+  "title": "Query Pending Rewards, Harvest Rewards, and Verify",
+  "description": [
+    "A composite problem that tests the LLM's ability to:",
+    "1. Query pending rewards in the staking pool",
+    "2. Execute a harvest rewards operation",
+    "3. Query final reward token balance to verify the harvest"
+  ],
+  "natural_language_templates": [
+    "Check your pending rewards in the pool, harvest them, then verify the reward tokens in your wallet",
+    "Query pending rewards at {pool_address}, harvest all rewards, and confirm tokens received"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "composite_structure": {
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "query_pending_rewards",
+        "description": "Query initial pending rewards"
+      },
+      {
+        "step": 2,
+        "atomic_id": "harvest_rewards",
+        "description": "Harvest rewards"
+      },
+      {
+        "step": 3,
+        "atomic_id": "query_erc20_balance",
+        "description": "Query final reward token balance"
+      }
+    ]
+  },
+  "parameters": {
+    "pool_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "SimpleRewardPool contract address",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_reward_pool_address"
+      }
+    },
+    "reward_token_address": {
+      "type": "address",
+      "role": "token",
+      "description": "Reward token address (CAKE)",
+      "shared_across_steps": [3],
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+        "comment": "CAKE token on BSC"
+      }
+    },
+    "reward_token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Reward token decimals",
+      "shared_across_steps": [2, 3],
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    }
+  },
+  "interaction_config": {
+    "optimal_steps": 2,
+    "max_rounds_multiplier": 2,
+    "comment": "max_rounds = optimal_steps * max_rounds_multiplier = 2 * 2 = 4"
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "description": "Directly reuse the atomic validator of the key operation - NO code duplication!",
+    "key_operation_step": 2,
+    "key_operation_id": "harvest_rewards",
+    "key_operation_alias": "rewards_harvest",
+    "validator_class": "HarvestRewardsValidator",
+    "note": "The validator will load HarvestRewardsValidator and call its validate() method directly"
+  },
+  "tags": ["query-write-verify", "defi", "farming"]
+}
+

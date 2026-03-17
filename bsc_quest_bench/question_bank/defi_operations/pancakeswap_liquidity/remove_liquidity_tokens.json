@@ -1,0 +1,175 @@
+{
+  "id": "remove_liquidity_tokens",
+  "category": "defi_operations",
+  "subcategory": "pancakeswap_liquidity",
+  "difficulty": "medium",
+  "title": "Remove Liquidity from Token-Token Pool",
+  "natural_language_templates": [
+    "Remove liquidity from the {token_a_symbol}/{token_b_symbol} pool on PancakeSwap",
+    "Withdraw {liquidity_percentage}% of my liquidity from the {token_a_symbol}-{token_b_symbol} pool",
+    "Remove {liquidity_amount} LP tokens from the {token_a_symbol}/{token_b_symbol} pool"
+  ],
+  "description": "Remove liquidity from a PancakeSwap V2 pool with two ERC20 tokens (Token A + Token B).\n\nThis task requires:\n1. Query the LP token address for the Token A/Token B pair from PancakeSwap Factory\n2. Check current LP token balance\n3. Calculate the liquidity amount to remove (can be a fixed amount or percentage)\n4. Query the pair's reserves to estimate how many Token A and Token B you'll receive\n5. Calculate minimum amounts (amountAMin, amountBMin) with slippage protection\n6. Ensure LP tokens are approved for the Router\n7. Call removeLiquidity(tokenA, tokenB, liquidity, amountAMin, amountBMin, to, deadline)\n\nKey PancakeSwap V2 Router function:\n- removeLiquidity(address tokenA, address tokenB, uint liquidity, uint amountAMin, uint amountBMin, address to, uint deadline) returns (uint amountA, uint amountB)\n\nImportant:\n- You need to APPROVE the Router to spend your LP tokens before calling removeLiquidity\n- Use Factory.getPair(tokenA, tokenB) to get the LP token address\n- Use Pair.getReserves() to estimate output amounts\n- Calculate minimum amounts: amountMin = (estimatedAmount * (100 - slippage)) / 100\n- Set a reasonable deadline (e.g., 20 minutes from now)\n- The 'to' address should be the agent's address to receive the tokens\n\nContract Addresses (BSC Mainnet):\n- PancakeSwap Router V2: 0x10ED43C718714eb63d5aA57B78B54704E256024E\n- PancakeSwap Factory: 0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73\n\nSteps:\n1. Get the LP token address: Factory.getPair(tokenA, tokenB)\n2. Check LP balance: LPToken.balanceOf(agent)\n3. Approve LP tokens: LPToken.approve(Router, liquidity)\n4. Get pair reserves: Pair.getReserves() and Pair.totalSupply()\n5. Estimate outputs: amountA = (liquidity * reserveA) / totalSupply, similar for amountB\n6. Calculate mins with slippage: amountAMin = amountA * (100 - slippage%) / 100\n7. Call Router.removeLiquidity(tokenA, tokenB, liquidity, amountAMin, amountBMin, agent, deadline)\n\nExample calculation:\n- If you have 1.5 LP tokens and want to remove 50%:\n  - liquidity = 1.5 * 0.5 = 0.75 LP tokens\n- If pool has 1000 Token A, 2000 Token B, 10 total LP supply:\n  - You'll get: (0.75 * 1000) / 10 = 75 Token A\n  - You'll get: (0.75 * 2000) / 10 = 150 Token B\n- With 5% slippage:\n  - amountAMin = 75 * 0.95 = 71.25\n  - amountBMin = 150 * 0.95 = 142.5",
+  "blockchain": {
+    "network": "bsc_mainnet",
+    "contracts": [
+      {
+        "name": "PancakeSwap Router V2",
+        "address": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+        "functions": [
+          "removeLiquidity(address tokenA, address tokenB, uint liquidity, uint amountAMin, uint amountBMin, address to, uint deadline)"
+        ]
+      },
+      {
+        "name": "PancakeSwap Factory",
+        "address": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+        "functions": [
+          "getPair(address tokenA, address tokenB)"
+        ]
+      }
+    ]
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "description": "PancakeSwap Router V2 address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      },
+      "role": "address"
+    },
+    "token_a_address": {
+      "type": "address",
+      "description": "First token address (e.g., USDT)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      },
+      "role": "receiver"
+    },
+    "token_a_symbol": {
+      "type": "string",
+      "description": "First token symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      },
+      "role": "parameter"
+    },
+    "token_a_decimals": {
+      "type": "integer",
+      "description": "First token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      },
+      "role": "parameter"
+    },
+    "token_b_address": {
+      "type": "address",
+      "description": "Second token address (e.g., BUSD)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      },
+      "role": "receiver"
+    },
+    "token_b_symbol": {
+      "type": "string",
+      "description": "Second token symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "BUSD"
+      },
+      "role": "parameter"
+    },
+    "token_b_decimals": {
+      "type": "integer",
+      "description": "Second token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      },
+      "role": "parameter"
+    },
+    "liquidity_percentage": {
+      "type": "number",
+      "description": "Percentage of LP tokens to remove (0-100)",
+      "generation": {
+        "method": "fixed",
+        "value": 50.0
+      },
+      "role": "parameter"
+    },
+    "slippage": {
+      "type": "number",
+      "description": "Slippage tolerance in percentage",
+      "generation": {
+        "method": "fixed",
+        "value": 5.0
+      },
+      "role": "parameter"
+    }
+  },
+  "preconditions": [
+    {
+      "type": "balance",
+      "description": "Must have BNB for gas fees",
+      "check": "balance >= 0.01 BNB"
+    },
+    {
+      "type": "lp_balance",
+      "description": "Must own LP tokens for the pair",
+      "check": "LP token balance > 0"
+    }
+  ],
+  "validation": {
+    "transaction_success": true,
+    "expected_state_changes": [
+      {
+        "type": "lp_balance_decrease",
+        "description": "LP token balance should decrease by liquidity amount"
+      },
+      {
+        "type": "token_a_increase",
+        "description": "Token A balance should increase"
+      },
+      {
+        "type": "token_b_increase",
+        "description": "Token B balance should increase"
+      }
+    ],
+    "required_interactions": [
+      {
+        "contract": "PancakeSwap Router V2",
+        "function": "removeLiquidity",
+        "selector": "0xbaa2abde"
+      }
+    ],
+    "pre_conditions": [],
+    "post_conditions": []
+  },
+  "metadata": {
+    "estimated_gas": 200000,
+    "requires_approval": true,
+    "approval_target": "LP Token",
+    "approval_spender": "PancakeSwap Router V2",
+    "tags": [
+      "defi",
+      "pancakeswap",
+      "liquidity",
+      "remove",
+      "amm",
+      "dex"
+    ],
+    "learning_objectives": [
+      "Understanding liquidity removal from AMM pools",
+      "LP token mechanics and redemption",
+      "Slippage protection for liquidity removal",
+      "Multi-step DeFi operations (query, approve, remove)"
+    ],
+    "requires_contract": false
+  },
+  "version": "2.0.0"
+}

@@ -1,0 +1,146 @@
+{
+  "id": "erc20_transfer_with_callback_1363",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "erc20_operations",
+  "difficulty": "medium",
+  "title": "ERC1363 Transfer with Callback",
+  "description": [
+    "Transfer ERC1363 tokens to a receiver contract with automatic callback execution.",
+    "",
+    "Technical context:",
+    "- Use ERC1363's transferAndCall(address to, uint256 value) function",
+    "- This is an extension of ERC20 that calls onTransferReceived() on the receiver",
+    "- The receiver must implement IERC1363Receiver interface",
+    "- Function selector: 0x4000aea0",
+    "- Parameters: to (address, 32 bytes) + value (uint256, 32 bytes)",
+    "- More gas-efficient than approve + transferFrom pattern",
+    "- The callback onTransferReceived(address,address,uint256,bytes) will be triggered",
+    "- Commonly used for paying for services in one transaction",
+    "- Recommended gas limit: 200000 (includes callback execution)"
+  ],
+  "natural_language_templates": [
+    "Transfer {amount} {token_symbol} tokens to contract {to_address} using ERC1363 transferAndCall",
+    "Send {amount} {token_symbol} to {to_address} with automatic callback using the ERC1363 token",
+    "Use ERC1363 transferAndCall to send {amount} {token_symbol} tokens to contract {to_address}",
+    "Transfer {amount} {token_symbol} tokens to {to_address} with callback notification"
+  ],
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "role": "token_contract",
+      "description": "ERC1363 token contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc1363_token_address",
+        "comment": "Use dynamically deployed ERC1363 token from environment"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "T1363"
+      }
+    },
+    "token_decimals": {
+      "type": "number",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "to_address": {
+      "type": "address",
+      "role": "receiver",
+      "description": "Receiver contract address (must implement IERC1363Receiver)",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "role": "transfer_amount",
+      "description": "Amount of tokens to transfer",
+      "generation": {
+        "method": "random",
+        "min": 1,
+        "max": 50,
+        "decimals": 2
+      }
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "description": "Agent must have sufficient token balance",
+        "min_balance": "{amount}"
+      },
+      {
+        "type": "balance",
+        "description": "Agent must have sufficient BNB for gas",
+        "min_balance": "0.01 BNB"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "token_balance_change",
+        "weight": 0.4,
+        "description": "Sender token balance decreased correctly",
+        "address": "agent",
+        "expected_change": "-{amount}",
+        "tolerance": "0"
+      },
+      {
+        "type": "token_balance_change",
+        "weight": 0.2,
+        "description": "Receiver token balance increased correctly",
+        "address": "{to_address}",
+        "expected_change": "+{amount}",
+        "tolerance": "0"
+      },
+      {
+        "type": "function_selector",
+        "weight": 0.1,
+        "description": "Correct function selector for transferAndCall",
+        "expected_selector": "0x4000aea0"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "erc1363",
+      "token",
+      "transfer",
+      "callback",
+      "receiver_pays",
+      "onchain"
+    ],
+    "estimated_gas": 200000,
+    "requires_contract": true,
+    "network": "mainnet",
+    "erc_standard": "ERC1363",
+    "known_limitations": [
+      "Most standard ERC20 tokens (USDT, USDC, DAI) do NOT support ERC1363",
+      "Requires token to implement transferAndCall function",
+      "Requires receiver to implement IERC1363Receiver interface",
+      "For testing, need to deploy a custom ERC1363-compliant token"
+    ],
+    "implementation_status": "partial",
+    "requires_custom_token": true
+  },
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  }
+}

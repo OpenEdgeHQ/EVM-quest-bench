@@ -1,0 +1,179 @@
+{
+  "id": "emergency_withdraw",
+  "title": "Emergency Withdraw from Staking Pool",
+  "difficulty": "easy",
+  "category": "defi_operations",
+  "subcategory": "staking_farming",
+  "description": [
+    "Emergency withdraw all staked LP tokens from a farming pool, forfeiting all accumulated rewards. This is an emergency function to quickly retrieve staked assets without claiming rewards.",
+    "",
+    "IMPORTANT: This is a SimpleRewardPool contract with emergencyWithdraw() function.",
+    "- Contract function: emergencyWithdraw() - NO PARAMETERS",
+    "- This function withdraws ALL staked LP tokens",
+    "- All pending rewards are FORFEITED (not claimed)",
+    "- User's staking record is completely cleared",
+    "- This is faster and uses less gas than normal withdraw",
+    "",
+    "Required steps:",
+    "1. Query current staked amount: rewardPool.userInfo(user_address)",
+    "2. Query current LP token balance: lpToken.balanceOf(user_address)",
+    "3. Call emergencyWithdraw: rewardPool.emergencyWithdraw()",
+    "4. Verify ALL LP tokens are returned",
+    "5. Verify staked amount becomes 0",
+    "6. Verify rewards are NOT claimed (CAKE balance should not increase)",
+    "",
+    "Contract details:",
+    "- SimpleRewardPool contract address: pool_address (dynamic parameter)",
+    "- Staking token: USDT/BUSD LP (0x7EFaEf62fDdCCa950418312c6C91Aef321375A00)",
+    "- Emergency withdraw function signature: emergencyWithdraw()",
+    "- NO amount parameter - withdraws everything",
+    "- Rewards are forfeited - this is the trade-off for emergency speed",
+    "",
+    "To get the pool address from deployed contracts:",
+    "const poolAddress = deployedContracts['simple_reward_pool']",
+    "",
+    "Function call construction:",
+    "```typescript",
+    "const SimpleRewardPoolABI = [",
+    "  'function emergencyWithdraw() external'",
+    "];",
+    "const contract = new Contract interface(poolAddress, SimpleRewardPoolABI, provider);",
+    "const data = encode the function call('emergencyWithdraw', []);",
+    "```",
+    "",
+    "Common mistakes to avoid:",
+    "- DO NOT pass any parameters to emergencyWithdraw()",
+    "- DO understand that rewards will be lost",
+    "- DO verify that CAKE balance does NOT increase (rewards forfeited)",
+    "- This is meant for emergency situations only"
+  ],
+  "tags": [
+    "emergency",
+    "withdraw",
+    "unstake",
+    "farming",
+    "defi"
+  ],
+  "parameters": {
+    "pool_address": {
+      "type": "address",
+      "description": "SimpleRewardPool contract address",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_reward_pool_address"
+      },
+      "role": "address"
+    },
+    "lp_token_address": {
+      "type": "address",
+      "description": "LP token address (USDT/BUSD pair)",
+      "example": "0x7EFaEf62fDdCCa950418312c6C91Aef321375A00",
+      "generation": {
+        "method": "fixed",
+        "value": "0x7EFaEf62fDdCCa950418312c6C91Aef321375A00"
+      },
+      "role": "receiver"
+    },
+    "reward_token_address": {
+      "type": "address",
+      "description": "Reward token address (CAKE)",
+      "example": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
+      },
+      "role": "receiver"
+    },
+    "user_address": {
+      "type": "address",
+      "description": "User's wallet address",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "test_address"
+      },
+      "role": "address"
+    },
+    "chain_id": {
+      "type": "integer",
+      "description": "Blockchain network ID (56 for BSC Mainnet)",
+      "example": 56,
+      "generation": {
+        "method": "fixed",
+        "value": 56
+      },
+      "role": "parameter"
+    }
+  },
+  "natural_language_templates": [
+    "Emergency withdraw all staked LP tokens from the pool at {pool_address}",
+    "Quickly retrieve all LP tokens from staking pool {pool_address} (forfeit rewards)",
+    "Execute emergency withdrawal from farming pool {pool_address}",
+    "Unstake all USDT/BUSD LP tokens immediately, forfeiting CAKE rewards"
+  ],
+  "contracts": {
+    "simple_reward_pool": {
+      "address": "dynamic",
+      "name": "SimpleRewardPool",
+      "abi_functions": [
+        "function emergencyWithdraw() external",
+        "function userInfo(address _user) external view returns (uint256 amount, uint256 rewardDebt)"
+      ]
+    },
+    "lp_token": {
+      "address": "0x7EFaEf62fDdCCa950418312c6C91Aef321375A00",
+      "name": "PancakeSwap LP Token (USDT/BUSD)",
+      "abi_functions": [
+        "function balanceOf(address account) external view returns (uint256)"
+      ]
+    },
+    "cake_token": {
+      "address": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+      "name": "PancakeSwap Token (CAKE)",
+      "abi_functions": [
+        "function balanceOf(address account) external view returns (uint256)"
+      ]
+    }
+  },
+  "expected_behavior": {
+    "transaction_count": 1,
+    "state_changes": [
+      "User's LP token balance increases by entire staked amount",
+      "User's staked amount in pool becomes 0",
+      "User's CAKE balance does NOT increase (rewards forfeited)"
+    ],
+    "gas_estimate": 100000
+  },
+  "validation_criteria": {
+    "transaction_success": {
+      "weight": 30,
+      "description": "Transaction executed successfully without reverting"
+    },
+    "lp_token_full_return": {
+      "weight": 40,
+      "description": "All staked LP tokens returned to user"
+    },
+    "staking_record_cleared": {
+      "weight": 20,
+      "description": "User's staking record cleared (amount = 0)"
+    },
+    "rewards_not_claimed": {
+      "weight": 10,
+      "description": "Rewards NOT claimed (CAKE balance unchanged)"
+    }
+  },
+  "hints": [
+    "Call emergencyWithdraw() with NO parameters",
+    "This withdraws ALL staked tokens at once",
+    "Rewards are forfeited - CAKE balance should not increase",
+    "Verify userInfo shows 0 staked amount after transaction",
+    "This is faster than normal withdraw but you lose rewards"
+  ],
+  "test_script_template": "emergency_withdraw.ts",
+  "version": "2.0.0",
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  }
+}

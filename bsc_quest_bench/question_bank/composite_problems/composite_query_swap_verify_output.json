@@ -1,0 +1,179 @@
+{
+  "id": "composite_query_swap_verify_output",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "complete_workflow",
+  "difficulty": "medium",
+  "title": "Query Expected Output, Swap BNB, and Verify Result",
+  "natural_language_templates": [
+    "Calculate expected output for {amount_bnb} BNB swap to {token_out_symbol}, execute the swap, then verify you got the expected amount",
+    "Query expected swap output using getAmountsOut, swap {amount_bnb} BNB for {token_out_symbol}, and confirm the output matches",
+    "First check how much {token_out_symbol} you would get for {amount_bnb} BNB, then swap, and verify the received amount"
+  ],
+  "description": [
+    "Complete swap verification workflow: query expected output, execute swap, and verify.",
+    "",
+    "This is a 3-step process:",
+    "1. Query expected swap output using PancakeSwap Router's getAmountsOut()",
+    "2. Execute the swap using swapExactETHForTokens()",
+    "3. Query token balance to verify the received amount",
+    "",
+    "Technical details:",
+    "- PancakeSwap Router: 0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "- getAmountsOut(uint amountIn, address[] path): view function",
+    "- swapExactETHForTokens: 0x7ff36ab5 (sends BNB, receives tokens)",
+    "- Token out: USDT (0x55d398326f99059fF775485246999027B3197955)",
+    "- Path: [WBNB, Token_Out]",
+    "",
+    "Note: The key operation is the swap since it's the core transaction."
+  ],
+  "composite_structure": {
+    "pattern": "query-swap-verify",
+    "optimal_steps": 3,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "query_swap_output_amount",
+        "role": "preparation",
+        "description": "Query expected swap output using getAmountsOut"
+      },
+      {
+        "step": 2,
+        "atomic_id": "swap_exact_bnb_for_tokens",
+        "role": "key_operation",
+        "description": "Execute BNB to token swap"
+      },
+      {
+        "step": 3,
+        "atomic_id": "query_erc20_balance",
+        "role": "verification",
+        "description": "Verify received token amount"
+      }
+    ]
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "wbnb_address": {
+      "type": "address",
+      "role": "intermediate",
+      "description": "WBNB address (for swap path)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "token_out_address": {
+      "type": "address",
+      "role": "token_out",
+      "description": "Output token address (USDT)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_out_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Output token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_out_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Output token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "amount_bnb": {
+      "type": "number",
+      "unit": "BNB",
+      "role": "swap_amount",
+      "description": "Amount of BNB to swap",
+      "generation": {
+        "method": "random",
+        "min": 0.01,
+        "max": 0.05,
+        "decimals": 3
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance percentage",
+      "generation": {
+        "method": "fixed",
+        "value": 5.0
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 6,
+    "optimal_steps": 3,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "swap_exact_bnb_for_tokens",
+    "key_operation_step": 2
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "bnb_balance",
+        "description": "Agent must have sufficient BNB for swap",
+        "min_balance": "0.1 BNB"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Swap transaction executed successfully"
+      },
+      {
+        "type": "token_received",
+        "weight": 0.4,
+        "description": "Output tokens received"
+      },
+      {
+        "type": "bnb_spent",
+        "weight": 0.3,
+        "description": "Correct BNB amount spent"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "defi",
+      "swap",
+      "verification",
+      "query",
+      "pancakeswap",
+      "complete-workflow",
+      "medium"
+    ],
+    "estimated_gas": 200000,
+    "requires_approval": false,
+    "difficulty_notes": [
+      "Three-step verification workflow",
+      "Must query expected output first",
+      "Compare expected vs actual output"
+    ]
+  }
+}
+

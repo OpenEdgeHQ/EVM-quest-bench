@@ -1,0 +1,128 @@
+{
+  "id": "composite_approve_swap_to_bnb",
+  "category": "composite_problems",
+  "difficulty": "medium",
+  "title": "Approve and Swap Tokens for BNB",
+  "description": [
+    "A composite problem that tests the LLM's ability to:",
+    "1. Execute ERC20 approval for PancakeSwap Router",
+    "2. Execute swap operation to exchange tokens for BNB",
+    "This demonstrates the DeFi approval pattern for token-to-BNB swaps."
+  ],
+  "natural_language_templates": [
+    "Approve PancakeSwap to spend {amount_in} {token_symbol}, then swap {amount_in} {token_symbol} for BNB",
+    "First approve the router, then swap {amount_in} {token_symbol} tokens to BNB on PancakeSwap"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "composite_structure": {
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "erc20_approve",
+        "description": "Approve PancakeSwap Router to spend tokens"
+      },
+      {
+        "step": 2,
+        "atomic_id": "swap_exact_tokens_for_bnb",
+        "description": "Swap tokens for BNB"
+      }
+    ]
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+        "comment": "PancakeSwap V2 Router on BSC"
+      }
+    },
+    "token_address": {
+      "type": "address",
+      "role": "token_in",
+      "description": "Token address to swap (USDT)",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955",
+        "comment": "USDT on BSC"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token symbol",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "wbnb_address": {
+      "type": "address",
+      "role": "token_out",
+      "description": "WBNB address",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "amount_in": {
+      "type": "number",
+      "unit": "tokens",
+      "role": "swap_amount",
+      "description": "Amount of tokens to swap",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "random",
+        "min": 5.0,
+        "max": 20.0,
+        "decimals": 2
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance (e.g., 5 for 5%)",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": 5.0
+      }
+    }
+  },
+  "interaction_config": {
+    "optimal_steps": 2,
+    "max_rounds_multiplier": 2,
+    "comment": "max_rounds = optimal_steps * max_rounds_multiplier = 2 * 2 = 4"
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "description": "Directly reuse the atomic validator of the key operation - NO code duplication!",
+    "key_operation_step": 2,
+    "key_operation_id": "swap_exact_tokens_for_bnb",
+    "key_operation_alias": "swap_to_bnb",
+    "validator_class": "SwapExactTokensForBNBValidator",
+    "note": "The validator will load SwapExactTokensForBNBValidator and call its validate() method directly"
+  },
+  "tags": ["approve-execute", "defi", "swap"]
+}
+

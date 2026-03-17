@@ -1,0 +1,222 @@
+{
+  "id": "composite_add_liquidity_stake_lp",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "complete_workflow",
+  "difficulty": "hard",
+  "title": "Add Token+Token Liquidity and Stake LP Tokens",
+  "natural_language_templates": [
+    "Add liquidity with {amount_a} {token_a_symbol} and {amount_b} {token_b_symbol}, then stake the LP tokens received",
+    "Provide liquidity to {token_a_symbol}/{token_b_symbol} pool, then stake all LP tokens in the farming pool at {staking_contract}",
+    "Add {amount_a} {token_a_symbol} and {amount_b} {token_b_symbol} to PancakeSwap, approve and stake the LP tokens"
+  ],
+  "description": [
+    "Complete LP farming workflow: add liquidity, approve LP, and stake.",
+    "",
+    "This is a 3-step process:",
+    "1. Add USDT + BUSD liquidity using addLiquidity to receive LP tokens",
+    "2. Approve the staking contract to spend LP tokens",
+    "3. Stake LP tokens in the farming pool using deposit(uint256)",
+    "",
+    "Technical details:",
+    "- PancakeSwap Router: 0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "- Token A: USDT (0x55d398326f99059fF775485246999027B3197955)",
+    "- Token B: BUSD (0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56)",
+    "- LP Token: USDT/BUSD LP (0x7EFaEf62fDdCCa950418312c6C91Aef321375A00)",
+    "- addLiquidity: 0xe8e33700",
+    "- SimpleLPStaking contract uses deposit(uint256 _amount)",
+    "",
+    "IMPORTANT: The staking contract uses deposit(uint256) function.",
+    "The key operation is stake_lp_tokens since it's the final goal."
+  ],
+  "composite_structure": {
+    "pattern": "liquidity-approve-stake",
+    "optimal_steps": 3,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "add_liquidity_tokens",
+        "role": "preparation",
+        "description": "Add USDT + BUSD liquidity to receive LP tokens"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_approve",
+        "role": "approval",
+        "description": "Approve staking contract to spend LP tokens"
+      },
+      {
+        "step": 3,
+        "atomic_id": "stake_lp_tokens",
+        "role": "key_operation",
+        "description": "Stake LP tokens in farming pool"
+      }
+    ]
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "token_a_address": {
+      "type": "address",
+      "role": "token_a",
+      "description": "Token A address (USDT)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_a_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token A symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_b_address": {
+      "type": "address",
+      "role": "token_b",
+      "description": "Token B address (BUSD)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      }
+    },
+    "token_b_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token B symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "BUSD"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "lp_token_address": {
+      "type": "address",
+      "role": "lp_token",
+      "description": "LP token address (USDT/BUSD LP - same as SimpleLPStaking expects)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x7EFaEf62fDdCCa950418312c6C91Aef321375A00"
+      }
+    },
+    "staking_contract": {
+      "type": "address",
+      "role": "contract",
+      "description": "SimpleLPStaking contract address",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_lp_staking_address"
+      }
+    },
+    "amount_a": {
+      "type": "number",
+      "unit": "token",
+      "role": "liquidity_amount",
+      "description": "Amount of token A to add as liquidity",
+      "generation": {
+        "method": "random",
+        "min": 5.0,
+        "max": 15.0,
+        "decimals": 2
+      }
+    },
+    "amount_b": {
+      "type": "number",
+      "unit": "token",
+      "role": "liquidity_amount",
+      "description": "Amount of token B to add as liquidity",
+      "generation": {
+        "method": "random",
+        "min": 5.0,
+        "max": 15.0,
+        "decimals": 2
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance percentage",
+      "generation": {
+        "method": "fixed",
+        "value": 10.0
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 6,
+    "optimal_steps": 3,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "stake_lp_tokens",
+    "key_operation_step": 3
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "description": "Agent must have sufficient USDT and BUSD",
+        "min_balance": "50 tokens each"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Stake transaction executed successfully"
+      },
+      {
+        "type": "lp_staking_increase",
+        "weight": 0.4,
+        "description": "LP staking balance increased"
+      },
+      {
+        "type": "lp_balance_decrease",
+        "weight": 0.3,
+        "description": "LP token balance decreased (staked)"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "defi",
+      "liquidity",
+      "staking",
+      "farming",
+      "lp",
+      "pancakeswap",
+      "complete-workflow",
+      "hard"
+    ],
+    "estimated_gas": 500000,
+    "requires_approval": true,
+    "difficulty_notes": [
+      "Three-step complete LP farming workflow",
+      "Must handle dynamic LP token amount",
+      "Complex approval chain",
+      "Requires understanding of AMM mechanics"
+    ]
+  }
+}

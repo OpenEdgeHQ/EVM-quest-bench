@@ -1,0 +1,115 @@
+{
+  "id": "composite_approve_stake_tokens",
+  "category": "composite_problems",
+  "difficulty": "medium",
+  "title": "Approve and Stake Tokens",
+  "description": [
+    "A composite problem that tests the LLM's ability to:",
+    "1. Execute ERC20 approval for staking contract to spend CAKE tokens",
+    "2. Execute single token staking operation using the approval",
+    "This demonstrates the DeFi approval pattern for staking operations.",
+    "IMPORTANT: The SimpleStaking contract uses 'deposit(uint256 _amount)' function, NOT 'stake()'."
+  ],
+  "natural_language_templates": [
+    "Approve the staking contract to spend {amount} CAKE, then stake {amount} CAKE tokens",
+    "First approve staking contract, then stake {amount} tokens in the pool"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "composite_structure": {
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "erc20_approve",
+        "description": "Approve staking contract to spend CAKE tokens"
+      },
+      {
+        "step": 2,
+        "atomic_id": "stake_single_token",
+        "description": "Stake CAKE tokens in the pool"
+      }
+    ]
+  },
+  "parameters": {
+    "pool_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "SimpleStaking contract address",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_staking_address"
+      }
+    },
+    "token_address": {
+      "type": "address",
+      "role": "token",
+      "description": "CAKE token address",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+        "comment": "CAKE token on BSC"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": "CAKE"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "amount": {
+      "type": "number",
+      "unit": "tokens",
+      "role": "stake_amount",
+      "description": "Amount of CAKE to stake",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "random",
+        "min": 2.0,
+        "max": 8.0,
+        "decimals": 1
+      }
+    },
+    "user_address": {
+      "type": "address",
+      "role": "user",
+      "description": "User's wallet address",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "from_env",
+        "env_key": "test_address"
+      }
+    }
+  },
+  "interaction_config": {
+    "optimal_steps": 2,
+    "max_rounds_multiplier": 2,
+    "comment": "max_rounds = optimal_steps * max_rounds_multiplier = 2 * 2 = 4"
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "description": "Directly reuse the atomic validator of the key operation - NO code duplication!",
+    "key_operation_step": 2,
+    "key_operation_id": "stake_single_token",
+    "key_operation_alias": "stake_tokens",
+    "validator_class": "StakeSingleTokenValidator",
+    "note": "The validator will load StakeSingleTokenValidator and call its validate() method directly"
+  },
+  "tags": ["approve-execute", "defi", "staking"]
+}
+

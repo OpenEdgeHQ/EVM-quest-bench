@@ -1,0 +1,240 @@
+{
+  "id": "composite_optimized_swap_with_query",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "advanced_defi",
+  "difficulty": "hard",
+  "title": "Optimized Swap with Query: Check Reserves, Calculate, Execute, Verify",
+  "natural_language_templates": [
+    "Query pair reserves, calculate optimal swap amount for {amount} {token_in_symbol}, execute the swap, then verify output",
+    "Optimize swap: check reserves, calculate expected output, swap {amount} {token_in_symbol} to {token_out_symbol}, and confirm",
+    "Advanced swap workflow: query {pair_address} reserves, estimate output for {amount} {token_in_symbol}, approve and swap to {token_out_symbol}, verify balance"
+  ],
+  "description": [
+    "Advanced DeFi workflow with pre-swap analysis and post-swap verification.",
+    "",
+    "This is a 5-step process:",
+    "1. Query pair reserves to check liquidity",
+    "2. Calculate expected swap output amount",
+    "3. Approve input token to Router",
+    "4. Execute the swap with calculated parameters",
+    "5. Query output token balance to verify",
+    "",
+    "Technical details:",
+    "- PancakeSwap Router: 0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "- PancakeSwap Factory: 0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+    "- USDT: 0x55d398326f99059fF775485246999027B3197955",
+    "- BUSD: 0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+    "- USDT/BUSD Pair: 0x7EFaEf62fDdCCa950418312c6C91Aef321375A00",
+    "",
+    "Query functions:",
+    "- getReserves(): returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
+    "- getAmountsOut(uint amountIn, address[] path): returns expected output",
+    "",
+    "BSC does NOT support ENS. Use hex addresses directly."
+  ],
+  "composite_structure": {
+    "pattern": "query-calculate-execute-verify",
+    "optimal_steps": 5,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "query_pair_reserves",
+        "role": "analysis",
+        "description": "Query pair reserves to check liquidity"
+      },
+      {
+        "step": 2,
+        "atomic_id": "query_swap_output_amount",
+        "role": "calculation",
+        "description": "Calculate expected swap output"
+      },
+      {
+        "step": 3,
+        "atomic_id": "erc20_approve",
+        "role": "approval",
+        "description": "Approve input token to Router"
+      },
+      {
+        "step": 4,
+        "atomic_id": "swap_exact_tokens_for_tokens",
+        "role": "key_operation",
+        "description": "Execute the optimized swap"
+      },
+      {
+        "step": 5,
+        "atomic_id": "query_erc20_balance",
+        "role": "verification",
+        "description": "Verify output token balance"
+      }
+    ],
+    "interaction_config": {
+      "max_rounds": 10,
+      "optimal_steps": 5,
+      "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+      "forced_submit_at_max": true
+    }
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "factory_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Factory contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73"
+      }
+    },
+    "pair_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "USDT/BUSD pair address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x7EFaEf62fDdCCa950418312c6C91Aef321375A00"
+      }
+    },
+    "token_in_address": {
+      "type": "address",
+      "role": "token",
+      "description": "Input token address (USDT)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_in_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Input token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_out_address": {
+      "type": "address",
+      "role": "token",
+      "description": "Output token address (BUSD)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      }
+    },
+    "token_out_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Output token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "BUSD"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "unit": "tokens",
+      "role": "swap_amount",
+      "description": "Amount of input tokens to swap",
+      "generation": {
+        "method": "random",
+        "min": 10.0,
+        "max": 50.0,
+        "decimals": 1
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance percentage",
+      "generation": {
+        "method": "fixed",
+        "value": 5.0
+      }
+    }
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "swap_exact_tokens_for_tokens",
+    "key_operation_step": 4
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "description": "Agent must have sufficient input tokens",
+        "min_balance": "100 tokens"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.2,
+        "description": "Swap transaction executed successfully"
+      },
+      {
+        "type": "reserves_queried",
+        "weight": 0.15,
+        "description": "Pair reserves were queried"
+      },
+      {
+        "type": "output_calculated",
+        "weight": 0.15,
+        "description": "Expected output was calculated"
+      },
+      {
+        "type": "input_token_decrease",
+        "weight": 0.2,
+        "description": "Input token balance decreased"
+      },
+      {
+        "type": "output_token_increase",
+        "weight": 0.2,
+        "description": "Output token balance increased"
+      },
+      {
+        "type": "balance_verified",
+        "weight": 0.1,
+        "description": "Final balance was verified"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "defi",
+      "optimization",
+      "query",
+      "swap",
+      "verification",
+      "advanced",
+      "hard"
+    ],
+    "estimated_gas": 500000,
+    "requires_approval": true,
+    "difficulty_notes": [
+      "Five-step advanced workflow",
+      "Requires query operations before swap",
+      "Must use query results to optimize swap",
+      "Post-swap verification required"
+    ]
+  }
+}
+

@@ -1,0 +1,145 @@
+{
+  "id": "erc20_approve_and_call_1363",
+  "category": "basic_transactions",
+  "subcategory": "erc20_operations",
+  "difficulty": "medium",
+  "title": "ERC20 Approve with Callback (ERC1363)",
+  "description": [
+    "Approve an address to spend ERC20 tokens and trigger an `onApprovalReceived` callback on the spender contract if it implements `IERC1363Spender`.",
+    "",
+    "Technical context:",
+    "- ERC1363 extends ERC20 with payable token functions",
+    "- Function signature: approveAndCall(address spender, uint256 value) or approveAndCall(address spender, uint256 value, bytes data)",
+    "- The spender must implement IERC1363Spender interface to receive callback",
+    "- If spender is a contract implementing IERC1363Spender, onApprovalReceived will be called",
+    "- If spender doesn't implement the interface, it works like regular approve",
+    "- Recommended gas limit: 200000",
+    "",
+    "Key considerations:",
+    "- Use the deployed ERC1363 test token (T1363)",
+    "- Create a Contract instance with token address and ERC1363 ABI",
+    "- The approveAndCall function combines approve and callback in one transaction",
+    "- Set transaction 'to' to the token contract address",
+    "- Set transaction 'value' to 0 (not sending BNB)",
+    "- After approval, allowance(owner, spender) should return the approved amount"
+  ],
+  "natural_language_templates": [
+    "Approve {spender_address} to spend {amount} {token_symbol} tokens with callback",
+    "Use ERC1363 approveAndCall to authorize {spender_address} to use {amount} {token_symbol}",
+    "Grant approval to {spender_address} for {amount} {token_symbol} using the ERC1363 token's callback feature",
+    "Approve {amount} {token_symbol} for {spender_address} with automatic onApprovalReceived callback"
+  ],
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "role": "token_contract",
+      "description": "ERC1363 token contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc1363_token_address",
+        "comment": "Use dynamically deployed ERC1363 token from environment"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "T1363"
+      }
+    },
+    "token_decimals": {
+      "type": "number",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "spender_address": {
+      "type": "address",
+      "role": "spender",
+      "description": "Address to be approved for spending tokens",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "unit": "token",
+      "role": "approval_amount",
+      "description": "Amount of tokens to approve",
+      "generation": {
+        "method": "random",
+        "min": 1.0,
+        "max": 100.0,
+        "decimals": 2
+      }
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "balance_check",
+        "address": "{agent_address}",
+        "token": "{token_address}",
+        "min_balance": "0.001",
+        "description": "Agent must have some tokens (approval doesn't require specific balance)"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "allowance_set",
+        "weight": 0.5,
+        "owner": "{agent_address}",
+        "spender": "{spender_address}",
+        "token": "{token_address}",
+        "expected_allowance": "{amount}",
+        "tolerance": "0",
+        "description": "Allowance correctly set for spender"
+      },
+      {
+        "type": "function_selector_check",
+        "weight": 0.2,
+        "description": "Correct function selector for approveAndCall",
+        "expected_selector": "0xcae9ca51",
+        "comment": "approveAndCall(address,uint256,bytes) selector"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "erc1363",
+      "token",
+      "approve",
+      "callback",
+      "allowance",
+      "spender_notification",
+      "onchain"
+    ],
+    "estimated_gas": 200000,
+    "requires_contract": true,
+    "network": "mainnet",
+    "erc_standard": "ERC1363",
+    "known_limitations": [
+      "Most standard ERC20 tokens (USDT, USDC, DAI) do NOT support ERC1363",
+      "Requires token to implement approveAndCall function",
+      "If spender is a contract, it can optionally implement IERC1363Spender interface",
+      "For testing, uses a custom ERC1363-compliant token"
+    ],
+    "implementation_status": "development",
+    "requires_custom_token": true
+  },
+  "version": "2.0.0",
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  }
+}

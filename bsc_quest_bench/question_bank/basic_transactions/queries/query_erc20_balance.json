@@ -1,0 +1,127 @@
+{
+  "id": "query_erc20_balance",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "queries",
+  "difficulty": "easy",
+  "title": "Query ERC20 Token Balance",
+  
+  "description": [
+    "Query the ERC20 token balance of a specific address by calling the balanceOf function.",
+    "",
+    "Technical context:",
+    "- Use contract.balanceOf(address) to query token balance",
+    "- The return value is in token's smallest unit (considering decimals)",
+    "- This is a read-only view function, no transaction is required",
+    "- Balance should be returned as uint256",
+    "",
+    "Key considerations:",
+    "- Create contract instance with token address and ERC20 ABI",
+    "- Call balanceOf(address) view function",
+    "- Return both raw balance (in wei/smallest unit) and human-readable balance",
+    "- Consider token decimals when converting to human-readable format"
+  ],
+  
+  "natural_language_templates": [
+    "Query the {token_symbol} balance of address {query_address}",
+    "Check the {token_symbol} token balance for {query_address}",
+    "Get the balance of {token_symbol} (token address: {token_address}) for {query_address}",
+    "What is the {token_symbol} balance of address {query_address}?"
+  ],
+  
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "ERC20 token contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc1363_token_address",
+        "comment": "Use locally deployed ERC1363 test token (standard OpenZeppelin ERC20)"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "T1363"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "query_address": {
+      "type": "address",
+      "role": "query_target",
+      "description": "Address to query token balance for",
+      "generation": {
+        "method": "random",
+        "comment": "Random address for query operation"
+      }
+    },
+    "expected_balance": {
+      "type": "number",
+      "role": "expected_result",
+      "description": "Expected token balance in tokens (will be set via Anvil)",
+      "generation": {
+        "method": "random",
+        "min": 10.0,
+        "max": 5000.0,
+        "decimals": 2,
+        "comment": "Random balance between 10 and 5000 tokens"
+      }
+    }
+  },
+  
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "address_exists",
+        "description": "Query address must be valid"
+      },
+      {
+        "type": "contract_exists",
+        "description": "Token contract must exist"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "query_success",
+        "weight": 0.3,
+        "description": "Query executed successfully"
+      },
+      {
+        "type": "return_format",
+        "weight": 0.3,
+        "description": "Return value format is correct (contains balance_raw)"
+      },
+      {
+        "type": "balance_correctness",
+        "weight": 0.4,
+        "description": "Balance value matches chain state"
+      }
+    ]
+  },
+  
+  "metadata": {
+    "tags": ["query", "balance", "erc20", "read-only", "basic"],
+    "estimated_gas": 0,
+    "requires_contract": true,
+    "operation_type": "query",
+    "erc_standard": "ERC20"
+  }
+}
+

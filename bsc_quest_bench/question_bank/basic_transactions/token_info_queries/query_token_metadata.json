@@ -1,0 +1,107 @@
+{
+  "id": "query_token_metadata",
+  "category": "basic_transactions",
+  "subcategory": "token_info_queries",
+  "difficulty": "easy",
+  "title": "Query Token Metadata",
+  "description": "Query comprehensive metadata of an ERC20 token by calling multiple view functions: name(), symbol(), decimals(), and totalSupply(). This demonstrates batch querying capabilities and handling of standard ERC20 token information. Note that some non-standard tokens may not implement all these functions, so proper error handling is important.",
+  "natural_language_templates": [
+    "Query the metadata for token at {{token_address}} including name, symbol, decimals, and total supply",
+    "Get comprehensive information about the ERC20 token at {{token_address}}",
+    "Retrieve token details (name, symbol, decimals, totalSupply) for {{token_address}}",
+    "Check the basic information of token {{token_address}}"
+  ],
+  "blockchain": "bsc",
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "description": "ERC20 token contract address to query metadata for (USDT on BSC)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "expected_name": {
+      "type": "string",
+      "description": "Expected token name",
+      "generation": {
+        "method": "fixed",
+        "value": "Tether USD"
+      }
+    },
+    "expected_symbol": {
+      "type": "string",
+      "description": "Expected token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "expected_decimals": {
+      "type": "integer",
+      "description": "Expected token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    }
+  },
+  "validation": {
+    "type": "query",
+    "rules": [
+      {
+        "field": "query_execution",
+        "condition": "success",
+        "error_message": "Failed to query token metadata",
+        "weight": 25
+      },
+      {
+        "field": "return_format",
+        "condition": "has_required_fields",
+        "required_fields": ["name", "symbol", "decimals", "totalSupply"],
+        "error_message": "Missing required fields in query result",
+        "weight": 25
+      },
+      {
+        "field": "name_correctness",
+        "condition": "matches_expected",
+        "error_message": "Token name does not match expected value",
+        "weight": 15
+      },
+      {
+        "field": "symbol_correctness",
+        "condition": "matches_expected",
+        "error_message": "Token symbol does not match expected value",
+        "weight": 15
+      },
+      {
+        "field": "decimals_correctness",
+        "condition": "matches_expected",
+        "error_message": "Token decimals do not match expected value",
+        "weight": 20
+      }
+    ]
+  },
+  "metadata": {
+    "tags": ["erc20", "token", "metadata", "query", "batch-query"],
+    "estimated_gas": 0,
+    "prerequisites": [],
+    "related_questions": ["query_erc20_balance", "erc20_transfer_fixed"],
+    "learning_objectives": [
+      "Understand standard ERC20 token metadata functions",
+      "Learn to query multiple contract functions efficiently",
+      "Master parsing different return types (string, uint8, uint256)",
+      "Understand the importance of decimals in token representation",
+      "Learn to handle non-standard ERC20 tokens gracefully"
+    ],
+    "operation_type": "query",
+    "notes": [
+      "name() and symbol() return string values",
+      "decimals() returns uint8 (typically 18 for most tokens)",
+      "totalSupply() returns uint256 (total token supply in smallest unit)",
+      "Some tokens may not implement all functions - handle gracefully",
+      "Batch querying is more efficient than individual calls"
+    ]
+  }
+}
+

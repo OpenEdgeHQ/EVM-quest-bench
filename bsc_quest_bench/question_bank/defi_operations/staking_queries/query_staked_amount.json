@@ -1,0 +1,89 @@
+{
+  "id": "query_staked_amount",
+  "category": "defi_operations",
+  "subcategory": "staking_queries",
+  "difficulty": "easy",
+  "title": "Query Staked Amount",
+  "description": "Query the staked amount of a user in a staking contract. This involves calling the staking contract's userInfo function to retrieve the user's staked balance and deposit time.",
+  "natural_language_templates": [
+    "Query the staked amount for address {{query_address}} in the SimpleStaking contract",
+    "Check how much {{query_address}} has staked in the staking pool at {{pool_address}}",
+    "Get the staked balance for user {{query_address}} from the SimpleStaking contract",
+    "Retrieve staking information for address {{query_address}} including amount and deposit time"
+  ],
+  "blockchain": "bsc",
+  "parameters": {
+    "pool_address": {
+      "type": "address",
+      "description": "SimpleStaking contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_staking_address"
+      }
+    },
+    "query_address": {
+      "type": "address",
+      "description": "User address to query staked amount for",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "expected_staked_amount": {
+      "type": "number",
+      "description": "Expected staked amount (in token units, not wei)",
+      "generation": {
+        "method": "random",
+        "min": 1,
+        "max": 100,
+        "decimals": 2
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "description": "Staking token decimals (CAKE uses 18 decimals)",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    }
+  },
+  "validation": {
+    "type": "query",
+    "rules": [
+      {
+        "field": "query_execution",
+        "condition": "success",
+        "error_message": "Failed to query staked amount",
+        "weight": 30
+      },
+      {
+        "field": "return_format",
+        "condition": "has_required_fields",
+        "required_fields": ["staked_amount", "deposit_time"],
+        "error_message": "Missing required fields in query result",
+        "weight": 30
+      },
+      {
+        "field": "staked_amount_correctness",
+        "condition": "matches_expected",
+        "tolerance_percent": 1,
+        "error_message": "Staked amount does not match expected value",
+        "weight": 40
+      }
+    ]
+  },
+  "metadata": {
+    "tags": ["defi", "staking", "query", "userInfo"],
+    "estimated_gas": 0,
+    "prerequisites": [],
+    "related_questions": ["stake_single_token", "unstake_lp_tokens"],
+    "learning_objectives": [
+      "Understand how to query staking contract state",
+      "Learn to call userInfo function to get user's staked balance",
+      "Master parsing struct return values from smart contracts",
+      "Understand the structure of staking data (amount, depositTime)"
+    ],
+    "operation_type": "query"
+  }
+}
+

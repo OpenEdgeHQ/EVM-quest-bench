@@ -1,0 +1,118 @@
+{
+  "id": "query_pair_reserves",
+  "category": "defi_operations",
+  "subcategory": "pancakeswap_queries",
+  "difficulty": "easy",
+  "title": "Query PancakeSwap Pair Reserves",
+  "description": "Query the reserve amounts of both tokens in a PancakeSwap liquidity pair",
+  "natural_language_templates": [
+    "Get the reserves of the {token0_symbol}/{token1_symbol} pair at {pair_address}",
+    "Query the liquidity reserves for pair {pair_address}",
+    "Check the reserve0 and reserve1 for the PancakeSwap pair {pair_address}",
+    "What are the current reserves of the {token0_symbol}/{token1_symbol} liquidity pair?"
+  ],
+  "blockchain": "bsc",
+  "parameters": {
+    "pair_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap pair contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x7EFaEf62fDdCCa950418312c6C91Aef321375A00",
+        "comment": "USDT/BUSD LP pair on BSC"
+      }
+    },
+    "token0_address": {
+      "type": "address",
+      "role": "reference",
+      "description": "Token0 address in the pair",
+      "generation": {
+        "method": "from_list",
+        "addresses": ["0x55d398326f99059fF775485246999027B3197955"],
+        "comment": "USDT is token0 in USDT/BUSD pair"
+      }
+    },
+    "token1_address": {
+      "type": "address",
+      "role": "reference",
+      "description": "Token1 address in the pair",
+      "generation": {
+        "method": "from_list",
+        "addresses": ["0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"],
+        "comment": "BUSD is token1 in USDT/BUSD pair"
+      }
+    },
+    "token0_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token0 symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token1_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token1 symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "BUSD"
+      }
+    },
+    "token0_decimals": {
+      "type": "integer",
+      "role": "parameter",
+      "description": "Token0 decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "token1_decimals": {
+      "type": "integer",
+      "role": "parameter",
+      "description": "Token1 decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    }
+  },
+  "validation": {
+    "type": "query_validation",
+    "checks": [
+      {
+        "name": "query_execution",
+        "description": "Query executed successfully",
+        "points": 30
+      },
+      {
+        "name": "return_format",
+        "description": "Return format correct (includes reserve0, reserve1, blockTimestampLast)",
+        "points": 30
+      },
+      {
+        "name": "reserves_correctness",
+        "description": "Reserve values match actual on-chain data",
+        "points": 40
+      }
+    ]
+  },
+  "metadata": {
+    "operation_type": "query",
+    "estimated_gas": 30000,
+    "requires_native_token": false,
+    "requires_contract": true,
+    "contract_type": "pancakeswap_pair",
+    "tags": ["query", "defi", "pancakeswap", "liquidity", "reserves", "read-only"],
+    "learning_objectives": [
+      "Query PancakeSwap pair reserves using getReserves()",
+      "Understand liquidity pool reserve structure",
+      "Distinguish between token0 and token1",
+      "Handle tuple return values (reserve0, reserve1, blockTimestampLast)"
+    ]
+  }
+}
+

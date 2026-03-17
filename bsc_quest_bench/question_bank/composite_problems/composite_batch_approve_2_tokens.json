@@ -1,0 +1,204 @@
+{
+  "id": "composite_batch_approve_2_tokens",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "batch_operations",
+  "difficulty": "medium",
+  "title": "Batch Approve Two Tokens and Add Liquidity",
+  "natural_language_templates": [
+    "Approve {token_a_symbol} and {token_b_symbol} for PancakeSwap, then add liquidity to the pool",
+    "Approve both tokens for the router, then add {amount_a} {token_a_symbol} and {amount_b} {token_b_symbol} as liquidity",
+    "Batch approve {token_a_symbol} and {token_b_symbol}, then provide {amount_a} and {amount_b} as liquidity"
+  ],
+  "description": [
+    "Batch approve two tokens and add liquidity.",
+    "",
+    "This is a 3-step process:",
+    "1. Approve {token_a_symbol} for PancakeSwap Router",
+    "2. Approve {token_b_symbol} for PancakeSwap Router",
+    "3. Add liquidity with {amount_a} {token_a_symbol} and {amount_b} {token_b_symbol}",
+    "",
+    "Token contracts:",
+    "- USDT: 0x55d398326f99059fF775485246999027B3197955",
+    "- BUSD: 0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+    "- Router: 0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "",
+    "Use addLiquidity(tokenA, tokenB, amountADesired, amountBDesired, amountAMin, amountBMin, to, deadline)",
+    "Function selector: 0xe8e33700",
+    "",
+    "The key operation is adding liquidity (step 3).",
+    "",
+    "IMPORTANT: Execute approvals first, then add liquidity."
+  ],
+  "composite_structure": {
+    "pattern": "batch-approve-execute",
+    "optimal_steps": 3,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "erc20_approve",
+        "role": "approve_token_a",
+        "description": "Approve token A for Router"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_approve",
+        "role": "approve_token_b",
+        "description": "Approve token B for Router"
+      },
+      {
+        "step": 3,
+        "atomic_id": "add_liquidity_tokens",
+        "role": "key_operation",
+        "description": "Add liquidity to the pool"
+      }
+    ]
+  },
+  "parameters": {
+    "token_a_address": {
+      "type": "address",
+      "role": "token_a",
+      "description": "Token A contract address (USDT)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_a_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token A symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_b_address": {
+      "type": "address",
+      "role": "token_b",
+      "description": "Token B contract address (BUSD)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      }
+    },
+    "token_b_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token B symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "BUSD"
+      }
+    },
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "amount_a": {
+      "type": "number",
+      "unit": "token",
+      "role": "amount_token_a",
+      "description": "Amount of token A to add (USDT)",
+      "generation": {
+        "method": "random",
+        "min": 5.0,
+        "max": 10.0,
+        "decimals": 2
+      }
+    },
+    "amount_b": {
+      "type": "number",
+      "unit": "token",
+      "role": "amount_token_b",
+      "description": "Amount of token B to add (BUSD)",
+      "generation": {
+        "method": "random",
+        "min": 5.0,
+        "max": 10.0,
+        "decimals": 2
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimals (both are 18)",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance",
+      "generation": {
+        "method": "fixed",
+        "value": 50.0
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 6,
+    "optimal_steps": 3,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "add_liquidity_tokens",
+    "key_operation_step": 3
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "token": "USDT",
+        "description": "Agent must have sufficient USDT",
+        "min_balance": "100 tokens"
+      },
+      {
+        "type": "token_balance",
+        "token": "BUSD",
+        "description": "Agent must have sufficient BUSD",
+        "min_balance": "100 tokens"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Liquidity added successfully"
+      },
+      {
+        "type": "lp_token_received",
+        "weight": 0.7,
+        "description": "LP tokens received by agent"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "batch",
+      "approve",
+      "liquidity",
+      "defi",
+      "pancakeswap",
+      "medium"
+    ],
+    "estimated_gas": 350000,
+    "requires_approval": true,
+    "difficulty_notes": [
+      "Requires two separate approvals",
+      "Must understand token pair liquidity",
+      "Slippage handling required"
+    ]
+  }
+}
+

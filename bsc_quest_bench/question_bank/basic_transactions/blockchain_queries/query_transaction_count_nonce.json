@@ -1,0 +1,75 @@
+{
+  "id": "query_transaction_count_nonce",
+  "category": "basic_transactions",
+  "subcategory": "blockchain_queries",
+  "difficulty": "easy",
+  "title": "Query Transaction Count (Nonce)",
+  "description": "Query the transaction count (nonce) for a specific address by calling eth_getTransactionCount. The nonce represents the number of transactions sent from an address and is critical for transaction ordering and replay protection. Understanding the difference between 'pending' and 'latest' states is important: 'pending' includes pending transactions and should be used when preparing new transactions, while 'latest' only includes confirmed transactions.",
+  "natural_language_templates": [
+    "Get the transaction count (nonce) for address {{query_address}}",
+    "Query the nonce for address {{query_address}}",
+    "Check how many transactions address {{query_address}} has sent",
+    "Retrieve the current nonce for address {{query_address}}"
+  ],
+  "blockchain": "bsc",
+  "parameters": {
+    "query_address": {
+      "type": "address",
+      "description": "Address to query transaction count for",
+      "generation": {
+        "method": "from_env",
+        "env_key": "test_address"
+      }
+    }
+  },
+  "validation": {
+    "type": "query",
+    "rules": [
+      {
+        "field": "query_execution",
+        "condition": "success",
+        "error_message": "Failed to query transaction count",
+        "weight": 40
+      },
+      {
+        "field": "return_format",
+        "condition": "has_required_fields",
+        "required_fields": ["nonce"],
+        "error_message": "Missing required fields in query result",
+        "weight": 30
+      },
+      {
+        "field": "nonce_validity",
+        "condition": "is_valid_nonce",
+        "error_message": "Nonce must be a valid non-negative integer",
+        "weight": 30
+      }
+    ]
+  },
+  "metadata": {
+    "tags": ["blockchain", "nonce", "transaction_count", "eth_getTransactionCount", "query", "rpc"],
+    "estimated_gas": 0,
+    "prerequisites": [],
+    "related_questions": ["query_current_block_number", "query_bnb_balance"],
+    "learning_objectives": [
+      "Understand the eth_getTransactionCount RPC method",
+      "Learn about nonce and its role in transaction ordering",
+      "Master the difference between 'pending' and 'latest' states",
+      "Understand replay attack protection",
+      "Learn when to use which nonce state"
+    ],
+    "operation_type": "query",
+    "notes": [
+      "Nonce starts at 0 for new addresses",
+      "Nonce increments by 1 for each transaction sent",
+      "Use 'pending' state when preparing new transactions",
+      "Use 'latest' state for confirmed transaction count",
+      "Nonce must be sequential - gaps will cause transactions to be stuck",
+      "Same nonce can be used to replace a pending transaction (with higher gas)",
+      "Different providers may have slightly different pending nonces",
+      "Smart contracts do not have nonces (only EOAs do)",
+      "Nonce is per-address, not per-transaction"
+    ]
+  }
+}
+

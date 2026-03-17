@@ -1,0 +1,224 @@
+{
+  "id": "composite_nft_bundle_sale",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "advanced_nft",
+  "difficulty": "hard",
+  "title": "NFT Bundle Sale: Transfer Two NFTs and Receive Payment",
+  "natural_language_templates": [
+    "Bundle sale: transfer NFT #{token_id1} and NFT #{token_id2} to {buyer_address}, receive {payment} {token_symbol}, and verify transfers",
+    "Sell NFT bundle: transfer two NFTs to {buyer_address} for {payment} {token_symbol} payment",
+    "Complete NFT bundle sale: send NFT #{token_id1} and #{token_id2} from {nft_address} to buyer, get {payment} USDT, verify ownership"
+  ],
+  "description": [
+    "NFT bundle sale workflow with payment and verification.",
+    "",
+    "This is a 5-step process:",
+    "1. Transfer NFT #1 to buyer",
+    "2. Transfer NFT #2 to buyer",
+    "3. Receive ERC20 payment from buyer (simulated as transfer to self)",
+    "4. Verify NFT #1 new owner",
+    "5. Verify NFT #2 new owner",
+    "",
+    "Technical details:",
+    "- ERC721 Test NFT: deployed dynamically",
+    "- USDT: 0x55d398326f99059fF775485246999027B3197955",
+    "- transferFrom(from, to, tokenId): Transfer NFT",
+    "- ownerOf(tokenId): Query NFT owner",
+    "",
+    "Note: In real scenarios, payment would come from buyer. For testing,",
+    "we simulate receiving payment as a transfer operation.",
+    "BSC does NOT support ENS. Use hex addresses directly."
+  ],
+  "composite_structure": {
+    "pattern": "nft-bundle-sale",
+    "optimal_steps": 5,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "erc721_transfer",
+        "role": "transfer",
+        "description": "Transfer NFT #1 to buyer"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc721_transfer",
+        "role": "key_operation",
+        "description": "Transfer NFT #2 to buyer"
+      },
+      {
+        "step": 3,
+        "atomic_id": "erc20_transfer_fixed",
+        "role": "payment",
+        "description": "Receive USDT payment"
+      },
+      {
+        "step": 4,
+        "atomic_id": "query_nft_owner",
+        "role": "verification",
+        "description": "Verify NFT #1 new owner"
+      },
+      {
+        "step": 5,
+        "atomic_id": "query_nft_owner",
+        "role": "verification",
+        "description": "Verify NFT #2 new owner"
+      }
+    ],
+    "interaction_config": {
+      "max_rounds": 10,
+      "optimal_steps": 5,
+      "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+      "forced_submit_at_max": true
+    }
+  },
+  "parameters": {
+    "nft_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "ERC721 NFT contract address",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc721_token_address"
+      }
+    },
+    "token_id1": {
+      "type": "integer",
+      "role": "nft_id",
+      "description": "First NFT token ID to transfer",
+      "generation": {
+        "method": "fixed",
+        "value": 1
+      }
+    },
+    "token_id2": {
+      "type": "integer",
+      "role": "nft_id",
+      "description": "Second NFT token ID to transfer",
+      "generation": {
+        "method": "fixed",
+        "value": 2
+      }
+    },
+    "buyer_address": {
+      "type": "address",
+      "role": "recipient",
+      "description": "Buyer address to receive NFTs",
+      "generation": {
+        "method": "from_list",
+        "addresses": [
+          "0x1234567890123456789012345678901234567890",
+          "0x2345678901234567890123456789012345678901",
+          "0x3456789012345678901234567890123456789012"
+        ]
+      }
+    },
+    "token_address": {
+      "type": "address",
+      "role": "payment_token",
+      "description": "USDT payment token address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Payment token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "payment": {
+      "type": "number",
+      "unit": "USDT",
+      "role": "payment_amount",
+      "description": "Payment amount for the bundle",
+      "generation": {
+        "method": "random",
+        "min": 50.0,
+        "max": 200.0,
+        "decimals": 0
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    }
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "erc721_transfer",
+    "key_operation_step": 2
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "nft_ownership",
+        "description": "Agent must own NFT #1 and #2",
+        "token_ids": [1, 2]
+      },
+      {
+        "type": "token_balance",
+        "description": "Agent must have USDT for simulated payment",
+        "min_balance": "500 USDT"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.2,
+        "description": "NFT transfer transactions executed successfully"
+      },
+      {
+        "type": "nft1_transferred",
+        "weight": 0.2,
+        "description": "NFT #1 transferred to buyer"
+      },
+      {
+        "type": "nft2_transferred",
+        "weight": 0.2,
+        "description": "NFT #2 transferred to buyer"
+      },
+      {
+        "type": "ownership_verified",
+        "weight": 0.2,
+        "description": "New ownership verified for both NFTs"
+      },
+      {
+        "type": "payment_processed",
+        "weight": 0.2,
+        "description": "Payment processed successfully"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "nft",
+      "bundle",
+      "sale",
+      "payment",
+      "transfer",
+      "verification",
+      "advanced",
+      "hard"
+    ],
+    "estimated_gas": 400000,
+    "requires_approval": false,
+    "difficulty_notes": [
+      "Five-step NFT bundle sale workflow",
+      "Two NFT transfers required",
+      "Payment handling",
+      "Ownership verification for multiple NFTs"
+    ]
+  }
+}
+

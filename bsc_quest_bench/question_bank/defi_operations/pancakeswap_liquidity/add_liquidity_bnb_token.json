@@ -1,0 +1,202 @@
+{
+  "id": "add_liquidity_bnb_token",
+  "category": "defi_operations",
+  "subcategory": "pancakeswap_liquidity",
+  "difficulty": "medium",
+  "title": "PancakeSwap Add Liquidity - BNB + Token",
+  "natural_language_templates": [
+    "Add {amount_bnb} BNB and {amount_token} {token_symbol} as liquidity to PancakeSwap",
+    "Provide liquidity to PancakeSwap: {amount_bnb} BNB + {amount_token} {token_symbol}",
+    "Deposit {amount_bnb} BNB and {amount_token} {token_symbol} into PancakeSwap liquidity pool",
+    "Add liquidity pair on PancakeSwap: {amount_bnb} BNB paired with {amount_token} {token_symbol}"
+  ],
+  "description": "Add liquidity to a BNB/Token pair on PancakeSwap V2. IMPORTANT: You must query the pair's current reserves first using Factory.getPair() to get the pair address, then call pair.getReserves() to get reserve amounts. Calculate the optimal token amount using the formula: optimalTokenAmount = (amountBNB × reserveToken) / reserveWBNB. Then calculate amountTokenMin and amountETHMin by applying slippage tolerance (subtract slippage % from desired amounts). Use addLiquidityETH function with these parameters: token address, amountTokenDesired (the optimal amount), amountTokenMin, amountETHMin, recipient address, and deadline. CRITICAL: This is a payable function - you must set the transaction value field to the BNB amount you're adding.",
+  "blockchain": {
+    "network": "bsc",
+    "contract_address": "{{router_address}}",
+    "function_name": "addLiquidityETH",
+    "function_signature": "addLiquidityETH(address,uint256,uint256,uint256,address,uint256)"
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "description": "PancakeSwap Router V2 contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      },
+      "role": "address"
+    },
+    "token_address": {
+      "type": "address",
+      "description": "Token address to pair with BNB",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      },
+      "role": "receiver"
+    },
+    "token_symbol": {
+      "type": "string",
+      "description": "Token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      },
+      "role": "parameter"
+    },
+    "token_decimals": {
+      "type": "integer",
+      "description": "Token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      },
+      "role": "parameter"
+    },
+    "amount_bnb": {
+      "type": "number",
+      "description": "Amount of BNB to add as liquidity (in BNB, e.g., 0.1)",
+      "generation": {
+        "method": "random",
+        "min": 0.01,
+        "max": 0.05,
+        "decimals": 3
+      },
+      "role": "transfer_amount"
+    },
+    "amount_token": {
+      "type": "number",
+      "description": "Desired amount of tokens to add as liquidity (in human-readable format)",
+      "generation": {
+        "method": "random",
+        "min": 5.0,
+        "max": 20.0,
+        "decimals": 2
+      },
+      "role": "transfer_amount"
+    },
+    "slippage": {
+      "type": "number",
+      "description": "Maximum acceptable slippage percentage (e.g., 5.0 for 5%)",
+      "generation": {
+        "method": "random",
+        "min": 3.0,
+        "max": 10.0,
+        "decimals": 1
+      },
+      "role": "parameter"
+    }
+  },
+  "preconditions": {
+    "account_balance": {
+      "description": "Test account must have sufficient BNB balance",
+      "minimum_balance_bnb": "{{amount_bnb}}"
+    },
+    "token_balance": {
+      "description": "Test account must have sufficient token balance",
+      "token": "{{token_address}}",
+      "minimum_balance": "{{amount_token}}"
+    },
+    "token_approval": {
+      "description": "Token must be approved for PancakeSwap Router",
+      "token": "{{token_address}}",
+      "spender": "{{router_address}}",
+      "minimum_allowance": "{{amount_token}}"
+    },
+    "liquidity_pool": {
+      "description": "Liquidity pool for BNB/Token pair should exist",
+      "pair": "BNB/{{token_symbol}}"
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "balance_check",
+        "description": "Test account must have sufficient BNB balance",
+        "min_balance": "{amount_bnb}"
+      },
+      {
+        "type": "token_balance",
+        "description": "Test account must have sufficient token balance",
+        "token": "{token_address}",
+        "min_balance": "{amount_token}"
+      },
+      {
+        "type": "token_approval",
+        "description": "Token must be approved for PancakeSwap Router",
+        "token": "{token_address}",
+        "spender": "{router_address}"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "contract_call",
+        "weight": 0.15,
+        "address": "{router_address}",
+        "description": "Correct PancakeSwap Router called"
+      },
+      {
+        "type": "function_selector",
+        "weight": 0.15,
+        "selector": "0xf305d719",
+        "description": "Correct function addLiquidityETH called"
+      },
+      {
+        "type": "bnb_balance_decrease",
+        "weight": 0.2,
+        "expected_change": "-{amount_bnb}",
+        "tolerance": "gas_only",
+        "description": "BNB balance decreased correctly"
+      },
+      {
+        "type": "token_balance_decrease",
+        "weight": 0.1,
+        "token": "{token_address}",
+        "expected_change": "-{amount_token}",
+        "tolerance": "0.05",
+        "description": "Token balance decreased correctly"
+      },
+      {
+        "type": "lp_token_received",
+        "weight": 0.1,
+        "min_increase": 0,
+        "description": "LP tokens received from liquidity pool"
+      }
+    ]
+  },
+  "metadata": {
+    "estimated_gas": "200000-250000",
+    "requires_native_token": true,
+    "complexity": "medium",
+    "tags": [
+      "defi",
+      "dex",
+      "liquidity",
+      "pancakeswap",
+      "amm",
+      "lp-token"
+    ],
+    "learning_objectives": [
+      "Understanding liquidity provision in AMM DEXes",
+      "Managing token approvals for router contracts",
+      "Handling payable functions with native tokens",
+      "Calculating slippage tolerance for liquidity operations",
+      "Receiving and tracking LP tokens"
+    ],
+    "common_pitfalls": [
+      "Not approving token before adding liquidity",
+      "Not sending BNB value with the transaction",
+      "Setting amountTokenMin/amountETHMin too high",
+      "Not accounting for current pool ratio",
+      "Forgetting to set deadline parameter"
+    ],
+    "requires_contract": false
+  },
+  "version": "2.0.0"
+}

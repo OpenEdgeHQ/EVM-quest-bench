@@ -1,0 +1,119 @@
+{
+  "id": "erc721_safe_transfer",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "nft_operations",
+  "difficulty": "medium",
+  "title": "ERC721 Safe Transfer",
+  "description": [
+    "Safely transfer an ERC721 NFT token to another address using safeTransferFrom.",
+    "",
+    "Technical context:",
+    "- Use ERC721's safeTransferFrom(address from, address to, uint256 tokenId) function",
+    "- Safe transfer checks if recipient is a contract and verifies it can receive NFTs",
+    "- If recipient is a contract, it must implement onERC721Received() interface",
+    "- Prevents NFTs from being locked in contracts that can't handle them",
+    "- Function selector: 0x42842e0e",
+    "- Parameters: from (address, 32 bytes) + to (address, 32 bytes) + tokenId (uint256, 32 bytes)",
+    "- Recommended gas limit: 150000"
+  ],
+  "natural_language_templates": [
+    "Safely transfer NFT token ID {token_id} from {nft_name} (contract {nft_address}) to address {to_address}",
+    "Use safeTransferFrom to transfer {nft_name} NFT #{token_id} (contract: {nft_address}) to {to_address}",
+    "Please safely transfer the NFT with token ID {token_id} from {nft_name} NFT collection at {nft_address} to {to_address}",
+    "I want to safely send my {nft_name} NFT (token ID: {token_id}, contract: {nft_address}) to address {to_address}"
+  ],
+  "parameters": {
+    "nft_address": {
+      "type": "address",
+      "role": "nft_contract",
+      "description": "ERC721 NFT contract address",
+      "generation": {
+        "method": "from_list",
+        "addresses": [
+          "0x0a8901b0E25DEb55A87524f0cC164E9644020EBA"
+        ],
+        "comment": "PancakeSquad NFT on BSC Mainnet"
+      }
+    },
+    "nft_name": {
+      "type": "string",
+      "role": "display",
+      "description": "Human-readable name of the NFT collection",
+      "generation": {
+        "method": "fixed",
+        "value": "PancakeSquad"
+      }
+    },
+    "token_id": {
+      "type": "integer",
+      "role": "nft_token_id",
+      "description": "Unique token ID of the NFT to transfer",
+      "generation": {
+        "method": "fixed",
+        "value": 1,
+        "comment": "Using token ID 1 which will be pre-setup in test environment"
+      }
+    },
+    "to_address": {
+      "type": "address",
+      "role": "receiver",
+      "description": "Recipient address (EOA or contract that implements onERC721Received)",
+      "generation": {
+        "method": "random"
+      }
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "nft_ownership",
+        "description": "Agent must own the NFT token",
+        "nft_address": "{nft_address}",
+        "token_id": "{token_id}"
+      },
+      {
+        "type": "balance",
+        "description": "Agent must have sufficient BNB for gas",
+        "min_balance": "0.01 BNB"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "nft_transfer",
+        "weight": 0.4,
+        "description": "NFT ownership transferred to recipient",
+        "expected_new_owner": "{to_address}"
+      },
+      {
+        "type": "function_selector",
+        "weight": 0.3,
+        "description": "Correct function selector for safeTransferFrom",
+        "expected_selector": "0x42842e0e",
+        "comment": "safeTransferFrom(address,address,uint256)"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "nft",
+      "erc721",
+      "safe_transfer",
+      "ownership",
+      "onchain"
+    ],
+    "estimated_gas": 150000,
+    "requires_contract": true,
+    "network": "mainnet",
+    "erc_standard": "ERC721"
+  },
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  }
+}

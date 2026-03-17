@@ -1,0 +1,127 @@
+{
+  "id": "composite_approve_transferfrom",
+  "category": "composite_problems",
+  "difficulty": "medium",
+  "title": "Approve and Execute TransferFrom",
+  "description": [
+    "A composite problem that tests the LLM's ability to:",
+    "1. Execute an ERC20 approval (approve spender to spend tokens)",
+    "2. Execute a transferFrom operation using the approval",
+    "This demonstrates the ERC20 approval pattern where authorization is granted first, then used."
+  ],
+  "natural_language_templates": [
+    "Approve {spender_address} to spend {amount} {token_symbol}, then transfer {amount} {token_symbol} from your account to {to_address} using transferFrom",
+    "First approve the spender, then execute transferFrom to move {amount} {token_symbol} tokens"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "composite_structure": {
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "erc20_approve",
+        "description": "Approve spender to spend tokens"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_transferfrom_basic",
+        "description": "Execute transferFrom using the approval"
+      }
+    ]
+  },
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "ERC20 token contract address (USDT)",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955",
+        "comment": "USDT on BSC"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token symbol for display",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "spender_address": {
+      "type": "address",
+      "role": "spender",
+      "description": "Address to approve (will be agent_address in this test scenario)",
+      "shared_across_steps": [1],
+      "generation": {
+        "method": "from_env",
+        "env_key": "test_address",
+        "comment": "Agent approves themselves to demonstrate the pattern"
+      }
+    },
+    "from_address": {
+      "type": "address",
+      "role": "token_owner",
+      "description": "Token owner address for transferFrom (agent_address)",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "from_env",
+        "env_key": "test_address",
+        "comment": "Agent is the token owner"
+      }
+    },
+    "to_address": {
+      "type": "address",
+      "role": "recipient",
+      "description": "Recipient address for token transfer",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "random"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "unit": "tokens",
+      "role": "transfer_amount",
+      "description": "Amount to approve and transfer",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "random",
+        "min": 10.0,
+        "max": 50.0,
+        "decimals": 2
+      }
+    }
+  },
+  "interaction_config": {
+    "optimal_steps": 2,
+    "max_rounds_multiplier": 2,
+    "comment": "max_rounds = optimal_steps * max_rounds_multiplier = 2 * 2 = 4"
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "description": "Directly reuse the atomic validator of the key operation - NO code duplication!",
+    "key_operation_step": 2,
+    "key_operation_id": "erc20_transferfrom_basic",
+    "key_operation_alias": "transferfrom_execution",
+    "validator_class": "ERC20TransferFromBasicValidator",
+    "note": "The validator will load ERC20TransferFromBasicValidator and call its validate() method directly"
+  },
+  "tags": ["approve-execute", "token"]
+}
+

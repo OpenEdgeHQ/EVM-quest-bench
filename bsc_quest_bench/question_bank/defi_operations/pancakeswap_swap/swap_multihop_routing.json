@@ -1,0 +1,232 @@
+{
+  "id": "swap_multihop_routing",
+  "category": "defi_operations",
+  "subcategory": "pancakeswap_swap",
+  "difficulty": "hard",
+  "title": "PancakeSwap Multi-hop Routing Swap",
+  "natural_language_templates": [
+    "Swap {amount_in} {token_start_symbol} for {token_end_symbol} on PancakeSwap using a multi-hop routing path through WBNB and USDT",
+    "Execute a multi-hop token swap: exchange {amount_in} {token_start_symbol} to {token_end_symbol} via intermediate tokens for better liquidity",
+    "Perform a complex token swap on PancakeSwap: {amount_in} {token_start_symbol} → WBNB → USDT → {token_end_symbol}",
+    "Use PancakeSwap Router to swap {amount_in} {token_start_symbol} for {token_end_symbol} with optimal multi-hop routing"
+  ],
+  "description": "Execute a multi-hop token swap on PancakeSwap Router V2. This operation involves swapping tokens through multiple intermediate tokens to achieve better liquidity and pricing. The swap path must be: CAKE → WBNB → USDT → BUSD (4 tokens). You must use the exact input amount specified in the task. Call getAmountsOut() first to estimate output amounts, then calculate amountOutMin with slippage tolerance. Use swapExactTokensForTokens function with the complete 4-token path.",
+  "blockchain": {
+    "network": "bsc",
+    "contract_address": "{{router_address}}",
+    "function_name": "swapExactTokensForTokens",
+    "function_signature": "swapExactTokensForTokens(uint256,uint256,address[],address,uint256)"
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "description": "PancakeSwap Router V2 contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      },
+      "role": "address"
+    },
+    "token_start_address": {
+      "type": "address",
+      "description": "Starting token address (first token in the path)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
+      },
+      "role": "receiver"
+    },
+    "token_start_symbol": {
+      "type": "string",
+      "description": "Starting token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "CAKE"
+      },
+      "role": "parameter"
+    },
+    "token_start_decimals": {
+      "type": "integer",
+      "description": "Starting token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      },
+      "role": "parameter"
+    },
+    "token_end_address": {
+      "type": "address",
+      "description": "Ending token address (last token in the path)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      },
+      "role": "receiver"
+    },
+    "token_end_symbol": {
+      "type": "string",
+      "description": "Ending token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "BUSD"
+      },
+      "role": "parameter"
+    },
+    "token_end_decimals": {
+      "type": "integer",
+      "description": "Ending token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      },
+      "role": "parameter"
+    },
+    "wbnb_address": {
+      "type": "address",
+      "description": "Wrapped BNB address (intermediate token)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      },
+      "role": "address"
+    },
+    "usdt_address": {
+      "type": "address",
+      "description": "USDT address (intermediate token)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      },
+      "role": "address"
+    },
+    "amount_in": {
+      "type": "number",
+      "description": "Amount of starting tokens to swap (in human-readable format, e.g., 1.5)",
+      "generation": {
+        "method": "fixed",
+        "value": 2.0
+      },
+      "role": "transfer_amount"
+    },
+    "slippage": {
+      "type": "number",
+      "description": "Maximum acceptable slippage percentage (e.g., 5.0 for 5%)",
+      "generation": {
+        "method": "fixed",
+        "value": 5.0
+      },
+      "role": "parameter"
+    }
+  },
+  "preconditions": {
+    "account_balance": {
+      "description": "Test account must have sufficient starting token balance",
+      "token": "{{token_start_address}}",
+      "minimum_balance": "{{amount_in}}"
+    },
+    "token_approval": {
+      "description": "Starting token must be approved for PancakeSwap Router",
+      "token": "{{token_start_address}}",
+      "spender": "{{router_address}}",
+      "minimum_allowance": "{{amount_in}}"
+    },
+    "liquidity": {
+      "description": "Sufficient liquidity must exist for each pair in the multi-hop path",
+      "pairs": [
+        "{{token_start_address}}/{{wbnb_address}}",
+        "{{wbnb_address}}/{{usdt_address}}",
+        "{{usdt_address}}/{{token_end_address}}"
+      ]
+    }
+  },
+  "validation": {
+    "rules": [
+      {
+        "type": "transaction_success",
+        "description": "Transaction must be successfully executed and confirmed"
+      },
+      {
+        "type": "token_approval",
+        "description": "Starting token must have been approved for Router (or have existing allowance)",
+        "token": "{{token_start_address}}",
+        "spender": "{{router_address}}"
+      },
+      {
+        "type": "contract_interaction",
+        "description": "Must interact with PancakeSwap Router contract",
+        "contract": "{{router_address}}"
+      },
+      {
+        "type": "function_call",
+        "description": "Must call swapExactTokensForTokens function",
+        "function_selector": "0x38ed1739"
+      },
+      {
+        "type": "balance_change",
+        "description": "Starting token balance must decrease by the specified amount",
+        "token": "{{token_start_address}}",
+        "change": "decrease",
+        "amount": "{{amount_in}}"
+      },
+      {
+        "type": "balance_change",
+        "description": "Ending token balance must increase (accounting for slippage)",
+        "token": "{{token_end_address}}",
+        "change": "increase",
+        "minimum_increase": "calculated_based_on_slippage"
+      },
+      {
+        "type": "multi_hop_path",
+        "description": "Must use the complete multi-hop path (3+ hops)",
+        "path": [
+          "{{token_start_address}}",
+          "{{wbnb_address}}",
+          "{{usdt_address}}",
+          "{{token_end_address}}"
+        ],
+        "minimum_hops": 3
+      }
+    ],
+    "scoring": {
+      "transaction_success": 20,
+      "token_approval": 10,
+      "correct_router": 10,
+      "correct_function": 10,
+      "input_token_decrease": 20,
+      "output_token_increase": 20,
+      "correct_multihop_path": 10
+    },
+    "pre_conditions": [],
+    "post_conditions": []
+  },
+  "metadata": {
+    "estimated_gas": "250000-300000",
+    "requires_native_token": false,
+    "complexity": "high",
+    "tags": [
+      "defi",
+      "dex",
+      "swap",
+      "pancakeswap",
+      "multihop",
+      "routing",
+      "optimization"
+    ],
+    "learning_objectives": [
+      "Understanding multi-hop routing in DEXes",
+      "Optimizing swap paths for better liquidity",
+      "Managing complex token swap paths",
+      "Calculating aggregate slippage across multiple hops",
+      "Understanding liquidity pools and pair relationships"
+    ],
+    "common_pitfalls": [
+      "Using inefficient routing paths",
+      "Not accounting for cumulative slippage",
+      "Insufficient allowance for input token",
+      "Not checking liquidity at each hop",
+      "Incorrect path order or missing intermediate tokens"
+    ],
+    "requires_contract": false
+  },
+  "version": "2.0.0"
+}

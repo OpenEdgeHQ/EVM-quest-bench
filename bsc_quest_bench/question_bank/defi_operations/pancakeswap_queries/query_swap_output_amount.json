@@ -1,0 +1,130 @@
+{
+  "id": "query_swap_output_amount",
+  "category": "defi_operations",
+  "subcategory": "pancakeswap_queries",
+  "difficulty": "medium",
+  "title": "Query Swap Output Amount",
+  "description": "Query the expected output amount for a token swap before executing the trade",
+  "natural_language_templates": [
+    "Calculate how much {token_out_symbol} you will receive for {amount_in} {token_in_symbol} on PancakeSwap",
+    "Query the output amount for swapping {amount_in} {token_in_symbol} to {token_out_symbol}",
+    "Get the estimated output for a {token_in_symbol} to {token_out_symbol} swap with input amount {amount_in}",
+    "What is the expected output for swapping {amount_in} {token_in_symbol} for {token_out_symbol}?"
+  ],
+  "blockchain": "bsc",
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap Router contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+        "comment": "PancakeSwap Router V2"
+      }
+    },
+    "token_in_address": {
+      "type": "address",
+      "role": "parameter",
+      "description": "Input token address",
+      "generation": {
+        "method": "from_list",
+        "addresses": ["0x55d398326f99059fF775485246999027B3197955"],
+        "comment": "USDT as input token"
+      }
+    },
+    "token_out_address": {
+      "type": "address",
+      "role": "parameter",
+      "description": "Output token address",
+      "generation": {
+        "method": "from_list",
+        "addresses": ["0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"],
+        "comment": "BUSD as output token"
+      }
+    },
+    "token_in_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Input token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_out_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Output token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "BUSD"
+      }
+    },
+    "amount_in": {
+      "type": "number",
+      "role": "parameter",
+      "description": "Input amount in tokens",
+      "generation": {
+        "method": "random",
+        "min": 10,
+        "max": 100,
+        "decimals": 2,
+        "comment": "Random input amount between 10-100 tokens"
+      }
+    },
+    "token_in_decimals": {
+      "type": "integer",
+      "role": "parameter",
+      "description": "Input token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "token_out_decimals": {
+      "type": "integer",
+      "role": "parameter",
+      "description": "Output token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    }
+  },
+  "validation": {
+    "type": "query_validation",
+    "checks": [
+      {
+        "name": "query_execution",
+        "description": "Query executed successfully",
+        "points": 30
+      },
+      {
+        "name": "return_format",
+        "description": "Return format correct (includes amounts array)",
+        "points": 30
+      },
+      {
+        "name": "output_amount_correctness",
+        "description": "Output amount matches expected value from router",
+        "points": 40
+      }
+    ]
+  },
+  "metadata": {
+    "operation_type": "query",
+    "estimated_gas": 50000,
+    "requires_native_token": false,
+    "requires_contract": true,
+    "contract_type": "pancakeswap_router",
+    "tags": ["query", "defi", "pancakeswap", "swap", "price", "read-only"],
+    "learning_objectives": [
+      "Query swap output amounts using getAmountsOut()",
+      "Understand swap path array structure",
+      "Parse array return values from smart contracts",
+      "Calculate expected output before executing trades"
+    ]
+  }
+}
+

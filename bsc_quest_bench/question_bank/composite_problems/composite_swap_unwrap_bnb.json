@@ -1,0 +1,182 @@
+{
+  "id": "composite_swap_unwrap_bnb",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "swap_unwrap",
+  "difficulty": "medium",
+  "title": "Swap Token to WBNB and Unwrap to BNB",
+  "natural_language_templates": [
+    "Swap {amount_in} {token_in_symbol} for WBNB on PancakeSwap, then unwrap all WBNB to BNB",
+    "Exchange {amount_in} {token_in_symbol} tokens for WBNB, then withdraw WBNB to get BNB",
+    "Convert {amount_in} {token_in_symbol} to WBNB using PancakeSwap, then unwrap to native BNB"
+  ],
+  "description": [
+    "Swap ERC20 tokens for WBNB and then unwrap the WBNB to get native BNB.",
+    "",
+    "This is a 2-step process:",
+    "1. Swap tokens for WBNB using swapExactTokensForTokens (Token needs to be approved first)",
+    "2. Withdraw WBNB to get native BNB using withdraw(uint256)",
+    "",
+    "Technical details:",
+    "- WBNB contract address: 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "- PancakeSwap Router: 0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "- swapExactTokensForTokens: 0x38ed1739",
+    "- WBNB withdraw(uint256): 0x2e1a7d4d",
+    "",
+    "Note: The key operation is wbnb_withdraw since the final goal is to get native BNB."
+  ],
+  "composite_structure": {
+    "pattern": "swap-unwrap",
+    "optimal_steps": 2,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "swap_exact_tokens_for_tokens",
+        "role": "swap_to_wbnb",
+        "description": "Swap input token for WBNB using PancakeSwap"
+      },
+      {
+        "step": 2,
+        "atomic_id": "wbnb_withdraw",
+        "role": "key_operation",
+        "description": "Withdraw WBNB to get native BNB"
+      }
+    ]
+  },
+  "parameters": {
+    "token_in_address": {
+      "type": "address",
+      "role": "token_in",
+      "description": "Input token address to swap",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955",
+        "comment": "USDT on BSC"
+      }
+    },
+    "token_in_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Input token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_in_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Input token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "wbnb_address": {
+      "type": "address",
+      "role": "token_out",
+      "description": "WBNB contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "amount_in": {
+      "type": "number",
+      "unit": "token",
+      "role": "swap_amount",
+      "description": "Amount of input tokens to swap",
+      "generation": {
+        "method": "random",
+        "min": 1.0,
+        "max": 10.0,
+        "decimals": 2
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance percentage",
+      "generation": {
+        "method": "fixed",
+        "value": 5.0
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 4,
+    "optimal_steps": 2,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "wbnb_withdraw",
+    "key_operation_step": 2
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "description": "Agent must have sufficient input token balance",
+        "min_balance": "50 tokens"
+      },
+      {
+        "type": "token_approval",
+        "description": "Token must be approved for Router"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Withdraw transaction executed successfully"
+      },
+      {
+        "type": "contract_called",
+        "weight": 0.2,
+        "address": "{wbnb_address}",
+        "description": "Correct WBNB contract called"
+      },
+      {
+        "type": "function_selector",
+        "weight": 0.2,
+        "selector": "0x2e1a7d4d",
+        "description": "Correct function withdraw(uint256) called"
+      },
+      {
+        "type": "bnb_balance_increase",
+        "weight": 0.3,
+        "description": "Native BNB balance increased"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "swap-unwrap",
+      "defi",
+      "wbnb",
+      "pancakeswap",
+      "unwrap",
+      "two-step"
+    ],
+    "estimated_gas": 260000,
+    "requires_approval": true,
+    "difficulty_notes": [
+      "Two-step process: swap to WBNB, then unwrap",
+      "Must correctly sequence both operations",
+      "Need to handle the swap output amount for withdraw"
+    ]
+  }
+}
+

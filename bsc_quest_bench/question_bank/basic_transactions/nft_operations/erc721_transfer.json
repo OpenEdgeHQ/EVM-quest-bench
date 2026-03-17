@@ -1,0 +1,140 @@
+{
+  "id": "erc721_transfer",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "nft_operations",
+  "difficulty": "medium",
+  "title": "ERC721 NFT Transfer",
+  "natural_language_templates": [
+    "Transfer NFT token {token_id} from contract {nft_address} to address {to_address}",
+    "Send NFT #{token_id} at {nft_address} to {to_address}",
+    "Transfer ERC721 token {token_id} from {nft_address} to {to_address}",
+    "I want to transfer NFT {token_id} (contract: {nft_address}) to {to_address}"
+  ],
+  "description": [
+    "Transfer an ERC721 NFT token to another address using the transferFrom function.",
+    "",
+    "Technical context:",
+    "- ERC721 is the standard for non-fungible tokens (NFTs)",
+    "- Function signature: transferFrom(address from, address to, uint256 tokenId)",
+    "- The 'from' address must be the current owner of the NFT",
+    "- The caller must be the owner or approved operator",
+    "- Recommended gas limit: 100000",
+    "",
+    "Key considerations:",
+    "- Create a Contract instance with NFT address and ERC721 ABI",
+    "- Use encode the function call('transferFrom', [from, to, tokenId])",
+    "- Set transaction 'to' to the NFT contract address",
+    "- Set transaction 'value' to 0 (not sending BNB)",
+    "- The 'from' parameter should be the agent's address (current owner)",
+    "- After transfer, ownerOf(tokenId) should return the recipient address",
+    "- The agent's NFT balance decreases by 1, recipient's increases by 1"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "nft_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "ERC721 NFT contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc721_token_address",
+        "comment": "Use dynamically deployed ERC721 test NFT contract from environment"
+      }
+    },
+    "nft_name": {
+      "type": "string",
+      "description": "NFT collection name for natural language",
+      "generation": {
+        "method": "from_list",
+        "values": [
+          "PancakeSquad"
+        ]
+      },
+      "role": "parameter"
+    },
+    "token_id": {
+      "type": "integer",
+      "description": "NFT token ID to transfer",
+      "generation": {
+        "method": "fixed",
+        "value": 1
+      },
+      "role": "parameter"
+    },
+    "to_address": {
+      "type": "address",
+      "role": "recipient",
+      "description": "Recipient address",
+      "generation": {
+        "method": "random"
+      }
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "nft_ownership",
+        "description": "Agent must own the NFT token",
+        "nft_contract": "{nft_address}",
+        "token_id": "{token_id}"
+      },
+      {
+        "type": "contract_exists",
+        "description": "NFT contract must exist",
+        "address": "{nft_address}"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "contract_call",
+        "weight": 0.2,
+        "description": "Transaction calls correct NFT contract",
+        "expected": "{nft_address}"
+      },
+      {
+        "type": "function_signature",
+        "weight": 0.2,
+        "description": "Correct transferFrom function signature",
+        "expected": "transferFrom(address,address,uint256)"
+      },
+      {
+        "type": "nft_ownership_transferred",
+        "weight": 0.3,
+        "description": "NFT ownership transferred to recipient",
+        "nft_contract": "{nft_address}",
+        "token_id": "{token_id}",
+        "expected_owner": "{to_address}"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "erc721",
+      "nft",
+      "transfer",
+      "ownership",
+      "intermediate"
+    ],
+    "estimated_gas": 100000,
+    "requires_contract": true,
+    "requires_nft_ownership": true,
+    "contract_requirements": {
+      "contract_type": "ERC721",
+      "required_functions": [
+        "transferFrom",
+        "ownerOf",
+        "balanceOf"
+      ],
+      "note": "Agent must own the NFT to transfer"
+    }
+  }
+}

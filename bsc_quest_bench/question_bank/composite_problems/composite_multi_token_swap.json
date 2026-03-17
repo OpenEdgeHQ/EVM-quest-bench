@@ -1,0 +1,201 @@
+{
+  "id": "composite_multi_token_swap",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "defi_workflows",
+  "difficulty": "medium",
+  "title": "Multi-Step Token Swap (BNB → USDT → BUSD)",
+  "natural_language_templates": [
+    "Swap {amount_bnb} BNB for USDT, then swap all USDT for BUSD on PancakeSwap",
+    "Exchange {amount_bnb} BNB to USDT, then convert all USDT to BUSD",
+    "Convert {amount_bnb} BNB to USDT first, approve router, then swap USDT for BUSD"
+  ],
+  "description": [
+    "Execute a multi-step token swap through PancakeSwap.",
+    "",
+    "This is a 3-step process:",
+    "1. Swap {amount_bnb} BNB for USDT using swapExactETHForTokens",
+    "2. Approve PancakeSwap Router to spend USDT",
+    "3. Swap all received USDT for BUSD using swapExactTokensForTokens",
+    "",
+    "Contract addresses:",
+    "- PancakeSwap Router: 0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "- WBNB: 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "- USDT: 0x55d398326f99059fF775485246999027B3197955",
+    "- BUSD: 0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+    "",
+    "Function signatures:",
+    "- swapExactETHForTokens: 0x7ff36ab5",
+    "- swapExactTokensForTokens: 0x38ed1739",
+    "- approve: 0x095ea7b3",
+    "",
+    "Swap paths:",
+    "- Step 1: [WBNB, USDT]",
+    "- Step 3: [USDT, BUSD]",
+    "",
+    "The key operation is the final swap (USDT → BUSD, step 3).",
+    "",
+    "IMPORTANT: Use 5% slippage tolerance for all swaps."
+  ],
+  "composite_structure": {
+    "pattern": "multi-swap",
+    "optimal_steps": 3,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "swap_exact_bnb_for_tokens",
+        "role": "first_swap",
+        "description": "Swap BNB for USDT"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_approve",
+        "role": "approval",
+        "description": "Approve Router to spend USDT"
+      },
+      {
+        "step": 3,
+        "atomic_id": "swap_exact_tokens_for_tokens",
+        "role": "key_operation",
+        "description": "Swap USDT for BUSD"
+      }
+    ]
+  },
+  "parameters": {
+    "amount_bnb": {
+      "type": "number",
+      "unit": "BNB",
+      "role": "input_amount",
+      "description": "Amount of BNB to swap",
+      "generation": {
+        "method": "random",
+        "min": 0.01,
+        "max": 0.05,
+        "decimals": 3
+      }
+    },
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "wbnb_address": {
+      "type": "address",
+      "role": "token",
+      "description": "WBNB contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "usdt_address": {
+      "type": "address",
+      "role": "intermediate_token",
+      "description": "USDT contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "busd_address": {
+      "type": "address",
+      "role": "output_token",
+      "description": "BUSD contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      }
+    },
+    "token_in_address": {
+      "type": "address",
+      "role": "token_in",
+      "description": "Input token for final swap (USDT)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_out_address": {
+      "type": "address",
+      "role": "token_out",
+      "description": "Output token for final swap (BUSD)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance",
+      "generation": {
+        "method": "fixed",
+        "value": 5.0
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimals (all tokens are 18)",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 6,
+    "optimal_steps": 3,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "swap_exact_tokens_for_tokens",
+    "key_operation_step": 3
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "bnb_balance",
+        "description": "Agent must have sufficient BNB",
+        "min_balance": "1.0 BNB"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Final swap executed successfully"
+      },
+      {
+        "type": "token_received",
+        "weight": 0.7,
+        "description": "BUSD received after multi-hop swap"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "defi",
+      "multi-swap",
+      "routing",
+      "pancakeswap",
+      "medium"
+    ],
+    "estimated_gas": 400000,
+    "requires_approval": true,
+    "difficulty_notes": [
+      "Multi-step swap operation",
+      "Requires intermediate approval",
+      "Must handle slippage for both swaps",
+      "Token routing knowledge required"
+    ]
+  }
+}
+

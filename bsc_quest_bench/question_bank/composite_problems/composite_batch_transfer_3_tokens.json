@@ -1,0 +1,193 @@
+{
+  "id": "composite_batch_transfer_3_tokens",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "batch_operations",
+  "difficulty": "medium",
+  "title": "Batch Transfer ERC20 Tokens to 3 Addresses",
+  "natural_language_templates": [
+    "Transfer {amount1} {token_symbol} to {address1}, {amount2} to {address2}, and {amount3} to {address3}",
+    "Distribute {token_symbol} tokens: send {amount1} to {address1}, {amount2} to {address2}, {amount3} to {address3}",
+    "Send {token_symbol} to three addresses: {amount1} to {address1}, {amount2} to {address2}, {amount3} to {address3}"
+  ],
+  "description": [
+    "Batch ERC20 token distribution to 3 different addresses.",
+    "",
+    "This is a 3-step process:",
+    "1. Transfer {amount1} {token_symbol} to address1",
+    "2. Transfer {amount2} {token_symbol} to address2",
+    "3. Transfer {amount3} {token_symbol} to address3",
+    "",
+    "Each transfer uses the ERC20 transfer(address,uint256) function.",
+    "Token contract: USDT (0x55d398326f99059fF775485246999027B3197955)",
+    "Function selector: 0xa9059cbb",
+    "",
+    "The key operation is the last transfer (step 3).",
+    "",
+    "IMPORTANT: Execute all 3 transfers in sequence."
+  ],
+  "composite_structure": {
+    "pattern": "batch-transfer",
+    "optimal_steps": 3,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "erc20_transfer_fixed",
+        "role": "transfer_1",
+        "description": "Transfer tokens to address 1"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_transfer_fixed",
+        "role": "transfer_2",
+        "description": "Transfer tokens to address 2"
+      },
+      {
+        "step": 3,
+        "atomic_id": "erc20_transfer_fixed",
+        "role": "key_operation",
+        "description": "Transfer tokens to address 3"
+      }
+    ]
+  },
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "role": "token",
+      "description": "ERC20 token contract address (USDT)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "address1": {
+      "type": "address",
+      "role": "recipient_1",
+      "description": "First recipient address",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "address2": {
+      "type": "address",
+      "role": "recipient_2",
+      "description": "Second recipient address",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "address3": {
+      "type": "address",
+      "role": "recipient_3",
+      "description": "Third recipient address",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "amount1": {
+      "type": "number",
+      "unit": "token",
+      "role": "transfer_amount_1",
+      "description": "Amount to transfer to address 1",
+      "generation": {
+        "method": "random",
+        "min": 1.0,
+        "max": 10.0,
+        "decimals": 2
+      }
+    },
+    "amount2": {
+      "type": "number",
+      "unit": "token",
+      "role": "transfer_amount_2",
+      "description": "Amount to transfer to address 2",
+      "generation": {
+        "method": "random",
+        "min": 1.0,
+        "max": 10.0,
+        "decimals": 2
+      }
+    },
+    "amount3": {
+      "type": "number",
+      "unit": "token",
+      "role": "transfer_amount_3",
+      "description": "Amount to transfer to address 3",
+      "generation": {
+        "method": "random",
+        "min": 1.0,
+        "max": 10.0,
+        "decimals": 2
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 6,
+    "optimal_steps": 3,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "erc20_transfer_fixed",
+    "key_operation_step": 3
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "description": "Agent must have sufficient token balance for all transfers",
+        "min_balance": "100 tokens"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "All transfers executed successfully"
+      },
+      {
+        "type": "recipient_balance_increase",
+        "weight": 0.7,
+        "description": "All recipients received correct token amounts"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "batch",
+      "token",
+      "distribution",
+      "erc20",
+      "transfer",
+      "medium"
+    ],
+    "estimated_gas": 150000,
+    "requires_approval": false,
+    "difficulty_notes": [
+      "Batch token transfer operation",
+      "No approvals needed (direct transfer)",
+      "Sequential execution required",
+      "Must track token balance across transfers"
+    ]
+  }
+}
+

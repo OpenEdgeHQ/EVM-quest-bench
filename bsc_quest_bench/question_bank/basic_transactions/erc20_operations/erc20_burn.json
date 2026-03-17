@@ -1,0 +1,147 @@
+{
+  "id": "erc20_burn",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "erc20_operations",
+  "difficulty": "medium",
+  "title": "ERC20 Token Burn",
+  "natural_language_templates": [
+    "Burn {amount} {token_symbol} tokens",
+    "Destroy {amount} {token_symbol} tokens permanently by sending to zero address",
+    "Remove {amount} {token_symbol} from circulation using the test token",
+    "Burn {amount} {token_symbol} from the ERC1363 test token"
+  ],
+  "description": [
+    "Burn (destroy) ERC20 tokens by transferring them to the zero address (0x0000...0000), permanently removing them from circulation.",
+    "",
+    "Technical context:",
+    "- Most ERC20 tokens don't have a dedicated burn() function",
+    "- The standard way to burn tokens is to transfer them to address(0)",
+    "- Zero address: 0x0000000000000000000000000000000000000000",
+    "- Once sent to zero address, tokens are permanently lost",
+    "- Function signature: transfer(address to, uint256 amount)",
+    "- Recommended gas limit: 70000",
+    "",
+    "Key considerations:",
+    "- Create a Contract instance with token address and standard ERC20 ABI",
+    "- Use encode the function call('transfer', [zeroAddress, amount])",
+    "- Set transaction 'to' to the token contract address",
+    "- Set transaction 'value' to 0 (not sending BNB)",
+    "- The 'to' parameter in transfer should be the zero address",
+    "- After burning, your token balance decreases",
+    "- Burned tokens are sent to 0x0000000000000000000000000000000000000000"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "ERC20 token contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc1363_token_address",
+        "comment": "Use dynamically deployed ERC1363 test token (T1363)"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "description": "Token symbol for natural language",
+      "generation": {
+        "method": "fixed",
+        "value": "T1363"
+      },
+      "role": "parameter"
+    },
+    "token_decimals": {
+      "type": "integer",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "from_list",
+        "values": [
+          18
+        ]
+      },
+      "role": "parameter"
+    },
+    "amount": {
+      "type": "number",
+      "unit": "tokens",
+      "description": "Amount of tokens to burn",
+      "generation": {
+        "min": 0.001,
+        "max": 1.0,
+        "decimals": 3
+      },
+      "role": "transfer_amount"
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "description": "Agent must have sufficient token balance",
+        "token": "{token_address}",
+        "min_balance": "100 tokens"
+      },
+      {
+        "type": "contract_exists",
+        "description": "Token contract must exist",
+        "address": "{token_address}"
+      },
+      {
+        "type": "function_exists",
+        "description": "Token must have transfer function",
+        "contract": "{token_address}",
+        "function": "transfer(address,uint256)"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "contract_call",
+        "weight": 0.2,
+        "description": "Transaction calls correct token contract",
+        "expected": "{token_address}"
+      },
+      {
+        "type": "function_signature",
+        "weight": 0.2,
+        "description": "Correct transfer function signature (to zero address)",
+        "expected": "transfer(address,uint256)"
+      },
+      {
+        "type": "balance_decrease",
+        "weight": 0.3,
+        "description": "Token balance decreased by burn amount",
+        "expected_decrease": "{amount}"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "erc20",
+      "burn",
+      "destroy",
+      "deflation",
+      "intermediate"
+    ],
+    "estimated_gas": 70000,
+    "requires_contract": true,
+    "requires_token_balance": true,
+    "contract_requirements": {
+      "contract_type": "ERC20",
+      "required_functions": [
+        "burn",
+        "balanceOf"
+      ],
+      "note": "Token must support burn function and agent must have tokens"
+    }
+  }
+}

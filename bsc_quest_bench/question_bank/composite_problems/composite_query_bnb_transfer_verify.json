@@ -1,0 +1,108 @@
+{
+  "id": "composite_query_bnb_transfer_verify",
+  "category": "composite_problems",
+  "difficulty": "easy",
+  "tags": ["composite", "query-write-verify", "basic", "native", "bnb"],
+  
+  "natural_language_templates": [
+    "Check your BNB balance, transfer {{amount}} BNB to {{to_address}}, then verify your remaining balance",
+    "Query your BNB balance, send {{amount}} BNB to {{to_address}}, and confirm the transfer succeeded",
+    "First check how much BNB you have, then send {{amount}} BNB to {{to_address}}, and verify the transaction",
+    "Query your current BNB balance, transfer {{amount}} BNB to {{to_address}}, then check your balance again to verify"
+  ],
+  
+  "parameters": {
+    "to_address": {
+      "type": "address",
+      "generation_method": "random",
+      "description": "Recipient address for BNB transfer"
+    },
+    "amount": {
+      "type": "number",
+      "generation_method": "random",
+      "min": 0.5,
+      "max": 5.0,
+      "decimals": 2,
+      "description": "Amount of BNB to transfer (in BNB, not Wei)",
+      "unit": "BNB"
+    }
+  },
+  
+  "composite_structure": {
+    "description": "Query-Write-Verify pattern for native BNB transfer",
+    
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "query_bnb_balance",
+        "description": "Query initial BNB balance",
+        "parameter_mapping": {
+          "query_address": "agent_address"
+        }
+      },
+      {
+        "step": 2,
+        "atomic_id": "bnb_transfer_basic",
+        "description": "Transfer BNB to recipient",
+        "key_operation": true,
+        "parameter_mapping": {
+          "to_address": "to_address",
+          "amount": "amount"
+        }
+      },
+      {
+        "step": 3,
+        "atomic_id": "query_bnb_balance",
+        "description": "Query final BNB balance (optional verification step)",
+        "optional": true,
+        "parameter_mapping": {
+          "query_address": "agent_address"
+        }
+      }
+    ],
+    
+    "interaction_config": {
+      "optimal_steps": 2,
+      "max_rounds_multiplier": 2,
+      "allow_error_report": true,
+      "require_submit": true,
+      "comment": "max_rounds = 2 × 2 = 4. Optimal path: query balance, then transfer (with inline verification)"
+    },
+    
+    "scoring_strategy": {
+      "method": "atomic_validator_reuse",
+      "key_operation_step": 2,
+      "key_operation_id": "bnb_transfer_basic",
+      "description": "Reuse BNB transfer validator for scoring"
+      }
+  },
+  
+  "validation": {
+    "validator": "composite",
+    "success_criteria": [
+      "Initial BNB balance queried successfully",
+      "BNB transfer executed successfully",
+      "Correct amount transferred",
+      "Recipient address matches",
+      "Transaction confirmed on chain"
+    ],
+    "error_scenarios": [
+      {
+        "type": "BNB_INSUFFICIENT_BALANCE",
+        "condition": "BNB balance < transfer amount + gas",
+        "expected_behavior": "LLM should detect and report error"
+      }
+    ]
+  },
+  
+  "metadata": {
+  "priority": "P0",
+    "estimated_dev_time": "30 minutes",
+    "created_date": "2025-11-24",
+    "related_atomic_problems": [
+      "query_bnb_balance",
+      "bnb_transfer_basic"
+    ],
+    "notes": "First composite problem for native BNB operations. Simpler than ERC20 version (A1) as it doesn't require token address parameter."
+}
+}

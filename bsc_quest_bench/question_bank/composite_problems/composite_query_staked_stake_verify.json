@@ -1,0 +1,100 @@
+{
+  "id": "composite_query_staked_stake_verify",
+  "category": "composite_problems",
+  "difficulty": "medium",
+  "title": "Query Staked Amount, Stake Token, and Verify",
+  "description": [
+    "A composite problem that tests the LLM's ability to:",
+    "1. Query initial staked amount in the pool",
+    "2. Execute a token staking operation",
+    "3. Query final staked amount to verify the stake"
+  ],
+  "natural_language_templates": [
+    "Check your staked amount, stake {amount} CAKE tokens, then verify the new staked amount",
+    "Query your staked balance in the pool, stake {amount} tokens, and confirm the stake increased"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "composite_structure": {
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "query_staked_amount",
+        "description": "Query initial staked amount"
+      },
+      {
+        "step": 2,
+        "atomic_id": "stake_single_token",
+        "description": "Stake tokens"
+      },
+      {
+        "step": 3,
+        "atomic_id": "query_staked_amount",
+        "description": "Query final staked amount"
+      }
+    ]
+  },
+  "parameters": {
+    "pool_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "SimpleStaking contract address",
+      "shared_across_steps": [1, 2, 3],
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_staking_address"
+      }
+    },
+    "token_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "CAKE token address (staking token)",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+        "comment": "BSC Mainnet CAKE token"
+      }
+    },
+    "amount": {
+      "type": "number",
+      "role": "stake_amount",
+      "description": "Amount of CAKE to stake",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "random",
+        "min": 2.0,
+        "max": 8.0,
+        "decimals": 1
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "CAKE token decimals",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    }
+  },
+  "interaction_config": {
+    "optimal_steps": 2,
+    "max_rounds_multiplier": 2,
+    "comment": "max_rounds = optimal_steps * max_rounds_multiplier = 2 * 2 = 4"
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "description": "Directly reuse the atomic validator of the key operation - NO code duplication!",
+    "key_operation_step": 2,
+    "key_operation_id": "stake_single_token",
+    "key_operation_alias": "token_stake",
+    "validator_class": "StakeSingleTokenValidator",
+    "note": "The validator will load StakeSingleTokenValidator and call its validate() method directly"
+  },
+  "tags": ["query-write-verify", "defi", "staking"]
+}
+

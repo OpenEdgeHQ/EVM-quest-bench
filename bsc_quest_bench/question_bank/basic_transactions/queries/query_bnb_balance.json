@@ -1,0 +1,94 @@
+{
+  "id": "query_bnb_balance",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "queries",
+  "difficulty": "easy",
+  "title": "Query BNB Balance",
+  
+  "description": [
+    "Query the BNB balance of a specific address using eth_getBalance RPC call.",
+    "",
+    "Technical context:",
+    "- Use provider.getBalance(address) to query balance",
+    "- The return value is in Wei (1 BNB = 10^18 Wei)",
+    "- This is a read-only operation, no transaction is required",
+    "- Balance should be returned as BigInt or string",
+    "",
+    "Key considerations:",
+    "- Use ethers.js provider.getBalance() method",
+    "- Return the balance value in the result object",
+    "- Include both raw Wei value and human-readable BNB value",
+    "- No transaction signing or gas fee required"
+  ],
+  
+  "natural_language_templates": [
+    "Query the BNB balance of address {query_address}",
+    "Check the BNB balance for {query_address}",
+    "Get the BNB balance of {query_address}",
+    "What is the BNB balance of address {query_address}?"
+  ],
+  
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  
+  "parameters": {
+    "query_address": {
+      "type": "address",
+      "role": "query_target",
+      "description": "Address to query BNB balance for",
+      "generation": {
+        "method": "random",
+        "comment": "Random address for query operation"
+      }
+    },
+    "expected_balance": {
+      "type": "number",
+      "role": "expected_result",
+      "description": "Expected BNB balance in BNB (will be set via Anvil)",
+      "generation": {
+        "method": "random",
+        "min": 0.5,
+        "max": 50.0,
+        "decimals": 3,
+        "comment": "Random balance between 0.5 and 50 BNB"
+      }
+    }
+  },
+  
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "address_exists",
+        "description": "Query address must be valid"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "query_success",
+        "weight": 0.3,
+        "description": "Query executed successfully"
+      },
+      {
+        "type": "return_format",
+        "weight": 0.3,
+        "description": "Return value format is correct (contains balance_wei)"
+      },
+      {
+        "type": "balance_correctness",
+        "weight": 0.4,
+        "description": "Balance value matches chain state"
+      }
+    ]
+  },
+  
+  "metadata": {
+    "tags": ["query", "balance", "bnb", "read-only", "basic"],
+    "estimated_gas": 0,
+    "requires_contract": false,
+    "operation_type": "query"
+  }
+}
+

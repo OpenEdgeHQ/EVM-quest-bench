@@ -1,0 +1,149 @@
+{
+  "id": "composite_approve_remove_liquidity",
+  "category": "composite_problems",
+  "difficulty": "medium",
+  "title": "Approve LP Token and Remove Liquidity",
+  "description": [
+    "A composite problem that tests the LLM's ability to:",
+    "1. Execute ERC20 approval for LP token to PancakeSwap Router",
+    "2. Execute remove liquidity operation using the approval",
+    "This demonstrates the DeFi approval pattern for liquidity withdrawal."
+  ],
+  "natural_language_templates": [
+    "Approve PancakeSwap Router to spend your LP tokens, then remove liquidity from {token_a_symbol}/{token_b_symbol} pool",
+    "First approve LP tokens, then remove {liquidity_percentage}% of your liquidity from the {token_a_symbol}/{token_b_symbol} pool"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "composite_structure": {
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "erc20_approve",
+        "description": "Approve PancakeSwap Router to spend LP tokens"
+      },
+      {
+        "step": 2,
+        "atomic_id": "remove_liquidity_tokens",
+        "description": "Remove liquidity from token pair pool"
+      }
+    ]
+  },
+  "parameters": {
+    "router_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "PancakeSwap V2 Router contract address",
+      "shared_across_steps": [1, 2],
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+        "comment": "PancakeSwap V2 Router on BSC"
+      }
+    },
+    "token_a_address": {
+      "type": "address",
+      "role": "token_a",
+      "description": "First token address (USDT)",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955",
+        "comment": "USDT on BSC"
+      }
+    },
+    "token_a_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "First token symbol",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "token_a_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "First token decimal places",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "token_b_address": {
+      "type": "address",
+      "role": "token_b",
+      "description": "Second token address (BUSD)",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+        "comment": "BUSD on BSC"
+      }
+    },
+    "token_b_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Second token symbol",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": "BUSD"
+      }
+    },
+    "token_b_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Second token decimal places",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "liquidity_percentage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "liquidity_amount",
+      "description": "Percentage of LP tokens to remove (0-100)",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "random",
+        "min": 30.0,
+        "max": 70.0,
+        "decimals": 0
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "slippage_tolerance",
+      "description": "Slippage tolerance (e.g., 5 for 5%)",
+      "shared_across_steps": [2],
+      "generation": {
+        "method": "fixed",
+        "value": 5.0
+      }
+    }
+  },
+  "interaction_config": {
+    "optimal_steps": 2,
+    "max_rounds_multiplier": 2,
+    "comment": "max_rounds = optimal_steps * max_rounds_multiplier = 2 * 2 = 4"
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "description": "Directly reuse the atomic validator of the key operation - NO code duplication!",
+    "key_operation_step": 2,
+    "key_operation_id": "remove_liquidity_tokens",
+    "key_operation_alias": "remove_liquidity",
+    "validator_class": "RemoveLiquidityTokensValidator",
+    "note": "The validator will load RemoveLiquidityTokensValidator and call its validate() method directly"
+  },
+  "tags": ["approve-execute", "defi", "liquidity"]
+}
+

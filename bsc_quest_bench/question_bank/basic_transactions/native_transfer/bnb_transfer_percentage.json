@@ -1,0 +1,108 @@
+{
+  "id": "bnb_transfer_percentage",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "native_transfer",
+  "difficulty": "medium",
+  "title": "Percentage BNB Transfer",
+  
+  "description": [
+    "Transfer a percentage of BNB balance from sender's address to another address.",
+    "",
+    "Technical context:",
+    "- Requires querying the sender's current balance before calculating transfer amount",
+    "- Formula: transfer_amount = balance × (percentage / 100)",
+    "- Query balance using eth_getBalance RPC call",
+    "- Standard gas limit: 21000",
+    "",
+    "Key considerations:",
+    "- First query current balance",
+    "- Calculate transfer amount based on percentage",
+    "- Convert amount to Wei: calculated_amount × 10^18",
+    "- Set transaction 'to' field to recipient address",
+    "- Set transaction 'value' field to calculated amount in Wei"
+  ],
+  
+  "natural_language_templates": [
+    "Transfer {percentage}% of my BNB balance to {to_address}",
+    "Send {percentage} percent of BNB to {to_address}",
+    "Please transfer {percentage}% of the BNB I have to {to_address}",
+    "I want to send {percentage}% of my BNB to address {to_address}"
+  ],
+  
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  
+  "parameters": {
+    "to_address": {
+      "type": "address",
+      "role": "receiver",
+      "description": "Recipient address",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "percentage": {
+      "type": "integer",
+      "role": "percentage",
+      "description": "Percentage of balance to transfer (1-100)",
+      "generation": {
+        "method": "random",
+        "min": 10,
+        "max": 90,
+        "step": 5
+      }
+    }
+  },
+  
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "balance_check",
+        "description": "Sender must have at least 0.01 BNB",
+        "min_balance": "0.01 BNB"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "address_check",
+        "weight": 0.2,
+        "field": "to",
+        "expected": "{to_address}",
+        "description": "Target address must be correct"
+      },
+      {
+        "type": "percentage_value_check",
+        "weight": 0.3,
+        "field": "value",
+        "percentage": "{percentage}",
+        "base": "sender_balance_before",
+        "tolerance": 0.02,
+        "description": "Transfer amount must be correct percentage of balance"
+      },
+      {
+        "type": "balance_percentage_change",
+        "weight": 0.2,
+        "address": "sender",
+        "expected_percentage": "-{percentage}",
+        "tolerance_type": "percentage",
+        "tolerance": 0.02,
+        "description": "Balance change must match the percentage (plus gas)"
+      }
+    ]
+  },
+  
+  "metadata": {
+    "tags": ["native_transfer", "bnb", "percentage", "query", "dynamic"],
+    "estimated_gas": 21000,
+    "requires_contract": false,
+    "requires_query": true
+  }
+}

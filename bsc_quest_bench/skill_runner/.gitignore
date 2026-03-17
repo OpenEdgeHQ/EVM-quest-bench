@@ -1,0 +1,9 @@
+# Node modules
+node_modules/
+
+# Temporary skill files
+temp/
+
+# Bun lockfile (optional, keep if you want reproducible builds)
+# bun.lock
+

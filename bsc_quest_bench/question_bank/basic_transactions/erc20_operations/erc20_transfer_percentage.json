@@ -1,0 +1,152 @@
+{
+  "id": "erc20_transfer_percentage",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "erc20_operations",
+  "difficulty": "medium",
+  "title": "ERC20 Percentage Token Transfer",
+  "natural_language_templates": [
+    "Transfer {percentage}% of my {token_symbol} tokens to {to_address}",
+    "Send {percentage} percent of {token_symbol} to address {to_address}",
+    "Please transfer {percentage}% of my {token_symbol} balance to {to_address}",
+    "I want to send {percentage}% of the {token_symbol} I have to {to_address}"
+  ],
+  "description": [
+    "Transfer a percentage of ERC20 token balance from the agent's address to another address.",
+    "",
+    "Technical context:",
+    "- Requires querying the agent's current token balance before calculating transfer amount",
+    "- Formula: transfer_amount = token_balance * (percentage / 100)",
+    "- Use the token contract's balanceOf(address) function to query balance",
+    "- The transfer function signature: transfer(address to, uint256 amount)",
+    "- Recommended gas limit: 65000",
+    "",
+    "Key considerations:",
+    "- Create a Contract instance with the token address and ERC20 ABI",
+    "- Call balanceOf(agentAddress) to get current token balance",
+    "- Calculate percentage of the balance (in smallest unit)",
+    "- Encode the transfer function call with calculated amount",
+    "- The transaction 'to' field should be the token contract address",
+    "- The transaction 'value' should be 0 (not sending native BNB)"
+  ],
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "ERC20 token contract address",
+      "generation": {
+        "method": "from_list",
+        "addresses": [
+          "0x55d398326f99059fF775485246999027B3197955"
+        ],
+        "comment": "BSC Mainnet USDT"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "description": "Token symbol for display",
+      "generation": {
+        "method": "from_list",
+        "values": [
+          "USDT"
+        ]
+      },
+      "role": "parameter"
+    },
+    "token_decimals": {
+      "type": "integer",
+      "description": "Token decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      },
+      "role": "parameter"
+    },
+    "to_address": {
+      "type": "address",
+      "role": "receiver",
+      "description": "Recipient address",
+      "generation": {
+        "method": "random"
+      }
+    },
+    "percentage": {
+      "type": "integer",
+      "unit": "%",
+      "description": "Percentage of token balance to transfer (10-90)",
+      "generation": {
+        "min": 10,
+        "max": 90,
+        "step": 5
+      },
+      "role": "parameter"
+    }
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "token_balance",
+        "description": "Agent must have sufficient token balance",
+        "min_balance": "200 tokens"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "transaction_success",
+        "weight": 0.3,
+        "description": "Transaction executed successfully"
+      },
+      {
+        "type": "contract_call",
+        "weight": 0.2,
+        "description": "Transaction calls the correct token contract",
+        "expected": "{token_address}"
+      },
+      {
+        "type": "function_signature",
+        "weight": 0.1,
+        "description": "Correct ERC20 transfer function signature",
+        "expected": "transfer(address,uint256)"
+      },
+      {
+        "type": "percentage_token_balance_change",
+        "weight": 0.3,
+        "description": "Token balance changed by correct percentage",
+        "sender_change": "-{percentage}%",
+        "receiver_change": "+{amount}",
+        "tolerance": "2%"
+      },
+      {
+        "type": "balance_query",
+        "weight": 0.1,
+        "description": "Agent queried balance before transfer",
+        "note": "This checks if the transfer amount matches percentage of initial balance"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "erc20",
+      "token",
+      "percentage",
+      "contract_call",
+      "balance_query",
+      "intermediate"
+    ],
+    "estimated_gas": 65000,
+    "requires_contract": true,
+    "requires_token_balance": true,
+    "requires_balance_query": true,
+    "contract_requirements": {
+      "standard": "ERC20",
+      "required_functions": [
+        "transfer",
+        "balanceOf"
+      ]
+    }
+  }
+}

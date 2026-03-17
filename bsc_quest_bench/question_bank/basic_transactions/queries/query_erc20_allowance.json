@@ -1,0 +1,136 @@
+{
+  "id": "query_erc20_allowance",
+  "version": "2.0.0",
+  "category": "basic_transactions",
+  "subcategory": "queries",
+  "difficulty": "easy",
+  "title": "Query ERC20 Token Allowance",
+  
+  "description": [
+    "Query the ERC20 token allowance granted by an owner to a spender by calling the allowance function.",
+    "",
+    "Technical context:",
+    "- Use contract.allowance(owner, spender) to query the approved amount",
+    "- The return value is in token's smallest unit (considering decimals)",
+    "- This is a read-only view function, no transaction is required",
+    "- Allowance represents how much the spender can transfer on behalf of the owner",
+    "",
+    "Key considerations:",
+    "- Create contract instance with token address and ERC20 ABI",
+    "- Call allowance(address owner, address spender) view function",
+    "- Return both raw allowance (in wei/smallest unit) and human-readable allowance",
+    "- Consider token decimals when converting to human-readable format"
+  ],
+  
+  "natural_language_templates": [
+    "Query the {token_symbol} allowance that {owner_address} has approved for {spender_address}",
+    "Check how much {token_symbol} {spender_address} is allowed to spend from {owner_address}",
+    "Get the allowance of {token_symbol} (token address: {token_address}) from owner {owner_address} to spender {spender_address}",
+    "What is the {token_symbol} allowance from {owner_address} to {spender_address}?"
+  ],
+  
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  },
+  
+  "parameters": {
+    "token_address": {
+      "type": "address",
+      "role": "contract",
+      "description": "ERC20 token contract address",
+      "generation": {
+        "method": "from_env",
+        "env_key": "erc1363_token_address",
+        "comment": "Use locally deployed ERC1363 test token (standard OpenZeppelin ERC20)"
+      }
+    },
+    "token_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token symbol for display",
+      "generation": {
+        "method": "fixed",
+        "value": "T1363"
+      }
+    },
+    "token_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token decimal places",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "owner_address": {
+      "type": "address",
+      "role": "owner",
+      "description": "Token owner address (who granted the allowance)",
+      "generation": {
+        "method": "random",
+        "comment": "Random address for query operation"
+      }
+    },
+    "spender_address": {
+      "type": "address",
+      "role": "spender",
+      "description": "Spender address (who received the allowance)",
+      "generation": {
+        "method": "random",
+        "comment": "Random address for query operation"
+      }
+    },
+    "expected_allowance": {
+      "type": "number",
+      "role": "expected_result",
+      "description": "Expected allowance in tokens (will be set via Anvil)",
+      "generation": {
+        "method": "random",
+        "min": 100.0,
+        "max": 10000.0,
+        "decimals": 2,
+        "comment": "Random allowance between 100 and 10000 tokens"
+      }
+    }
+  },
+  
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "address_exists",
+        "description": "Owner and spender addresses must be valid"
+      },
+      {
+        "type": "contract_exists",
+        "description": "Token contract must exist"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "query_success",
+        "weight": 0.3,
+        "description": "Query executed successfully"
+      },
+      {
+        "type": "return_format",
+        "weight": 0.3,
+        "description": "Return value format is correct (contains allowance_raw)"
+      },
+      {
+        "type": "allowance_correctness",
+        "weight": 0.4,
+        "description": "Allowance value matches chain state"
+      }
+    ]
+  },
+  
+  "metadata": {
+    "tags": ["query", "allowance", "erc20", "read-only", "approval"],
+    "estimated_gas": 0,
+    "requires_contract": true,
+    "operation_type": "query",
+    "erc_standard": "ERC20"
+  }
+}
+

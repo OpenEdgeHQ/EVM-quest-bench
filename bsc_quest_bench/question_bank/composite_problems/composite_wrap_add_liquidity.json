@@ -1,0 +1,231 @@
+{
+  "id": "composite_wrap_add_liquidity",
+  "version": "1.0.0",
+  "category": "composite_problems",
+  "subcategory": "liquidity_workflows",
+  "difficulty": "medium",
+  "title": "Wrap BNB and Add Liquidity",
+  "natural_language_templates": [
+    "Wrap {amount_bnb} BNB to WBNB, then add liquidity to WBNB/{token_b_symbol} pool with {amount_wbnb} WBNB and {amount_token_b} {token_b_symbol}",
+    "Deposit BNB to WBNB, approve it, and provide liquidity to the WBNB/{token_b_symbol} pool",
+    "Convert {amount_bnb} BNB to WBNB, approve PancakeSwap Router, then add {amount_wbnb} WBNB + {amount_token_b} {token_b_symbol} as liquidity"
+  ],
+  "description": [
+    "Wrap BNB to WBNB and add liquidity to a token pair on PancakeSwap.",
+    "",
+    "This is a 3-step process:",
+    "1. Deposit {amount_bnb} BNB to WBNB contract to get WBNB",
+    "2. Approve WBNB for PancakeSwap Router",
+    "3. Add liquidity with {amount_wbnb} WBNB and {amount_token_b} {token_b_symbol}",
+    "",
+    "Contract addresses:",
+    "- WBNB: {wbnb_address}",
+    "- Token B ({token_b_symbol}): {token_b_address}",
+    "- PancakeSwap Router V2: {router_address}",
+    "",
+    "Functions:",
+    "- WBNB deposit(): Payable function, send BNB to get WBNB",
+    "- ERC20 approve(address spender, uint256 amount): 0x095ea7b3",
+    "- Router addLiquidity(tokenA, tokenB, amountADesired, amountBDesired, amountAMin, amountBMin, to, deadline): 0xe8e33700",
+    "",
+    "The key operation is step 3 (addLiquidity).",
+    "",
+    "Note: You already have {token_b_symbol} allowance set for Router."
+  ],
+  "composite_structure": {
+    "pattern": "wrap-approve-liquidity",
+    "optimal_steps": 3,
+    "atomic_operations": [
+      {
+        "step": 1,
+        "atomic_id": "wbnb_deposit",
+        "role": "preparation",
+        "description": "Wrap BNB to WBNB"
+      },
+      {
+        "step": 2,
+        "atomic_id": "erc20_approve",
+        "role": "authorization",
+        "description": "Approve WBNB for Router"
+      },
+      {
+        "step": 3,
+        "atomic_id": "add_liquidity_tokens",
+        "role": "key_operation",
+        "description": "Add WBNB + Token B liquidity"
+      }
+    ]
+  },
+  "parameters": {
+    "wbnb_address": {
+      "type": "address",
+      "role": "token_a",
+      "description": "WBNB contract address",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "token_a_address": {
+      "type": "address",
+      "role": "token_a",
+      "description": "Token A address (WBNB)",
+      "generation": {
+        "method": "fixed",
+        "value": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+    },
+    "token_b_address": {
+      "type": "address",
+      "role": "token_b",
+      "description": "Token B address (USDT)",
+      "generation": {
+        "method": "fixed",
+        "value": "0x55d398326f99059fF775485246999027B3197955"
+      }
+    },
+    "token_b_symbol": {
+      "type": "string",
+      "role": "display",
+      "description": "Token B symbol",
+      "generation": {
+        "method": "fixed",
+        "value": "USDT"
+      }
+    },
+    "router_address": {
+      "type": "address",
+      "role": "router",
+      "description": "PancakeSwap Router V2 address",
+      "generation": {
+        "method": "fixed",
+        "value": "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+      }
+    },
+    "amount_bnb": {
+      "type": "number",
+      "unit": "ether",
+      "role": "wrap_amount",
+      "description": "Amount of BNB to wrap",
+      "generation": {
+        "method": "random",
+        "min": "0.1",
+        "max": "0.5",
+        "decimals": 2
+      }
+    },
+    "amount_wbnb": {
+      "type": "number",
+      "unit": "ether",
+      "role": "liquidity_amount_a",
+      "description": "Amount of WBNB to add as liquidity",
+      "generation": {
+        "method": "fixed",
+        "value": "0.1"
+      }
+    },
+    "amount_token_a": {
+      "type": "number",
+      "unit": "ether",
+      "role": "liquidity_amount_a",
+      "description": "Amount of Token A (WBNB) for liquidity",
+      "generation": {
+        "method": "fixed",
+        "value": "0.1"
+      }
+    },
+    "amount_token_b": {
+      "type": "number",
+      "unit": "ether",
+      "role": "liquidity_amount_b",
+      "description": "Amount of Token B (USDT) for liquidity",
+      "generation": {
+        "method": "fixed",
+        "value": "50"
+      }
+    },
+    "token_a_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "WBNB decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "token_b_decimals": {
+      "type": "integer",
+      "role": "calculation",
+      "description": "Token B decimals",
+      "generation": {
+        "method": "fixed",
+        "value": 18
+      }
+    },
+    "slippage": {
+      "type": "number",
+      "unit": "percent",
+      "role": "tolerance",
+      "description": "Slippage tolerance",
+      "generation": {
+        "method": "fixed",
+        "value": 50
+      }
+    }
+  },
+  "interaction_config": {
+    "max_rounds": 6,
+    "optimal_steps": 3,
+    "score_decay_formula": "base_score * min(1.0, optimal_steps / actual_steps)",
+    "forced_submit_at_max": true
+  },
+  "scoring_strategy": {
+    "method": "atomic_validator_reuse",
+    "key_operation_id": "add_liquidity_tokens",
+    "key_operation_step": 3
+  },
+  "validation": {
+    "pre_conditions": [
+      {
+        "type": "bnb_balance",
+        "description": "Agent must have BNB to wrap",
+        "min_balance": "1 BNB"
+      },
+      {
+        "type": "token_balance",
+        "description": "Agent must have Token B balance",
+        "min_balance": "100 tokens"
+      }
+    ],
+    "post_conditions": [
+      {
+        "type": "liquidity_added",
+        "weight": 0.7,
+        "description": "LP tokens received"
+      },
+      {
+        "type": "tokens_deposited",
+        "weight": 0.3,
+        "description": "Both tokens deposited to pool"
+      }
+    ]
+  },
+  "metadata": {
+    "tags": [
+      "wrap",
+      "liquidity",
+      "defi",
+      "wbnb",
+      "pancakeswap",
+      "medium"
+    ],
+    "estimated_gas": 350000,
+    "requires_approval": true,
+    "difficulty_notes": [
+      "Requires wrapping BNB first",
+      "Two approvals needed (WBNB + Token B)",
+      "Complex liquidity parameters"
+    ]
+  }
+}
+

@@ -1,0 +1,147 @@
+{
+  "id": "harvest_rewards",
+  "title": "Harvest Farming Rewards",
+  "difficulty": "medium",
+  "category": "defi_operations",
+  "subcategory": "staking_farming",
+  "description": [
+    "Harvest (claim) accumulated farming rewards from a staking pool. This operation collects the rewards earned from staking without unstaking the principal.",
+    "",
+    "IMPORTANT: This is a SimpleRewardPool contract with a harvest() function.",
+    "- Contract function: harvest() - NO PARAMETERS",
+    "- This function claims all pending rewards for the caller",
+    "- The pool_address parameter is the SimpleRewardPool contract address",
+    "- Rewards are paid in CAKE tokens",
+    "",
+    "Required steps:",
+    "1. Query pending rewards: rewardPool.pendingReward(user_address)",
+    "2. Check current CAKE balance: cakeToken.balanceOf(user_address)",
+    "3. Call harvest to claim rewards: rewardPool.harvest()",
+    "4. Verify CAKE balance increased",
+    "",
+    "Contract details:",
+    "- SimpleRewardPool contract address: pool_address (dynamic parameter)",
+    "- Reward token: CAKE (0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82)",
+    "- Harvest function signature: harvest() - no parameters",
+    "",
+    "To get the pool address from deployed contracts:",
+    "const poolAddress = deployedContracts['simple_reward_pool']",
+    "",
+    "Function call construction:",
+    "```typescript",
+    "const SimpleRewardPoolABI = [",
+    "  'function harvest() external'",
+    "];",
+    "const contract = new Contract interface(poolAddress, SimpleRewardPoolABI, provider);",
+    "const data = encode the function call('harvest', []);",
+    "```",
+    "",
+    "Common mistakes to avoid:",
+    "- DO NOT pass any parameters to harvest() - it's a parameterless function",
+    "- DO ensure you have pending rewards before harvesting",
+    "- DO check the reward token (CAKE) balance before and after"
+  ],
+  "tags": [
+    "harvest",
+    "farming",
+    "rewards",
+    "defi",
+    "yield"
+  ],
+  "parameters": {
+    "pool_address": {
+      "type": "address",
+      "description": "SimpleRewardPool contract address",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "simple_reward_pool_address"
+      },
+      "role": "address"
+    },
+    "reward_token_address": {
+      "type": "address",
+      "description": "Reward token address (CAKE)",
+      "example": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+      "generation": {
+        "method": "fixed",
+        "value": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
+      },
+      "role": "receiver"
+    },
+    "user_address": {
+      "type": "address",
+      "description": "User's wallet address",
+      "dynamic": true,
+      "generation": {
+        "method": "from_env",
+        "env_key": "test_address"
+      },
+      "role": "address"
+    },
+    "chain_id": {
+      "type": "integer",
+      "description": "Blockchain network ID (56 for BSC Mainnet)",
+      "example": 56,
+      "generation": {
+        "method": "fixed",
+        "value": 56
+      },
+      "role": "parameter"
+    }
+  },
+  "natural_language_templates": [
+    "Harvest farming rewards from the pool at {pool_address}",
+    "Claim accumulated rewards from the farming pool",
+    "Collect farming rewards without unstaking",
+    "Harvest CAKE rewards from the staking pool"
+  ],
+  "contracts": {
+    "simple_reward_pool": {
+      "address": "dynamic",
+      "name": "SimpleRewardPool",
+      "abi_functions": [
+        "function harvest() external",
+        "function pendingReward(address _user) external view returns (uint256)",
+        "function userInfo(address _user) external view returns (uint256 amount, uint256 rewardDebt)"
+      ]
+    },
+    "cake_token": {
+      "address": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+      "name": "PancakeSwap Token (CAKE)",
+      "abi_functions": [
+        "function balanceOf(address account) external view returns (uint256)",
+        "function transfer(address to, uint256 amount) external returns (bool)"
+      ]
+    }
+  },
+  "expected_behavior": {
+    "transaction_count": 1,
+    "state_changes": [
+      "User's CAKE balance increases by pending rewards",
+      "Pending rewards reset to 0 after harvest"
+    ],
+    "gas_estimate": 100000
+  },
+  "validation_criteria": {
+    "transaction_success": {
+      "weight": 30,
+      "description": "Transaction executed successfully without reverting"
+    },
+    "reward_token_increase": {
+      "weight": 70,
+      "description": "User's reward token (CAKE) balance increased"
+    }
+  },
+  "hints": [
+    "Use the harvest() function with no parameters",
+    "Check pendingReward() before harvesting to see expected amount",
+    "Verify CAKE balance increases after harvest"
+  ],
+  "test_script_template": "harvest_rewards.ts",
+  "version": "2.0.0",
+  "blockchain": {
+    "chain": "BSC",
+    "network": "mainnet"
+  }
+}
