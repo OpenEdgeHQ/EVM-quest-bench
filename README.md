@@ -726,3 +726,14 @@ We welcome contributions! Please:
 2. Maintain backward compatibility
 3. Add tests for new features
 4. Update documentation
+
+## If you are interested in our work, please cite
+
+
+@article{yang2026evm,
+  title={EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation},
+  author={Yang, Pei and Chen, Wanyi and Wang, Ke and Ai, Lynn and Yang, Eric and Shi, Tianyu},
+  journal={arXiv preprint arXiv:2601.06565},
+  year={2026}
+}
+
