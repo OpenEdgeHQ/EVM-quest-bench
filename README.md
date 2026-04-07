@@ -730,10 +730,21 @@ We welcome contributions! Please:
 ## If you are interested in our work, please cite
 
 
+
+## Citation
+
+If you use EVM-quest-bench in your research, please cite:
+
+```bibtex
 @article{yang2026evm,
   title={EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation},
   author={Yang, Pei and Chen, Wanyi and Wang, Ke and Ai, Lynn and Yang, Eric and Shi, Tianyu},
   journal={arXiv preprint arXiv:2601.06565},
   year={2026}
 }
+
+```
+
+
+
 
