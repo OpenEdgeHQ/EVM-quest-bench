@@ -10,6 +10,36 @@
   <meta property="og:title" content="EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation">
   <meta property="og:description" content="A benchmark that executes generated transaction code and verifies the resulting EVM state.">
   <meta property="og:url" content="https://openedgehq.github.io/EVM-quest-bench/">
+  <link rel="canonical" href="https://openedgehq.github.io/EVM-quest-bench/">
+  <meta name="citation_title" content="EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation">
+  <meta name="citation_author" content="Yang, Pei">
+  <meta name="citation_author" content="Chen, Wanyi">
+  <meta name="citation_author" content="Wang, Ke">
+  <meta name="citation_author" content="Ai, Lynn">
+  <meta name="citation_author" content="Yang, Eric">
+  <meta name="citation_author" content="Shi, Tianyu">
+  <meta name="citation_publication_date" content="2026/07/02">
+  <meta name="citation_conference_title" content="Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics">
+  <meta name="citation_firstpage" content="35513">
+  <meta name="citation_lastpage" content="35529">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "name": "EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation",
+    "headline": "An execution-grounded benchmark for natural-language transaction code generation",
+    "url": "https://openedgehq.github.io/EVM-quest-bench/",
+    "sameAs": ["https://aclanthology.org/2026.acl-long.1642/", "https://arxiv.org/abs/2601.06565", "https://github.com/OpenEdgeHQ/EVM-quest-bench"],
+    "datePublished": "2026-07-02",
+    "isPartOf": {"@type": "PublicationIssue", "name": "Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics"},
+    "author": [
+      {"@type": "Person", "name": "Pei Yang"}, {"@type": "Person", "name": "Wanyi Chen"},
+      {"@type": "Person", "name": "Ke Wang"}, {"@type": "Person", "name": "Lynn Ai"},
+      {"@type": "Person", "name": "Eric Yang"}, {"@type": "Person", "name": "Tianyu Shi"}
+    ],
+    "keywords": "EVM, blockchain, LLM benchmark, transaction code generation, Atomic, Composite"
+  }
+  </script>
   <link rel="stylesheet" href="static/css/bulma.min.css">
   <link rel="stylesheet" href="static/css/index.css">
   <link rel="stylesheet" href="static/css/evmquest.css">
@@ -67,6 +97,21 @@
     <h2 class="title is-3"><span lang="zh">摘要式定位</span><span lang="en">Abstract</span></h2>
     <p lang="zh">EVM-QuestBench 研究一个具体而容易被高估的问题：语言模型能否把用户的自然语言区块链意图，编译成可执行的交易代码，并真正改变 EVM 状态。与只比较生成代码字符串的评测不同，本基准在 BSC 主网 fork 上执行模型返回的 unsigned transaction，再根据 receipt、调用目标、calldata、余额、allowance、NFT owner、LP token 等状态证据评分。基准把能力拆成单步 Atomic 与多步 Composite，Composite 还显式记录规划、逐步执行、反馈和效率衰减。</p>
     <p lang="en">EVM-QuestBench asks whether language models can compile natural-language blockchain intent into executable transaction code that produces the intended EVM state. Instead of comparing strings, it executes unsigned transactions on a BSC mainnet fork and scores receipts, targets, calldata, balances, allowances, NFT ownership, LP tokens, and other state evidence. The benchmark separates single-operation Atomic tasks from multi-step Composite workflows, with explicit planning, feedback, and efficiency decay for the latter.</p>
+  </div>
+</section>
+
+<section class="section figure-section" id="method-figure">
+  <div class="container is-max-desktop">
+    <div class="figure-intro">
+      <div>
+        <p class="eyebrow"><span lang="zh">论文 Figure 1 · 方法总览</span><span lang="en">Paper Figure 1 · Method overview</span></p>
+        <h2 class="title is-3"><span lang="zh">从任务定义到可验证的 EVM 状态</span><span lang="en">From task definition to a verifiable EVM state</span></h2>
+        <p lang="zh">这不是一个“模型回答完就结束”的代码题。题目 JSON 负责定义任务，动态实例化负责生成本轮自然语言，模型负责生成代码或动作，Runner 在隔离 fork 上执行，Validator 最后对 receipt 与状态变化打分。</p>
+        <p lang="en">This is not a code question that ends when the model responds. JSON defines the task, dynamic instantiation creates the current natural-language instance, the model generates code or an action, the runner executes it on an isolated fork, and validators score the receipt and state change.</p>
+        <div class="figure-facts"><span>62 Atomic</span><span>45 Composite</span><span>BSC fork</span><span>Task-specific validators</span></div>
+      </div>
+      <figure class="paper-figure"><img src="static/img/architecture.png" alt="EVM-QuestBench layered evaluation architecture from task definition to environment and validation"><figcaption>Figure 1. EVM-QuestBench evaluation architecture and end-to-end pipeline.</figcaption></figure>
+    </div>
   </div>
 </section>
 
@@ -183,6 +228,19 @@
       </tbody></table>
     </div>
     <div class="insight-grid"><div><b>Atomic ↔ Composite asymmetry</b><span lang="zh">单步高分不保证多步规划同样稳健。</span><span lang="en">Strong single-step execution does not guarantee robust workflow planning.</span></div><div><b>Variance matters</b><span lang="zh">SD/CV 显示不同轮次的稳定性。</span><span lang="en">SD/CV expose run-to-run stability.</span></div><div><b>Cost is measurable</b><span lang="zh">完整 107 题约 334K tokens；标准模型单轮约 $0.06–$0.29，thinking-heavy 模型最高约 $14.16。</span><span lang="en">A full 107-task run uses about 334K tokens; standard-model rounds cost roughly $0.06–$0.29, while thinking-heavy models reach about $14.16.</span></div></div>
+    <div class="result-visuals">
+      <figure class="paper-figure compact"><img src="static/img/score-cost.png" alt="Paper Figure 3 showing total benchmark score versus token usage and API cost"><figcaption>Figure 3. Total score versus total token usage and API cost.</figcaption></figure>
+      <div class="result-takeaway"><p class="eyebrow"><span lang="zh">论文观察</span><span lang="en">Takeaway</span></p><h3><span lang="zh">执行正确性与工作流能力并不等价</span><span lang="en">Execution precision and workflow competence are not equivalent</span></h3><p lang="zh">论文报告的模型分布显示，Atomic 与 Composite 能力存在明显不对称：有些模型擅长单步交易，却在多步依赖、接口格式和效率控制上失分。</p><p lang="en">The reported model distribution shows a clear Atomic–Composite asymmetry: some models are strong at single transactions but lose points on multi-step dependencies, interface format, and execution efficiency.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section figure-section" id="pipeline-figure">
+  <div class="container is-max-desktop">
+    <div class="figure-intro reverse">
+      <figure class="paper-figure"><img src="static/img/pipeline.png" alt="Paper Figure 2 showing the end-to-end benchmark pipeline"><figcaption>Figure 2. End-to-end evaluation pipeline.</figcaption></figure>
+      <div><p class="eyebrow"><span lang="zh">闭环执行，而不是静态生成</span><span lang="en">A closed execution loop, not static generation</span></p><h2 class="title is-3"><span lang="zh">每个分数都能追溯到一条链上证据</span><span lang="en">Every score traces back to on-chain evidence</span></h2><p lang="zh">一次评测会记录参数采样、Prompt、模型响应、执行前快照、交易 receipt、tx hash、查询结果、错误信息和执行后状态。这样别人不仅能看到分数，还能理解模型到底在哪一层失败。</p><p lang="en">A run records parameter sampling, prompts, model responses, pre-state snapshots, receipts, transaction hashes, query results, errors, and post-state. The score is therefore tied to an auditable failure surface.</p></div>
+    </div>
   </div>
 </section>
 

@@ -1,34 +1,48 @@
 <p align="right"><b>English</b> · <a href="README_CN.md">中文</a></p>
 
+<div align="center">
+
 # EVM-QuestBench
 
-**EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation**
+**An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation**
 
-[![Project Page](https://img.shields.io/badge/Project%20Page-EVM--QuestBench-2563eb)](https://openedgehq.github.io/EVM-quest-bench/)
+[![Project Page](https://img.shields.io/badge/Project%20Page-Visit-2563eb)](https://openedgehq.github.io/EVM-quest-bench/)
 [![ACL 2026](https://img.shields.io/badge/ACL%202026-Long%20Paper-0f766e)](https://aclanthology.org/2026.acl-long.1642/)
 [![Paper](https://img.shields.io/badge/Paper-ACL%20Anthology-111827)](https://aclanthology.org/2026.acl-long.1642/)
 [![Code](https://img.shields.io/badge/Code-GitHub-111827?logo=github)](https://github.com/OpenEdgeHQ/EVM-quest-bench)
+[![Citation](https://img.shields.io/badge/Cite-CITATION.cff-f59e0b)](CITATION.cff)
 
-Pei Yang<sup>*</sup>, Wanyi Chen<sup>*</sup>, Ke Wang, Lynn Ai, Eric Yang, Tianyu Shi<sup>†</sup><br>
-Gradient · Soochow University<br>
-<sup>*</sup>Equal contribution · <sup>†</sup>Corresponding author
+<a href="https://openedgehq.github.io/EVM-quest-bench/">Project Page</a> ·
+<a href="https://aclanthology.org/2026.acl-long.1642/">Paper</a> ·
+<a href="https://arxiv.org/abs/2601.06565">arXiv</a> ·
+<a href="CITATION.cff">Cite this repository</a>
 
-EVM-QuestBench evaluates whether a model can turn natural-language blockchain intent into executable transaction code and the intended EVM state transition. It contains **62 Atomic** tasks and **45 Composite** workflows, and evaluates generated actions on an Anvil fork of BSC rather than by comparing code strings.
+</div>
 
-> **Paper:** Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics, Volume 1: Long Papers, 2026, pp. 35513–35529.
+> [!IMPORTANT]
+> **ACL 2026 Long Paper.** EVM-QuestBench evaluates whether a model can turn natural-language blockchain intent into executable transaction code **and the intended EVM state transition**. It contains **62 Atomic** tasks and **45 Composite** workflows, executed on an Anvil fork of BSC and scored from receipts, calldata, and post-state evidence—not code-string similarity.
 
-## Quick links
+## About
 
-- [Project page](https://openedgehq.github.io/EVM-quest-bench/)
-- [ACL Anthology](https://aclanthology.org/2026.acl-long.1642/)
-- [arXiv:2601.06565](https://arxiv.org/abs/2601.06565)
-- [Question bank and source code](https://github.com/OpenEdgeHQ/EVM-quest-bench)
+Most code-generation benchmarks stop after checking whether generated text compiles or resembles a reference. EVM-QuestBench asks a stricter question: **did the generated transaction actually execute and leave the chain in the state requested by the user?**
 
-# BSC Quest Bench - LLM Blockchain Transaction Benchmark
+The benchmark covers native-token transfers, ERC-20 and NFT operations, contract calls, PancakeSwap, staking, flashloans, and multi-step workflows. Each run samples a natural-language template and parameters, calls the model, executes the returned action on a snapshot-isolated BSC fork, and validates the resulting state.
 
-A comprehensive benchmark for evaluating LLM ability to generate accurate blockchain transaction code from natural language descriptions. Supports both single-round atomic operations and multi-round composite workflows.
+| Split | What it tests | Model interaction | Score |
+| --- | --- | --- | --- |
+| **Atomic (62)** | One transaction or query | One model call → TypeScript transaction module | 6,200 max |
+| **Composite (45)** | Multi-transaction workflow | Planning + per-step calls + feedback | 4,500 max |
+| **Total (107)** | End-to-end execution-grounded ability | 20 models × 5 rounds × 107 tasks | 10,700 max |
 
-> **🎯 Pure Natural Language Testing** — No code templates, no implementation hints, just natural language tasks. Tests true understanding, not pattern matching.
+## Paper and authors
+
+**EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation**<br>
+Pei Yang<sup>1*</sup>, Wanyi Chen<sup>2*</sup>, Ke Wang<sup>1</sup>, Lynn Ai<sup>1</sup>, Eric Yang<sup>1</sup>, Tianyu Shi<sup>1†</sup><br>
+<sup>1</sup> Gradient · <sup>2</sup> Soochow University<br>
+<sup>*</sup>Equal contribution · <sup>†</sup>Corresponding author<br>
+*Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics, Volume 1: Long Papers, 2026, pp. 35513–35529.*
+
+**Resources:** [Project Page](https://openedgehq.github.io/EVM-quest-bench/) · [ACL Anthology](https://aclanthology.org/2026.acl-long.1642/) · [arXiv](https://arxiv.org/abs/2601.06565) · [Code](https://github.com/OpenEdgeHQ/EVM-quest-bench) · [CITATION.cff](CITATION.cff)
 
 ## Overview
 
@@ -773,5 +787,3 @@ If you use EVM-quest-bench in your research, please cite:
 }
 
 ```
-
-
