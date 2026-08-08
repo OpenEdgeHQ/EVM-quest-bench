@@ -1,0 +1,68 @@
+cff-version: 1.2.0
+title: "EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation"
+message: "If you use EVM-QuestBench, please cite the ACL 2026 Long Paper."
+type: software
+authors:
+  - given-names: Pei
+    family-names: Yang
+    affiliation: Gradient
+    equal-contribution: true
+  - given-names: Wanyi
+    family-names: Chen
+    affiliation: Soochow University
+    equal-contribution: true
+  - given-names: Ke
+    family-names: Wang
+    affiliation: Gradient
+  - given-names: Lynn
+    family-names: Ai
+    affiliation: Gradient
+  - given-names: Eric
+    family-names: Yang
+    affiliation: Gradient
+  - given-names: Tianyu
+    family-names: Shi
+    affiliation: Gradient
+    corresponding: true
+repository-code: "https://github.com/OpenEdgeHQ/EVM-quest-bench"
+url: "https://openedgehq.github.io/EVM-quest-bench/"
+repository-artifact: "https://github.com/OpenEdgeHQ/EVM-quest-bench"
+license: MIT
+version: "1.0.0"
+date-released: 2026-07-02
+identifiers:
+  - type: doi
+    value: "10.18653/v1/2026.acl-long.1642"
+    description: "ACL Anthology publication DOI"
+  - type: arxiv
+    value: "2601.06565"
+keywords:
+  - EVM
+  - blockchain
+  - large language models
+  - transaction code generation
+  - benchmark
+  - agent evaluation
+  - ACL 2026
+preferred-citation:
+  type: article
+  title: "EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation"
+  authors:
+    - given-names: Pei
+      family-names: Yang
+    - given-names: Wanyi
+      family-names: Chen
+    - given-names: Ke
+      family-names: Wang
+    - given-names: Lynn
+      family-names: Ai
+    - given-names: Eric
+      family-names: Yang
+    - given-names: Tianyu
+      family-names: Shi
+  journal: "Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics"
+  year: 2026
+  volume: 1
+  start: 35513
+  end: 35529
+  doi: "10.18653/v1/2026.acl-long.1642"
