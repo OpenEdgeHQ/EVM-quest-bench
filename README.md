@@ -1,3 +1,29 @@
+<p align="right"><b>English</b> · <a href="README_CN.md">中文</a></p>
+
+# EVM-QuestBench
+
+**EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation**
+
+[![Project Page](https://img.shields.io/badge/Project%20Page-EVM--QuestBench-2563eb)](https://openedgehq.github.io/EVM-quest-bench/)
+[![ACL 2026](https://img.shields.io/badge/ACL%202026-Long%20Paper-0f766e)](https://aclanthology.org/2026.acl-long.1642/)
+[![Paper](https://img.shields.io/badge/Paper-ACL%20Anthology-111827)](https://aclanthology.org/2026.acl-long.1642/)
+[![Code](https://img.shields.io/badge/Code-GitHub-111827?logo=github)](https://github.com/OpenEdgeHQ/EVM-quest-bench)
+
+Pei Yang<sup>*</sup>, Wanyi Chen<sup>*</sup>, Ke Wang, Lynn Ai, Eric Yang, Tianyu Shi<sup>†</sup><br>
+Gradient · Soochow University<br>
+<sup>*</sup>Equal contribution · <sup>†</sup>Corresponding author
+
+EVM-QuestBench evaluates whether a model can turn natural-language blockchain intent into executable transaction code and the intended EVM state transition. It contains **62 Atomic** tasks and **45 Composite** workflows, and evaluates generated actions on an Anvil fork of BSC rather than by comparing code strings.
+
+> **Paper:** Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics, Volume 1: Long Papers, 2026, pp. 35513–35529.
+
+## Quick links
+
+- [Project page](https://openedgehq.github.io/EVM-quest-bench/)
+- [ACL Anthology](https://aclanthology.org/2026.acl-long.1642/)
+- [arXiv:2601.06565](https://arxiv.org/abs/2601.06565)
+- [Question bank and source code](https://github.com/OpenEdgeHQ/EVM-quest-bench)
+
 # BSC Quest Bench - LLM Blockchain Transaction Benchmark
 
 A comprehensive benchmark for evaluating LLM ability to generate accurate blockchain transaction code from natural language descriptions. Supports both single-round atomic operations and multi-round composite workflows.
@@ -736,15 +762,16 @@ We welcome contributions! Please:
 If you use EVM-quest-bench in your research, please cite:
 
 ```bibtex
-@article{yang2026evm,
+@inproceedings{yang-etal-2026-evm-questbench,
   title={EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation},
   author={Yang, Pei and Chen, Wanyi and Wang, Ke and Ai, Lynn and Yang, Eric and Shi, Tianyu},
-  journal={arXiv preprint arXiv:2601.06565},
-  year={2026}
+  booktitle={Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics},
+  year={2026},
+  pages={35513--35529},
+  publisher={Association for Computational Linguistics},
+  url={https://aclanthology.org/2026.acl-long.1642/}
 }
 
 ```
-
-
 
 

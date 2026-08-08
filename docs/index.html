@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EVM-QuestBench — Execution-Grounded Transaction Benchmark</title>
-  <meta name="description" content="EVM-QuestBench evaluates whether language models can turn natural-language blockchain intent into executable transaction code and correct EVM state transitions.">
-  <meta name="keywords" content="EVM, blockchain, LLM, benchmark, transaction code generation, BSC, Anvil, execution-grounded">
+  <title>EVM-QuestBench — ACL 2026 Long Paper</title>
+  <meta name="description" content="EVM-QuestBench：ACL 2026 长论文，面向自然语言交易代码生成的执行地基评测。">
+  <meta name="keywords" content="EVM, blockchain, LLM, benchmark, ACL 2026, transaction code generation">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="EVM-QuestBench — Execution-Grounded Transaction Benchmark">
-  <meta property="og:description" content="From natural-language intent to an executable transaction and a verified EVM state transition.">
-  <meta property="og:url" content="https://github.com/OpenEdgeHQ/EVM-quest-bench">
+  <meta property="og:title" content="EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation">
+  <meta property="og:description" content="A benchmark that executes generated transaction code and verifies the resulting EVM state.">
+  <meta property="og:url" content="https://openedgehq.github.io/EVM-quest-bench/">
   <link rel="stylesheet" href="static/css/bulma.min.css">
   <link rel="stylesheet" href="static/css/index.css">
   <link rel="stylesheet" href="static/css/evmquest.css">
@@ -24,207 +24,205 @@
 <section class="hero publication-header">
   <div class="hero-body">
     <div class="container is-max-desktop has-text-centered">
-      <p class="publication-kicker">EXECUTION-GROUNDED BENCHMARK · BSC QUEST BENCH</p>
-      <h1 class="title is-1 publication-title">EVM-QuestBench</h1>
-      <p class="publication-subtitle" lang="zh">把自然语言意图，放进真实 EVM 执行里验证</p>
-      <p class="publication-subtitle" lang="en">An execution-grounded benchmark for natural-language transaction code generation</p>
-      <p class="publication-subtitle-alt" lang="zh">不是比较代码像不像，而是检查交易能否执行、状态是否正确。</p>
-      <p class="publication-subtitle-alt" lang="en">Not string similarity. Real transactions, real state transitions, verifiable outcomes.</p>
-      <div class="publication-venue">62 Atomic · 45 Composite · 107 Tasks</div>
-
-      <div class="publication-links" style="margin-top:1.35rem">
-        <span class="link-block"><a class="button is-dark is-rounded" href="https://github.com/OpenEdgeHQ/EVM-quest-bench"><span class="icon"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-2.91-.88-2.91-2.9 0-.86.31-1.57.82-2.12-.08-.2-.36-1.01.08-2.1 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.09.16 1.9.08 2.1.51.55.82 1.25.82 2.12 0 2.03-1.13 2.7-2.92 2.9.29.26.55.75.55 1.52 0 .21.15.46.55.38A7.99 7.99 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg></span><span lang="zh">代码与题库</span><span lang="en">Code &amp; question bank</span></a></span>
-        <span class="link-block"><a class="button is-dark is-rounded" href="https://arxiv.org/abs/2601.06565"><span class="icon"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 1h12v14H2zM4 3v1h8V3H4zm0 3v1h8V6H4zm0 3v1h5V9H4z"/></svg></span><span lang="zh">论文</span><span lang="en">Paper</span></a></span>
-        <span class="link-block"><a class="button is-dark is-rounded" href="#pipeline"><span class="icon"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2H9v5a1 1 0 1 1-2 0V9H2a1 1 0 1 1 0-2h5V2a1 1 0 0 1 1-1z"/></svg></span><span lang="zh">看评测流程</span><span lang="en">See the pipeline</span></a></span>
+      <p class="publication-kicker"><span lang="zh">ACL 2026 · LONG PAPER · VOLUME 1</span><span lang="en">ACL 2026 · LONG PAPER · VOLUME 1</span></p>
+      <h1 class="publication-title">EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation</h1>
+      <p class="authors">Pei Yang<sup>*</sup> · Wanyi Chen<sup>*</sup> · Ke Wang · Lynn Ai · Eric Yang · Tianyu Shi<sup>†</sup></p>
+      <p class="affiliations">¹ Gradient &nbsp;·&nbsp; ² Soochow University<br><span lang="zh"><sup>*</sup>共同贡献，<sup>†</sup>通讯作者</span><span lang="en"><sup>*</sup>Equal contribution, <sup>†</sup>Corresponding author</span></p>
+      <p class="paper-subtitle" lang="zh">把自然语言的链上意图，放进真实 EVM 执行中验证。</p>
+      <p class="paper-subtitle" lang="en">Putting natural-language blockchain intent into real EVM execution.</p>
+      <div class="publication-links">
+        <a class="button is-dark is-rounded" href="https://aclanthology.org/2026.acl-long.1642/">📄 <span lang="zh">ACL 正式论文</span><span lang="en">ACL Anthology</span></a>
+        <a class="button is-dark is-rounded" href="https://arxiv.org/abs/2601.06565">⌁ <span lang="zh">arXiv</span><span lang="en">arXiv</span></a>
+        <a class="button is-dark is-rounded" href="https://github.com/OpenEdgeHQ/EVM-quest-bench">⌘ <span lang="zh">代码与题库</span><span lang="en">Code</span></a>
+        <a class="button is-primary is-rounded" href="#citation">✎ <span lang="zh">引用 / BibTeX</span><span lang="en">Cite / BibTeX</span></a>
       </div>
+      <p class="paper-meta"><span lang="zh">Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics · 2026 · pp. 35513–35529</span><span lang="en">Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics · 2026 · pp. 35513–35529</span></p>
     </div>
   </div>
 </section>
 
 <section class="hero-teaser">
   <div class="container is-max-desktop">
-    <div class="terminal" role="img" aria-label="Terminal showing EVM-QuestBench execution flow">
-      <div class="terminal-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>bsc-quest-bench · evaluation run</span></div>
-      <pre><span class="pr">$</span> <span class="cmd">python run_quest_bench.py --model gpt-4o --type atomic</span>
-<span class="pr">&gt;</span> loading <span class="cyan">62 atomic</span> problems
-<span class="pr">&gt;</span> fork: BSC mainnet · chain id <span class="cyan">56</span>
-<span class="pr">&gt;</span> execute: unsigned TypeScript transaction object
-<span class="pr">&gt;</span> validate: receipt + state_before + state_after
-<span class="pr">&gt;</span> <span class="ok">PASS  execution-grounded evaluation</span></pre>
+    <div class="terminal" role="img" aria-label="EVM-QuestBench execution pipeline">
+      <div class="terminal-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>evm-questbench · execution-grounded evaluation</span></div>
+      <pre><span class="pr">$</span> python run_quest_bench.py --model MODEL --type atomic
+<span class="pr">&gt;</span> load <span class="cyan">107 task definitions</span> (62 Atomic + 45 Composite)
+<span class="pr">&gt;</span> instantiate natural-language template + parameters
+<span class="pr">&gt;</span> call model API → unsigned TypeScript transaction / action
+<span class="pr">&gt;</span> execute on BSC mainnet fork (Anvil, chain id 56)
+<span class="pr">&gt;</span> validate receipt, call target, calldata, and state delta
+<span class="pr">&gt;</span> <span class="ok">score = execution evidence, not code similarity</span></pre>
     </div>
     <div class="stat-grid">
-      <div class="stat"><b>107</b><span lang="zh">固定题目定义<br>Atomic + Composite</span><span lang="en">task definitions<br>Atomic + Composite</span></div>
-      <div class="stat"><b>62 / 45</b><span lang="zh">单步 / 多步工作流</span><span lang="en">single-step / workflows</span></div>
-      <div class="stat"><b>373</b><span lang="zh">自然语言模板</span><span lang="en">natural-language templates</span></div>
-      <div class="stat"><b>0 → 100</b><span lang="zh">分项结果评分</span><span lang="en">weighted outcome score</span></div>
+      <div class="stat"><b>ACL 2026</b><span lang="zh">主会 Long Paper<br>Volume 1</span><span lang="en">Main-conference<br>Long Paper · Vol. 1</span></div>
+      <div class="stat"><b>107</b><span lang="zh">固定任务定义<br>62 Atomic + 45 Composite</span><span lang="en">task definitions<br>62 Atomic + 45 Composite</span></div>
+      <div class="stat"><b>10,700</b><span lang="zh">执行实例<br>20 模型 × 5 rounds × 107</span><span lang="en">execution instances<br>20 models × 5 rounds × 107</span></div>
+      <div class="stat"><b>8,236</b><span lang="zh">最高 aggregate score<br>Claude-Sonnet-4.5</span><span lang="en">best aggregate score<br>Claude-Sonnet-4.5</span></div>
     </div>
   </div>
 </section>
 
-<section class="section hero is-light">
+<section class="section hero is-light" id="abstract">
+  <div class="container is-max-desktop narrow-copy">
+    <h2 class="title is-3"><span lang="zh">摘要式定位</span><span lang="en">Abstract</span></h2>
+    <p lang="zh">EVM-QuestBench 研究一个具体而容易被高估的问题：语言模型能否把用户的自然语言区块链意图，编译成可执行的交易代码，并真正改变 EVM 状态。与只比较生成代码字符串的评测不同，本基准在 BSC 主网 fork 上执行模型返回的 unsigned transaction，再根据 receipt、调用目标、calldata、余额、allowance、NFT owner、LP token 等状态证据评分。基准把能力拆成单步 Atomic 与多步 Composite，Composite 还显式记录规划、逐步执行、反馈和效率衰减。</p>
+    <p lang="en">EVM-QuestBench asks whether language models can compile natural-language blockchain intent into executable transaction code that produces the intended EVM state. Instead of comparing strings, it executes unsigned transactions on a BSC mainnet fork and scores receipts, targets, calldata, balances, allowances, NFT ownership, LP tokens, and other state evidence. The benchmark separates single-operation Atomic tasks from multi-step Composite workflows, with explicit planning, feedback, and efficiency decay for the latter.</p>
+  </div>
+</section>
+
+<section class="section" id="motivation">
   <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3"><span lang="zh">一句话：它到底测什么？</span><span lang="en">What does it measure?</span></h2>
-        <div class="content has-text-justified">
-          <p lang="zh">EVM-QuestBench 把大模型当作一个<strong>链上意图编译器</strong>：输入自然语言任务、运行环境和本轮参数，模型生成 unsigned transaction code；平台在 BSC 的本地 fork 上真实执行，再验证交易和链上状态是否满足用户意图。</p>
-          <p lang="en">EVM-QuestBench treats an LLM as an <strong>intent compiler for blockchain actions</strong>: given a natural-language task, runtime context, and sampled parameters, the model generates unsigned transaction code. The platform executes it on a BSC fork and verifies the resulting transaction and state.</p>
-        </div>
-        <div class="callout"><strong lang="zh">核心判断：</strong><span lang="zh">正确答案不是“长得像参考代码”，而是“执行后真的把链上世界变成用户想要的样子”。</span><strong lang="en">Core idea:</strong><span lang="en"> correctness is a verified state transition, not a string match against reference code.</span></div>
-      </div>
+    <h2 class="title is-3 has-text-centered"><span lang="zh">为什么普通代码评测不够？</span><span lang="en">Why code similarity is not enough</span></h2>
+    <div class="three-grid">
+      <article class="evidence-card"><div class="card-number">01</div><h3><span lang="zh">字符串正确 ≠ 交易正确</span><span lang="en">String match ≠ valid transaction</span></h3><p lang="zh">selector、ABI 编码、to、value 或 decimals 只错一个字符，代码仍可能“看起来合理”，但上链会 revert 或产生错误状态。</p><p lang="en">A plausible-looking snippet can still revert or encode the wrong recipient, selector, value, or decimals.</p></article>
+      <article class="evidence-card"><div class="card-number">02</div><h3><span lang="zh">查询与执行是两件事</span><span lang="en">Reading and acting are different</span></h3><p lang="zh">模型可以读取余额、allowance 和 reserves，但真正的能力是把这些观测转成正确的下一笔交易。</p><p lang="en">The model may read balances, allowances, or reserves; the hard part is turning observations into the next correct transaction.</p></article>
+      <article class="evidence-card"><div class="card-number">03</div><h3><span lang="zh">多步工作流会暴露依赖</span><span lang="en">Workflows expose dependencies</span></h3><p lang="zh">approve → swap → query 的顺序、参数传播和额外轮次，无法用一段参考代码充分表达。</p><p lang="en">Ordering, parameter propagation, and unnecessary rounds in approve → swap → query cannot be captured by one reference string.</p></article>
     </div>
   </div>
 </section>
 
-<section class="section" id="pipeline">
+<section class="section hero is-light" id="pipeline">
   <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column is-four-fifths has-text-centered">
-        <h2 class="title is-3"><span lang="zh">从一句话到链上状态</span><span lang="en">From intent to state transition</span></h2>
-        <p class="section-lead" lang="zh">模型只负责生成代码；Controller、Runner、Anvil 和 Validator 把回答变成可复核的执行证据。</p>
-        <p class="section-lead" lang="en">The model writes code; the Controller, Runner, Anvil, and Validator turn it into auditable execution evidence.</p>
-        <div class="pipeline">
-          <div class="pipe-step"><b>01 · Task JSON</b><span lang="zh">模板、参数、前置条件、后置条件</span><span lang="en">templates, parameters, predicates</span></div>
-          <div class="pipe-step"><b>02 · LLM API</b><span lang="zh">Atomic 一次；Composite 规划后多轮</span><span lang="en">one-shot Atomic; multi-round Composite</span></div>
-          <div class="pipe-step"><b>03 · TypeScript</b><span lang="zh">返回 unsigned transaction object</span><span lang="en">return an unsigned transaction object</span></div>
-          <div class="pipe-step"><b>04 · Anvil fork</b><span lang="zh">真实执行、产生 receipt 与状态变化</span><span lang="en">execute and produce receipts + state</span></div>
-          <div class="pipe-step"><b>05 · Validator</b><span lang="zh">多项约束 → 0–100 分</span><span lang="en">weighted constraints → 0–100</span></div>
-        </div>
-      </div>
+    <h2 class="title is-3 has-text-centered"><span lang="zh">评测执行契约</span><span lang="en">The execution contract</span></h2>
+    <p class="section-lead" lang="zh">题目定义、模型调用、执行环境和验证器是不同组件；页面把它们明确拆开。</p>
+    <p class="section-lead" lang="en">Task definitions, model calls, execution infrastructure, and validators are separate components.</p>
+    <div class="pipeline">
+      <div class="pipe-step"><b>01 · Question JSON</b><span lang="zh">固定 id、模板、参数、前后置条件</span><span lang="en">id, templates, parameters, predicates</span></div>
+      <div class="pipe-step"><b>02 · Instantiate</b><span lang="zh">采样金额、比例、地址并解析自然语言 Task</span><span lang="en">sample values and resolve the natural-language Task</span></div>
+      <div class="pipe-step"><b>03 · Model API</b><span lang="zh">Atomic 一次；Composite 规划后逐 subtask 多轮</span><span lang="en">one-shot Atomic; multi-round Composite after planning</span></div>
+      <div class="pipe-step"><b>04 · Runner + Anvil</b><span lang="zh">签名、广播、执行交易并记录 receipt / state</span><span lang="en">sign, broadcast, execute, and record receipt / state</span></div>
+      <div class="pipe-step"><b>05 · Validator</b><span lang="zh">把执行证据映射为分数与 pass 标记</span><span lang="en">map execution evidence to score and pass</span></div>
+    </div>
+    <div class="role-grid">
+      <div><b>Model</b><span lang="zh">只生成代码或动作 JSON，不直接拥有链上执行权。</span><span lang="en">Generates code or action JSON; it does not directly control the chain.</span></div>
+      <div><b>Controller</b><span lang="zh">Composite 的规划器与循环器，保存每轮结果并构造下一轮输入。</span><span lang="en">Orchestrates planning, rounds, feedback, and the next prompt.</span></div>
+      <div><b>Runner</b><span lang="zh">运行 TypeScript、签名并提交 unsigned transaction。</span><span lang="en">Runs TypeScript, signs, and submits the unsigned transaction.</span></div>
+      <div><b>Validator</b><span lang="zh">检查 receipt、调用细节和最终 EVM 状态。</span><span lang="en">Checks receipts, call details, and final EVM state.</span></div>
     </div>
   </div>
 </section>
 
-<section class="section hero is-light">
+<section class="section" id="splits">
   <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column is-four-fifths has-text-centered">
-        <h2 class="title is-3"><span lang="zh">两个 split，两个能力面</span><span lang="en">Two splits, two capability profiles</span></h2>
-        <div class="mode-grid">
-          <article class="mode-card atomic">
-            <h3>Atomic · 62</h3>
-            <p lang="zh">单步交易题。模型一次调用 API，返回一段 TypeScript；代码内部可以查询链上状态，但最终提交一笔交易。</p>
-            <p lang="en">Single-operation tasks. One model call returns TypeScript; the code may read chain state, but the benchmark evaluates one submitted transaction.</p>
-            <ul><li>BNB / ERC-20 / NFT</li><li>PancakeSwap / staking / queries</li><li>receipt + state delta validation</li></ul>
-          </article>
-          <article class="mode-card composite">
-            <h3>Composite · 45</h3>
-            <p lang="zh">多步工作流。模型先规划，Controller 再逐 subtask 调用模型；每轮执行后把结果写回下一轮 prompt。</p>
-            <p lang="en">Multi-step workflows. The model plans first, then the Controller calls it per subtask and feeds observations back into the next prompt.</p>
-            <ul><li>planning phase · not counted</li><li>execution rounds · scored</li><li>extra rounds incur efficiency decay</li></ul>
-          </article>
-        </div>
-      </div>
+    <h2 class="title is-3 has-text-centered"><span lang="zh">两个 split，两个能力面</span><span lang="en">Two splits, two capability profiles</span></h2>
+    <div class="mode-grid">
+      <article class="mode-card atomic"><h3>Atomic · 62</h3><p lang="zh">一次模型 API 调用。输入为通用 <code>atomic_role_prompt</code>、通用 <code>environment_description</code> 和当前解析出的 Task；输出是一个 TypeScript 模块，导出 <code>executeSkill</code>，返回一笔 unsigned transaction object。</p><p lang="en">One model API call. The input combines the atomic role prompt, environment description, and a resolved task. The output is a TypeScript module exporting <code>executeSkill</code> and returning one unsigned transaction object.</p><ul><li>BNB / ERC-20 / NFT</li><li>PancakeSwap / staking / contract calls</li><li>receipt + state-delta validation</li></ul></article>
+      <article class="mode-card composite"><h3>Composite · 45</h3><p lang="zh">模型先给出 JSON planning；Controller 按 subtask 多轮调用模型。每轮的 <code>action_result</code>、<code>tx_hash</code>、query result 或 error 会进入下一轮上下文。</p><p lang="en">The model first emits a JSON plan; the Controller calls it per subtask. Each round feeds action results, transaction hashes, query results, or errors into the next context.</p><ul><li>planning phase + execution rounds</li><li>optimal steps are defined per task</li><li>extra steps receive efficiency decay</li></ul></article>
     </div>
   </div>
 </section>
 
-<section class="section">
+<section class="section hero is-light" id="case">
   <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column is-four-fifths has-text-centered">
-        <h2 class="title is-3"><span lang="zh">一个真实 Atomic 任务</span><span lang="en">One real Atomic task</span></h2>
-        <div class="columns is-variable is-5 is-vcentered">
-          <div class="column has-text-left">
-            <p class="has-text-grey is-size-7 mono">bnb_transfer_percentage.json</p>
-            <h3 class="title is-4">Transfer 15% of my BNB balance</h3>
-            <p lang="zh">模型必须查询 agent 当前余额、计算 15%、构造一笔 unsigned transaction。Runner 执行后，Validator 检查交易成功、目标地址、金额、gas 和余额变化。</p>
-            <p lang="en">The model must query the agent balance, compute 15%, and construct one unsigned transaction. The Validator checks success, recipient, amount, gas, and balance change.</p>
-          </div>
-          <div class="column">
-            <div class="code-card">
-              <div class="code-head">generated executeSkill · ethers.js v6</div>
-              <pre><span class="kw">const</span> balance = <span class="kw">await</span> provider.getBalance(agentAddress);
-<span class="kw">const</span> amount = balance * 15n / 100n;
-
-<span class="kw">return</span> {
-  to: <span class="str">"0x1111...1111"</span>,
-  value: amount,
-  gasLimit: 21000n
-};</pre>
-            </div>
-          </div>
-        </div>
-        <div class="check-list">
-          <div class="check">status · 30</div><div class="check">to · 20</div><div class="check">value · 30</div><div class="check">gas · 10</div><div class="check">state delta · 10</div>
-        </div>
-      </div>
+    <h2 class="title is-3 has-text-centered"><span lang="zh">真实题目案例：从 JSON 到状态验证</span><span lang="en">Concrete cases: JSON → execution → state checks</span></h2>
+    <div class="case-grid">
+      <article class="case-card">
+        <div class="case-label">ATOMIC · <code>bnb_transfer_percentage.json</code></div>
+        <h3>Transfer {percentage}% of my BNB balance to {to_address}</h3>
+        <div class="case-block"><b>Question JSON</b><pre>{
+  "id": "bnb_transfer_percentage",
+  "parameters": {"percentage": {"min": 10, "max": 90, "step": 5},
+                 "to_address": {"type": "address", "method": "random"}},
+  "natural_language_templates": [
+    "Transfer {percentage}% of my BNB balance to {to_address}"
+  ]
+}</pre></div>
+        <div class="case-block"><b>Resolved Task</b><p><code>Transfer 15% of my BNB balance to 0x1111...1111</code></p></div>
+        <div class="case-block"><b>Model output contract</b><pre>export async function executeSkill(...): Promise&lt;TransactionRequest&gt; {
+  const balance = await provider.getBalance(agentAddress);
+  return { to: "0x1111...1111", value: balance * 15n / 100n, gasLimit: 21000n };
+}</pre></div>
+        <div class="case-checks"><span>receipt.success</span><span>to = recipient</span><span>value ≈ 15%</span><span>sender balance delta</span></div>
+      </article>
+      <article class="case-card">
+        <div class="case-label composite-label">COMPOSITE · <code>composite_approve_swap_query_result.json</code></div>
+        <h3>Approve USDT, swap for BUSD, then verify the received balance</h3>
+        <div class="case-block"><b>Question JSON</b><pre>{
+  "composite_structure": {
+    "optimal_steps": 3,
+    "atomic_operations": ["erc20_approve",
+      "swap_exact_tokens_for_tokens", "query_erc20_balance"]
+  },
+  "interaction_config": {
+    "score_decay_formula": "base_score * min(1, optimal_steps / actual_steps)"
+  }
+}</pre></div>
+        <div class="case-block"><b>Resolved Task</b><p><code>Approve 4.50 USDT for PancakeSwap, swap it for BUSD, and check how much BUSD you received.</code></p></div>
+        <div class="case-block"><b>Controller loop</b><ol><li>plan: approve → swap → query</li><li>execute one action per round</li><li>feed receipt / query result into next prompt</li><li>submit when done; penalize unnecessary rounds</li></ol></div>
+        <div class="case-checks"><span>router = PancakeSwap</span><span>selector = 0x38ed1739</span><span>USDT decreases</span><span>BUSD increases</span></div>
+      </article>
     </div>
   </div>
 </section>
 
-<section class="section hero is-light">
+<section class="section" id="scoring">
   <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column is-four-fifths has-text-centered">
-        <h2 class="title is-3"><span lang="zh">动态实例，不是固定答案</span><span lang="en">Dynamic instances, not fixed answers</span></h2>
-        <div class="columns is-variable is-5">
-          <div class="column has-text-left">
-            <p lang="zh">题目定义写在 JSON 中，但每轮会重新选择自然语言模板并填入参数。随机地址、金额、比例和环境部署地址让模型不能只背一份固定交易。</p>
-            <p lang="en">Task definitions live in JSON, while each run samples a template and resolves parameters. Addresses, amounts, percentages, and environment-derived contracts prevent fixed-answer memorization.</p>
-            <div class="callout"><strong>373</strong> natural-language templates · <strong>107</strong> task definitions</div>
-          </div>
-          <div class="column">
-            <div class="code-card">
-              <div class="code-head">question instance</div>
-              <pre>{
-  id: <span class="str">"bnb_transfer_percentage"</span>,
-  percentage: <span class="fn">15</span>,
-  to_address: <span class="str">"0x1111...1111"</span>
-}
-
-<span class="cm">// resolved Task</span>
-Transfer 15% of my BNB balance to 0x1111...1111</pre>
-            </div>
-          </div>
-        </div>
-      </div>
+    <h2 class="title is-3 has-text-centered"><span lang="zh">分数来自执行证据</span><span lang="en">Scores come from execution evidence</span></h2>
+    <div class="columns is-variable is-6">
+      <div class="column"><h3 class="title is-5">Atomic</h3><p lang="zh">每个题目按其 validator 的后置条件评分。以 BNB 百分比转账为例，validator 会分别检查交易成功、目标地址、转账金额和发送方余额变化；因此可能得到部分分，但不是过程分。</p><p lang="en">Each task is scored against its validator post-conditions. For the BNB percentage transfer, checks cover success, recipient, amount, and sender balance delta. Partial credit reflects satisfied outcome checks, not hidden reasoning steps.</p><div class="score-bar"><span class="s1">success</span><span class="s2">to</span><span class="s3">value</span><span class="s4">state</span></div></div>
+      <div class="column"><h3 class="title is-5">Composite</h3><p lang="zh">Composite 复用关键 atomic validator，同时比较实际执行轮次和题目定义的 optimal steps。额外轮次会按题目中的衰减公式降低分数。</p><p lang="en">Composite reuses the key atomic validator and compares actual rounds with the task's optimal steps. Unnecessary rounds reduce the score through the task-defined decay formula.</p><div class="decay"><span>3 optimal steps</span><span>4 steps → 75%</span><span>6 steps → 50%</span></div></div>
     </div>
+    <p class="callout" lang="zh">最终评测同时保留原始执行证据：交易 receipt、tx hash、查询结果、错误信息和 before/after state。代码“像答案”不等于链上“达到答案”。</p>
+    <p class="callout" lang="en">The evaluation retains receipts, transaction hashes, query results, errors, and before/after state. Code that looks like an answer is not enough unless the chain reaches the intended state.</p>
   </div>
 </section>
 
-<section class="section">
+<section class="section hero is-light" id="results">
   <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column is-four-fifths has-text-centered">
-        <h2 class="title is-3"><span lang="zh">评分不是代码相似度</span><span lang="en">Scoring is not code similarity</span></h2>
-        <p class="section-lead" lang="zh">Atomic 的 0–100 分来自多个结果约束；Composite 还会根据额外执行轮次衰减。</p>
-        <p class="section-lead" lang="en">Atomic scores are weighted outcome checks; Composite adds a decay for unnecessary execution rounds.</p>
-        <div class="score-bar"><span class="s1">30</span><span class="s2">20</span><span class="s3">30</span><span class="s4">10</span><span class="s5">10</span></div>
-        <div class="score-legend"><span>success</span><span>recipient</span><span>amount</span><span>gas</span><span>state delta</span></div>
-        <div class="callout" lang="zh">一次交易可以拿部分分，但只有所有检查都通过，才会被标记为最终通过。代码写得像参考答案，不代表状态一定正确。</div>
-        <div class="callout" lang="en">A transaction can earn partial credit, but the final pass flag requires all checks to pass. Looking like a reference answer does not guarantee a correct state transition.</div>
-      </div>
+    <h2 class="title is-3 has-text-centered"><span lang="zh">ACL 论文主结果</span><span lang="en">Main ACL results</span></h2>
+    <p class="section-lead" lang="zh">论文在 20 个模型上运行 5 个独立 rounds，共 10,700 个执行实例。下表列出论文报告的最高六个 aggregate scores。</p>
+    <p class="section-lead" lang="en">The paper evaluates 20 models across 5 independent rounds, yielding 10,700 execution instances. The table shows the six highest reported aggregate scores.</p>
+    <div class="table-container">
+      <table class="table is-fullwidth is-hoverable result-table"><thead><tr><th>Model</th><th>Atomic</th><th>Composite</th><th>Total</th><th>SD</th><th>CV</th></tr></thead><tbody>
+        <tr class="winner"><td>Claude-Sonnet-4.5</td><td>4,278</td><td>3,958</td><td><strong>8,236</strong></td><td>174</td><td>2.1%</td></tr>
+        <tr><td>Gemini-3-Pro</td><td>4,302</td><td>3,561</td><td>7,863</td><td>267</td><td>3.4%</td></tr>
+        <tr><td>GPT-5</td><td>4,128</td><td>3,646</td><td>7,774</td><td>407</td><td>5.2%</td></tr>
+        <tr><td>GPT-5.1</td><td>3,715</td><td>3,617</td><td>7,332</td><td>144</td><td>2.0%</td></tr>
+        <tr><td>Kimi-K2-Thinking</td><td>3,605</td><td>3,633</td><td>7,238</td><td>207</td><td>2.9%</td></tr>
+        <tr><td>DeepSeek-V3.2</td><td>3,071</td><td>3,638</td><td>6,709</td><td>384</td><td>5.7%</td></tr>
+      </tbody></table>
     </div>
+    <div class="insight-grid"><div><b>Atomic ↔ Composite asymmetry</b><span lang="zh">单步高分不保证多步规划同样稳健。</span><span lang="en">Strong single-step execution does not guarantee robust workflow planning.</span></div><div><b>Variance matters</b><span lang="zh">SD/CV 显示不同轮次的稳定性。</span><span lang="en">SD/CV expose run-to-run stability.</span></div><div><b>Cost is measurable</b><span lang="zh">完整 107 题约 334K tokens；标准模型单轮约 $0.06–$0.29，thinking-heavy 模型最高约 $14.16。</span><span lang="en">A full 107-task run uses about 334K tokens; standard-model rounds cost roughly $0.06–$0.29, while thinking-heavy models reach about $14.16.</span></div></div>
   </div>
 </section>
 
-<footer class="footer">
-  <div class="content has-text-centered is-size-7">
-    <p><span lang="zh">EVM-QuestBench · OpenEdgeHQ · 面向真实 EVM 执行的交易代码生成评测</span><span lang="en">EVM-QuestBench · OpenEdgeHQ · execution-grounded transaction code generation benchmark</span></p>
-    <p>This page borrows the source code of the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>, adapted from the <a href="https://nerfies.github.io">Nerfies</a> project page. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p>
+<section class="section" id="reproduce">
+  <div class="container is-max-desktop narrow-copy">
+    <h2 class="title is-3"><span lang="zh">复现与资料</span><span lang="en">Reproduce the benchmark</span></h2>
+    <p lang="zh">仓库包含题库 JSON、参数生成器、Controller、Anvil fork 环境、TypeScript runner 和 validators。安装依赖后可按 split 运行：</p>
+    <p lang="en">The repository contains JSON task definitions, parameter generation, Controller, Anvil-fork environment, TypeScript runner, and validators. Run either split after installing dependencies:</p>
+    <pre class="command-block">pip install -r requirements.txt
+cd bsc_quest_bench/skill_runner &amp;&amp; bun install &amp;&amp; cd ../..
+python run_quest_bench.py --model MODEL --type atomic
+python run_quest_bench.py --model MODEL --type composite</pre>
+    <p class="resource-links"><a href="https://github.com/OpenEdgeHQ/EVM-quest-bench">Repository</a><a href="https://aclanthology.org/2026.acl-long.1642/">ACL Anthology</a><a href="https://arxiv.org/abs/2601.06565">arXiv</a></p>
   </div>
-</footer>
+</section>
+
+<section class="section hero is-light" id="citation">
+  <div class="container is-max-desktop narrow-copy">
+    <h2 class="title is-3"><span lang="zh">引用这项工作</span><span lang="en">Citation</span></h2>
+    <div class="citation-head"><span lang="zh">BibTeX（点击右侧按钮复制）</span><span lang="en">BibTeX (copy with the button)</span><button class="button is-small is-link is-light" onclick="copyBibtex()" id="copy-citation">Copy BibTeX</button></div>
+    <pre id="bibtex" class="bibtex">@inproceedings{yang-etal-2026-evm-questbench,
+  title = {EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation},
+  author = {Yang, Pei and Chen, Wanyi and Wang, Ke and Ai, Lynn and Yang, Eric and Shi, Tianyu},
+  booktitle = {Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics},
+  year = {2026},
+  pages = {35513--35529},
+  publisher = {Association for Computational Linguistics},
+  url = {https://aclanthology.org/2026.acl-long.1642/}
+}</pre>
+    <p id="copy-status" class="copy-status" aria-live="polite"></p>
+  </div>
+</section>
+
+<footer class="footer"><div class="content has-text-centered is-size-7"><p>EVM-QuestBench · OpenEdgeHQ · ACL 2026 Long Paper</p><p>This page borrows the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>, adapted from <a href="https://nerfies.github.io">Nerfies</a>. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p></div></footer>
 
 <script>
-  const META = {
-    zh: { title: 'EVM-QuestBench — 面向真实 EVM 执行的交易代码评测', desc: 'EVM-QuestBench：把自然语言区块链意图放进 BSC fork 执行，并验证交易与链上状态。' },
-    en: { title: 'EVM-QuestBench — Execution-Grounded Transaction Benchmark', desc: 'EVM-QuestBench executes natural-language blockchain intent on a BSC fork and verifies the resulting transaction and state.' }
-  };
-  function setLang(lang) {
-    document.body.classList.toggle('lang-zh', lang === 'zh');
-    document.body.classList.toggle('lang-en', lang === 'en');
-    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-    document.title = META[lang].title;
-    document.querySelector('meta[name="description"]').setAttribute('content', META[lang].desc);
-    document.querySelector('#btn-zh').setAttribute('aria-pressed', String(lang === 'zh'));
-    document.querySelector('#btn-en').setAttribute('aria-pressed', String(lang === 'en'));
-    localStorage.setItem('evmquest-lang', lang);
-  }
-  const queryLang = new URLSearchParams(location.search).get('lang');
-  const savedLang = localStorage.getItem('evmquest-lang');
-  const browserLang = navigator.language && navigator.language.toLowerCase().startsWith('en') ? 'en' : 'zh';
-  setLang(queryLang === 'en' || queryLang === 'zh' ? queryLang : (savedLang || browserLang));
+  const META = { zh: { title: 'EVM-QuestBench — ACL 2026 长论文', desc: 'EVM-QuestBench：把自然语言区块链意图放进 BSC fork 执行，并验证交易与链上状态。' }, en: { title: 'EVM-QuestBench — ACL 2026 Long Paper', desc: 'EVM-QuestBench executes natural-language blockchain intent on a BSC fork and verifies the resulting transaction and state.' } };
+  function setLang(lang) { document.body.classList.toggle('lang-zh', lang === 'zh'); document.body.classList.toggle('lang-en', lang === 'en'); document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en'; document.title = META[lang].title; document.querySelector('meta[name="description"]').setAttribute('content', META[lang].desc); document.querySelector('#btn-zh').setAttribute('aria-pressed', String(lang === 'zh')); document.querySelector('#btn-en').setAttribute('aria-pressed', String(lang === 'en')); localStorage.setItem('evmquest-lang', lang); }
+  async function copyBibtex() { const text = document.querySelector('#bibtex').innerText; try { await navigator.clipboard.writeText(text); document.querySelector('#copy-status').textContent = 'Copied.'; } catch (e) { document.querySelector('#copy-status').textContent = 'Select the BibTeX block to copy.'; } }
+  const queryLang = new URLSearchParams(location.search).get('lang'); const savedLang = localStorage.getItem('evmquest-lang'); const browserLang = navigator.language && navigator.language.toLowerCase().startsWith('en') ? 'en' : 'zh'; setLang(queryLang === 'en' || queryLang === 'zh' ? queryLang : (savedLang || browserLang));
 </script>
 </body>
 </html>
