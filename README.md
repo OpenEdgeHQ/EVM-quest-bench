@@ -37,9 +37,9 @@ The benchmark covers native-token transfers, ERC-20 and NFT operations, contract
 ## Paper and authors
 
 **EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation**<br>
-Pei Yang<sup>1*</sup>, Wanyi Chen<sup>2*</sup>, Ke Wang<sup>1</sup>, Lynn Ai<sup>1</sup>, Eric Yang<sup>1</sup>, Tianyu Shi<sup>1†</sup><br>
-<sup>1</sup> Gradient · <sup>2</sup> Soochow University<br>
-<sup>*</sup>Equal contribution · <sup>†</sup>Corresponding author<br>
+Pei Yang* (¹), Wanyi Chen* (²), Ke Wang (¹), Lynn Ai (¹), Eric Yang (¹), Tianyu Shi† (¹)<br>
+¹ Gradient · ² Soochow University<br>
+* Equal contribution · † Corresponding author<br>
 *Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics, Volume 1: Long Papers, 2026, pp. 35513–35529.*
 
 **Resources:** [Project Page](https://openedgehq.github.io/EVM-quest-bench/) · [ACL Anthology](https://aclanthology.org/2026.acl-long.1642/) · [arXiv](https://arxiv.org/abs/2601.06565) · [Code](https://github.com/OpenEdgeHQ/EVM-quest-bench) · [CITATION.cff](CITATION.cff)

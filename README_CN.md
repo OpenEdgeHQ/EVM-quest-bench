@@ -9,7 +9,7 @@ EVM-QuestBench 评测模型能否把自然语言区块链意图转化为可执�
 ## 论文信息
 
 - ACL 2026 主会 Long Paper，Volume 1
-- 作者：Pei Yang、Wanyi Chen、Ke Wang、Lynn Ai、Eric Yang、Tianyu Shi
+- 作者：Pei Yang*、Wanyi Chen*、Ke Wang、Lynn Ai、Eric Yang、Tianyu Shi†（*同等贡献，†通讯作者）
 - 单位：Gradient、Soochow University
 - [项目主页](https://openedgehq.github.io/EVM-quest-bench/)
 - [ACL Anthology](https://aclanthology.org/2026.acl-long.1642/)
