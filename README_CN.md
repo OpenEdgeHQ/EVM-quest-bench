@@ -14,6 +14,18 @@ EVM-QuestBench 评测模型能否把自然语言区块链意图转化为可执�
 - [项目主页](https://openedgehq.github.io/EVM-quest-bench/)
 - [ACL Anthology](https://aclanthology.org/2026.acl-long.1642/)
 - [arXiv](https://arxiv.org/abs/2601.06565)
+- [Hugging Face 数据集与在线预览](https://huggingface.co/datasets/berryccc1/EVM-QuestBench)
+
+## Hugging Face 数据集
+
+```python
+from datasets import load_dataset
+
+dataset = load_dataset("berryccc1/EVM-QuestBench")
+print(dataset["atomic"][0])
+```
+
+默认包含 `atomic`（62 条）和 `composite`（45 条）两个 split。
 
 ## 快速开始
 

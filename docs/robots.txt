@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://openedgehq.github.io/EVM-quest-bench/sitemap.xml

@@ -10,11 +10,14 @@
 [![ACL 2026](https://img.shields.io/badge/ACL%202026-Long%20Paper-0f766e)](https://aclanthology.org/2026.acl-long.1642/)
 [![Paper](https://img.shields.io/badge/Paper-ACL%20Anthology-111827)](https://aclanthology.org/2026.acl-long.1642/)
 [![Code](https://img.shields.io/badge/Code-GitHub-111827?logo=github)](https://github.com/OpenEdgeHQ/EVM-quest-bench)
+[![Dataset](https://img.shields.io/badge/🤗%20Dataset-Hugging%20Face-ffd21e)](https://huggingface.co/datasets/berryccc1/EVM-QuestBench)
 [![Citation](https://img.shields.io/badge/Cite-CITATION.cff-f59e0b)](CITATION.cff)
 
 <a href="https://openedgehq.github.io/EVM-quest-bench/">Project Page</a> ·
 <a href="https://aclanthology.org/2026.acl-long.1642/">Paper</a> ·
 <a href="https://arxiv.org/abs/2601.06565">arXiv</a> ·
+<a href="https://huggingface.co/papers/2601.06565">Hugging Face Paper</a> ·
+<a href="https://huggingface.co/datasets/berryccc1/EVM-QuestBench">Hugging Face Dataset</a> ·
 <a href="CITATION.cff">Cite this repository</a>
 
 </div>
@@ -42,7 +45,7 @@ Pei Yang* (¹), Wanyi Chen* (²), Ke Wang (¹), Lynn Ai (¹), Eric Yang (¹), Ti
 * Equal contribution · † Corresponding author<br>
 *Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics, Volume 1: Long Papers, 2026, pp. 35513–35529.*
 
-**Resources:** [Project Page](https://openedgehq.github.io/EVM-quest-bench/) · [ACL Anthology](https://aclanthology.org/2026.acl-long.1642/) · [arXiv](https://arxiv.org/abs/2601.06565) · [Code](https://github.com/OpenEdgeHQ/EVM-quest-bench) · [CITATION.cff](CITATION.cff)
+**Resources:** [Project Page](https://openedgehq.github.io/EVM-quest-bench/) · [ACL Anthology](https://aclanthology.org/2026.acl-long.1642/) · [arXiv](https://arxiv.org/abs/2601.06565) · [Hugging Face Dataset](https://huggingface.co/datasets/berryccc1/EVM-QuestBench) · [Code](https://github.com/OpenEdgeHQ/EVM-quest-bench) · [CITATION.cff](CITATION.cff)
 
 ## Overview
 
@@ -50,6 +53,17 @@ BSC Quest Bench tests LLM competency in understanding blockchain concepts and ge
 
 - **Atomic Problems (62 problems)**: Single operations evaluated in one round
 - **Composite Problems (45 problems)**: Multi-step workflows with planning and execution phases
+
+### Hugging Face Dataset
+
+Explore the 107 task definitions in the [Dataset Viewer](https://huggingface.co/datasets/berryccc1/EVM-QuestBench), or load the `atomic` and `composite` splits directly:
+
+```python
+from datasets import load_dataset
+
+dataset = load_dataset("berryccc1/EVM-QuestBench")
+print(dataset["atomic"][0])
+```
 
 ### Quick Start
 

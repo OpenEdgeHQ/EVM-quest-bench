@@ -1,16 +1,27 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EVM-QuestBench — ACL 2026 Long Paper</title>
-  <meta name="description" content="EVM-QuestBench：ACL 2026 长论文，面向自然语言交易代码生成的执行地基评测。">
-  <meta name="keywords" content="EVM, blockchain, LLM, benchmark, ACL 2026, transaction code generation">
+  <title>EVM-QuestBench — ACL 2026 Execution-Grounded EVM Benchmark</title>
+  <meta name="description" content="EVM-QuestBench is the ACL 2026 execution-grounded benchmark for natural-language EVM transaction code generation, with 107 atomic and composite tasks, validators, code, and a Hugging Face dataset.">
+  <meta name="keywords" content="EVM-QuestBench, EVM benchmark, blockchain benchmark, LLM agent evaluation, transaction code generation, execution-grounded evaluation, ACL 2026, BSC, DeFi, smart contracts">
+  <meta name="author" content="Pei Yang, Wanyi Chen, Ke Wang, Lynn Ai, Eric Yang, Tianyu Shi">
   <meta property="og:type" content="article">
+  <meta property="og:site_name" content="EVM-QuestBench">
   <meta property="og:title" content="EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation">
-  <meta property="og:description" content="A benchmark that executes generated transaction code and verifies the resulting EVM state.">
+  <meta property="og:description" content="ACL 2026 benchmark with 107 tasks that executes generated transaction code and validates the resulting EVM state.">
   <meta property="og:url" content="https://openedgehq.github.io/EVM-quest-bench/">
+  <meta property="og:image" content="https://openedgehq.github.io/EVM-quest-bench/static/img/pipeline.png">
+  <meta property="og:image:alt" content="EVM-QuestBench execution-grounded evaluation pipeline">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="EVM-QuestBench — ACL 2026">
+  <meta name="twitter:description" content="An execution-grounded benchmark for natural-language EVM transaction code generation.">
+  <meta name="twitter:image" content="https://openedgehq.github.io/EVM-quest-bench/static/img/pipeline.png">
   <link rel="canonical" href="https://openedgehq.github.io/EVM-quest-bench/">
+  <link rel="alternate" hreflang="en" href="https://openedgehq.github.io/EVM-quest-bench/?lang=en">
+  <link rel="alternate" hreflang="zh-CN" href="https://openedgehq.github.io/EVM-quest-bench/?lang=zh">
+  <link rel="alternate" hreflang="x-default" href="https://openedgehq.github.io/EVM-quest-bench/">
   <meta name="citation_title" content="EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation">
   <meta name="citation_author" content="Yang, Pei">
   <meta name="citation_author" content="Chen, Wanyi">
@@ -22,33 +33,93 @@
   <meta name="citation_conference_title" content="Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics">
   <meta name="citation_firstpage" content="35513">
   <meta name="citation_lastpage" content="35529">
+  <meta name="citation_doi" content="10.18653/v1/2026.acl-long.1642">
+  <meta name="citation_arxiv_id" content="2601.06565">
+  <meta name="citation_pdf_url" content="https://aclanthology.org/2026.acl-long.1642.pdf">
+  <meta name="citation_abstract_html_url" content="https://aclanthology.org/2026.acl-long.1642/">
+  <meta name="citation_language" content="en">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "ScholarlyArticle",
-    "name": "EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation",
-    "headline": "An execution-grounded benchmark for natural-language transaction code generation",
-    "url": "https://openedgehq.github.io/EVM-quest-bench/",
-    "sameAs": ["https://aclanthology.org/2026.acl-long.1642/", "https://arxiv.org/abs/2601.06565", "https://github.com/OpenEdgeHQ/EVM-quest-bench"],
-    "datePublished": "2026-07-02",
-    "isPartOf": {"@type": "PublicationIssue", "name": "Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics"},
-    "author": [
-      {"@type": "Person", "name": "Pei Yang"}, {"@type": "Person", "name": "Wanyi Chen"},
-      {"@type": "Person", "name": "Ke Wang"}, {"@type": "Person", "name": "Lynn Ai"},
-      {"@type": "Person", "name": "Eric Yang"}, {"@type": "Person", "name": "Tianyu Shi"}
-    ],
-    "keywords": "EVM, blockchain, LLM benchmark, transaction code generation, Atomic, Composite"
+    "@graph": [
+      {
+        "@type": "ScholarlyArticle",
+        "@id": "https://openedgehq.github.io/EVM-quest-bench/#paper",
+        "name": "EVM-QuestBench: An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation",
+        "headline": "An Execution-Grounded Benchmark for Natural-Language Transaction Code Generation",
+        "description": "EVM-QuestBench evaluates whether language models can generate transaction code that executes successfully and produces the intended EVM state transition across 62 atomic tasks and 45 composite workflows.",
+        "abstract": "An ACL 2026 benchmark for natural-language transaction-script generation on EVM-compatible chains using dynamic execution-grounded validation.",
+        "url": "https://openedgehq.github.io/EVM-quest-bench/",
+        "mainEntityOfPage": "https://openedgehq.github.io/EVM-quest-bench/",
+        "sameAs": [
+          "https://aclanthology.org/2026.acl-long.1642/",
+          "https://arxiv.org/abs/2601.06565",
+          "https://huggingface.co/papers/2601.06565",
+          "https://github.com/OpenEdgeHQ/EVM-quest-bench"
+        ],
+        "identifier": [
+          {"@type": "PropertyValue", "propertyID": "DOI", "value": "10.18653/v1/2026.acl-long.1642"},
+          {"@type": "PropertyValue", "propertyID": "arXiv", "value": "2601.06565"}
+        ],
+        "image": "https://openedgehq.github.io/EVM-quest-bench/static/img/pipeline.png",
+        "datePublished": "2026-07-02",
+        "inLanguage": "en",
+        "isPartOf": {"@type": "PublicationIssue", "name": "Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics, Volume 1: Long Papers"},
+        "author": [
+          {"@type": "Person", "name": "Pei Yang"},
+          {"@type": "Person", "name": "Wanyi Chen"},
+          {"@type": "Person", "name": "Ke Wang"},
+          {"@type": "Person", "name": "Lynn Ai"},
+          {"@type": "Person", "name": "Eric Yang"},
+          {"@type": "Person", "name": "Tianyu Shi"}
+        ],
+        "about": ["large language models", "AI agents", "EVM", "blockchain", "transaction code generation", "execution-grounded evaluation"],
+        "keywords": ["EVM-QuestBench", "EVM benchmark", "blockchain benchmark", "LLM agent evaluation", "transaction code generation", "ACL 2026"],
+        "hasPart": [
+          {"@id": "https://huggingface.co/datasets/berryccc1/EVM-QuestBench#dataset"},
+          {"@id": "https://github.com/OpenEdgeHQ/EVM-quest-bench#software"}
+        ]
+      },
+      {
+        "@type": "Dataset",
+        "@id": "https://huggingface.co/datasets/berryccc1/EVM-QuestBench#dataset",
+        "name": "EVM-QuestBench Dataset",
+        "description": "107 execution-grounded EVM transaction-code generation tasks: 62 atomic tasks and 45 composite workflows.",
+        "url": "https://huggingface.co/datasets/berryccc1/EVM-QuestBench",
+        "sameAs": "https://github.com/OpenEdgeHQ/EVM-quest-bench/tree/main/bsc_quest_bench/question_bank",
+        "isBasedOn": {"@id": "https://openedgehq.github.io/EVM-quest-bench/#paper"},
+        "license": "https://opensource.org/license/mit",
+        "creator": {"@type": "Organization", "name": "EVM-QuestBench authors"},
+        "distribution": {
+          "@type": "DataDownload",
+          "encodingFormat": "application/jsonl",
+          "contentUrl": "https://huggingface.co/datasets/berryccc1/EVM-QuestBench"
+        },
+        "keywords": ["benchmark dataset", "EVM", "blockchain", "LLM", "AI agents", "code generation", "DeFi"]
+      },
+      {
+        "@type": "SoftwareSourceCode",
+        "@id": "https://github.com/OpenEdgeHQ/EVM-quest-bench#software",
+        "name": "EVM-QuestBench",
+        "description": "Execution runner, task definitions, and validators for EVM-QuestBench.",
+        "url": "https://github.com/OpenEdgeHQ/EVM-quest-bench",
+        "codeRepository": "https://github.com/OpenEdgeHQ/EVM-quest-bench",
+        "programmingLanguage": ["Python", "TypeScript", "Solidity"],
+        "license": "https://opensource.org/license/mit",
+        "citation": {"@id": "https://openedgehq.github.io/EVM-quest-bench/#paper"}
+      }
+    ]
   }
   </script>
   <link rel="stylesheet" href="static/css/bulma.min.css">
   <link rel="stylesheet" href="static/css/index.css">
   <link rel="stylesheet" href="static/css/evmquest.css">
 </head>
-<body class="lang-zh">
+<body class="lang-en">
 
 <div class="lang-switch" role="group" aria-label="Language / 语言">
-  <button id="btn-zh" aria-pressed="true" onclick="setLang('zh')">中文</button>
-  <button id="btn-en" aria-pressed="false" onclick="setLang('en')">EN</button>
+  <button id="btn-zh" aria-pressed="false" onclick="setLang('zh')">中文</button>
+  <button id="btn-en" aria-pressed="true" onclick="setLang('en')">EN</button>
 </div>
 
 <section class="hero publication-header">
@@ -64,6 +135,7 @@
         <a class="button is-dark is-rounded" href="https://aclanthology.org/2026.acl-long.1642/">📄 <span lang="zh">ACL 正式论文</span><span lang="en">ACL Anthology</span></a>
         <a class="button is-dark is-rounded" href="https://arxiv.org/abs/2601.06565">⌁ <span lang="zh">arXiv</span><span lang="en">arXiv</span></a>
         <a class="button is-dark is-rounded" href="https://github.com/OpenEdgeHQ/EVM-quest-bench">⌘ <span lang="zh">代码与题库</span><span lang="en">Code</span></a>
+        <a class="button is-dark is-rounded" href="https://huggingface.co/datasets/berryccc1/EVM-QuestBench">🤗 <span lang="zh">数据集</span><span lang="en">Dataset</span></a>
         <a class="button is-primary is-rounded" href="#citation">✎ <span lang="zh">引用 / BibTeX</span><span lang="en">Cite / BibTeX</span></a>
       </div>
       <p class="paper-meta"><span lang="zh">Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics · 2026 · pp. 35513–35529</span><span lang="en">Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics · 2026 · pp. 35513–35529</span></p>
@@ -97,6 +169,18 @@
     <h2 class="title is-3"><span lang="zh">摘要式定位</span><span lang="en">Abstract</span></h2>
     <p lang="zh">EVM-QuestBench 研究一个具体而容易被高估的问题：语言模型能否把用户的自然语言区块链意图，编译成可执行的交易代码，并真正改变 EVM 状态。与只比较生成代码字符串的评测不同，本基准在 BSC 主网 fork 上执行模型返回的 unsigned transaction，再根据 receipt、调用目标、calldata、余额、allowance、NFT owner、LP token 等状态证据评分。基准把能力拆成单步 Atomic 与多步 Composite，Composite 还显式记录规划、逐步执行、反馈和效率衰减。</p>
     <p lang="en">EVM-QuestBench asks whether language models can compile natural-language blockchain intent into executable transaction code that produces the intended EVM state. Instead of comparing strings, it executes unsigned transactions on a BSC mainnet fork and scores receipts, targets, calldata, balances, allowances, NFT ownership, LP tokens, and other state evidence. The benchmark separates single-operation Atomic tasks from multi-step Composite workflows, with explicit planning, feedback, and efficiency decay for the latter.</p>
+  </div>
+</section>
+
+<section class="section" id="dataset">
+  <div class="container is-max-desktop narrow-copy">
+    <h2 class="title is-3"><span lang="zh">数据集与复现资源</span><span lang="en">Dataset and reproducibility resources</span></h2>
+    <p lang="zh">EVM-QuestBench 的 107 个任务定义已发布到 Hugging Face，包含 62 个 Atomic 任务和 45 个 Composite 工作流，可在线浏览并通过 <code>datasets</code> 直接加载。GitHub 仓库提供完整 Runner、Validator、Anvil/BSC 执行环境和复现实验说明。</p>
+    <p lang="en">All 107 EVM-QuestBench task definitions are available on Hugging Face as 62 Atomic tasks and 45 Composite workflows. They can be explored in the Dataset Viewer or loaded directly with <code>datasets</code>. The GitHub repository provides the full runner, validators, Anvil/BSC execution environment, and reproduction instructions.</p>
+    <pre><code>from datasets import load_dataset
+
+dataset = load_dataset("berryccc1/EVM-QuestBench")</code></pre>
+    <p class="resource-links"><a href="https://huggingface.co/datasets/berryccc1/EVM-QuestBench">Hugging Face Dataset</a><a href="https://github.com/OpenEdgeHQ/EVM-quest-bench">GitHub Implementation</a><a href="https://huggingface.co/papers/2601.06565">Hugging Face Paper</a></p>
   </div>
 </section>
 
@@ -253,7 +337,7 @@
 cd bsc_quest_bench/skill_runner &amp;&amp; bun install &amp;&amp; cd ../..
 python run_quest_bench.py --model MODEL --type atomic
 python run_quest_bench.py --model MODEL --type composite</pre>
-    <p class="resource-links"><a href="https://github.com/OpenEdgeHQ/EVM-quest-bench">Repository</a><a href="https://aclanthology.org/2026.acl-long.1642/">ACL Anthology</a><a href="https://arxiv.org/abs/2601.06565">arXiv</a></p>
+    <p class="resource-links"><a href="https://github.com/OpenEdgeHQ/EVM-quest-bench">Repository</a><a href="https://huggingface.co/datasets/berryccc1/EVM-QuestBench">Hugging Face Dataset</a><a href="https://huggingface.co/papers/2601.06565">Hugging Face Paper</a><a href="https://aclanthology.org/2026.acl-long.1642/">ACL Anthology</a><a href="https://arxiv.org/abs/2601.06565">arXiv</a><a href="https://doi.org/10.18653/v1/2026.acl-long.1642">DOI</a></p>
   </div>
 </section>
 
@@ -277,7 +361,7 @@ python run_quest_bench.py --model MODEL --type composite</pre>
 <footer class="footer"><div class="content has-text-centered is-size-7"><p>EVM-QuestBench · OpenEdgeHQ · ACL 2026 Long Paper</p><p>This page borrows the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>, adapted from <a href="https://nerfies.github.io">Nerfies</a>. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p></div></footer>
 
 <script>
-  const META = { zh: { title: 'EVM-QuestBench — ACL 2026 长论文', desc: 'EVM-QuestBench：把自然语言区块链意图放进 BSC fork 执行，并验证交易与链上状态。' }, en: { title: 'EVM-QuestBench — ACL 2026 Long Paper', desc: 'EVM-QuestBench executes natural-language blockchain intent on a BSC fork and verifies the resulting transaction and state.' } };
+  const META = { zh: { title: 'EVM-QuestBench — ACL 2026 执行地基 EVM 基准', desc: 'EVM-QuestBench 是 ACL 2026 面向自然语言 EVM 交易代码生成的执行地基基准，包含 107 个 Atomic 与 Composite 任务。' }, en: { title: 'EVM-QuestBench — ACL 2026 Execution-Grounded EVM Benchmark', desc: 'EVM-QuestBench is the ACL 2026 execution-grounded benchmark for natural-language EVM transaction code generation, with 107 atomic and composite tasks.' } };
   function setLang(lang) { document.body.classList.toggle('lang-zh', lang === 'zh'); document.body.classList.toggle('lang-en', lang === 'en'); document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en'; document.title = META[lang].title; document.querySelector('meta[name="description"]').setAttribute('content', META[lang].desc); document.querySelector('#btn-zh').setAttribute('aria-pressed', String(lang === 'zh')); document.querySelector('#btn-en').setAttribute('aria-pressed', String(lang === 'en')); localStorage.setItem('evmquest-lang', lang); }
   async function copyBibtex() { const text = document.querySelector('#bibtex').innerText; try { await navigator.clipboard.writeText(text); document.querySelector('#copy-status').textContent = 'Copied.'; } catch (e) { document.querySelector('#copy-status').textContent = 'Select the BibTeX block to copy.'; } }
   const queryLang = new URLSearchParams(location.search).get('lang'); const savedLang = localStorage.getItem('evmquest-lang'); const browserLang = navigator.language && navigator.language.toLowerCase().startsWith('en') ? 'en' : 'zh'; setLang(queryLang === 'en' || queryLang === 'zh' ? queryLang : (savedLang || browserLang));
